@@ -1,0 +1,6 @@
+{
+    "python.envFile": "/home/fatpunk/.local/share/virtualenvs/AlteryxGalleryAPI-wm4dG1Q_",
+    "python.testing.pytestArgs": ["tests"],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true
+}
