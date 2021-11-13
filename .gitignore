@@ -38,9 +38,18 @@ coverage.xml
 .pytest_cache/
 cover/
 
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
 ## Personally added Ignores
 # .pypirc
 # **/dist
 # **/
 # **/__pycache__
-.env
+# .env
