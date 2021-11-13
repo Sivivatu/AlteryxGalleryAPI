@@ -4,8 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+requests = "*"
+alteryxgalleryapi = {editable = true, path = "."}
 
 [dev-packages]
+python-decouple = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.9"
