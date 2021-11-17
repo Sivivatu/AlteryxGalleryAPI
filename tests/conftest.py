@@ -1,8 +1,9 @@
 import pytest
 from decouple import config
 
-from AlteryxGallery.AlteryxGalleryAPI import Gallery
-from AlteryxGallery.Admin import GalleryAdmin
+from alteryxGallery.gallery_connection import Gallery
+from alteryxGallery.api_connections.admin import GalleryAdmin
+from alteryxGallery.api_connections.gallery import GalleryUser
 
 @pytest.fixture(scope="session")
 def api_con():
