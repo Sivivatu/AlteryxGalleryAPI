@@ -10,8 +10,8 @@ alteryxgalleryapi = {editable = true, path = "."}
 [dev-packages]
 python-decouple = "*"
 pytest = "*"
-pylint = "*"
 setuptools = "*"
+flake8 = "*"
 
 [requires]
 python_version = "3.9"
