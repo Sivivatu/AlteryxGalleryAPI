@@ -7,5 +7,10 @@
     "python.linting.enabled": true,
     "python.linting.mypyEnabled": false,
     "python.linting.banditEnabled": false,
-    "python.linting.pylintEnabled": false
+    "python.linting.pylintEnabled": false,
+    "python.linting.ignorePatterns": [
+        "**/site-packages/**/*.py",
+        ".vscode/*.py",
+        "build/**"
+    ]
 }
