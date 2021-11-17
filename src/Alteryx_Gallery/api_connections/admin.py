@@ -2,12 +2,13 @@ import json
 import requests
 from Alteryx_Gallery.gallery_connection import Gallery
 
+
 class GalleryAdmin(Gallery):
     '''Extends the Gallery Class containing connection to access Alteryx Server API endpoints'''
     def __init__(self, api_location: str, api_key: str, api_secret: str):
         super().__init__(self.api_location, self.api_key, self.api_secret)
         api_location_base = api_location.rsplit("/", 1)
-        self.api_location = api_location_base[0]+ "/admin/" + api_location_base[1] + "/"
+        self.api_location = api_location_base[0] + "/admin/" + api_location_base[1] + "/"
 
     @property
     def api_location(self):
@@ -20,7 +21,7 @@ class GalleryAdmin(Gallery):
         if not isinstance(loc, str):
             raise TypeError(f"Invalid type {type(loc)} for variable 'api_location'")
         api_location_base = loc.rsplit("/", 1)
-        self.api_location = api_location_base[0]+ "/admin/" + api_location_base[1] + "/"
+        self.api_location = api_location_base[0] + "/admin/" + api_location_base[1] + "/"
 
     @property
     def admin_api_key(self):
@@ -48,10 +49,13 @@ class GalleryAdmin(Gallery):
             raise TypeError(f"Invalid type {type(secret_key)} for variable 'api_secret'")
         self._api_secret = secret_key
 
-    def get_workflows_migratable(self, app_id = None, **kwargs):
+    def get_workflows_migratable(self, **kwargs):
         """:return: Generate a list of workflows that have been set as migratable"""
         method = 'GET'
-        url = self.api_location + '/workflows/migratable'
+        if 'subscriptionIds' in kwargs:
+            url = self.api_location + '/workflows/migratable?subscriptionIds=' + kwargs['subscriptionIds']
+        else:
+            url = self.api_location + '/workflows/migratable'
         params = self.build_oauth_params()
         signature = self.generate_signature(method, url, params)
         params.update({'oauth_signature': signature})

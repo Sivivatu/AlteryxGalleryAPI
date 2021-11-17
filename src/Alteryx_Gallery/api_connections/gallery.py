@@ -2,6 +2,7 @@ import json
 import requests
 from Alteryx_Gallery.gallery_connection import Gallery
 
+
 class GalleryUser(Gallery):
     '''Extends the Gallery Class containing connection to access Alteryx Server API endpoints'''
     def __init__(self, api_location: str, api_key: str, api_secret: str):
@@ -46,9 +47,9 @@ class GalleryUser(Gallery):
 
         if 'payload' in kwargs:
             output = requests.post(url,
-                                json=kwargs['payload'],
-                                headers={'Content-Type': 'application/json'},
-                                params=params)
+                                   json=kwargs['payload'],
+                                   headers={'Content-Type': 'application/json'},
+                                   params=params)
         else:
             response = requests.post(url, params=params)
 
