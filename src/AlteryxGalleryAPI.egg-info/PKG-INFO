@@ -1,22 +1,24 @@
 Metadata-Version: 2.1
 Name: AlteryxGalleryAPI
-Version: 0.0.7
-Summary: An API for connecting to an Alteryx Gallery. Forked from the project by DAVID PRYOR, NICK SIMMONS, AND RITU GOWLIKAR
+Version: 0.0.9
+Summary: An API for connecting to an Alteryx Gallery, Forked from the project by DAVID PRYOR, NICK SIMMONS, AND RITU GOWLIKAR"
 Home-page: https://github.com/Sivivatu/AlteryxGalleryAPI
-Author: PAUL HOUGHTON
+Author: Paul Houghton
 Author-email: paul.houghton@theinformationlab.co.uk
 License: UNKNOWN
 Project-URL: API Documentation, https://gallery.alteryx.com/api-docs/
-Project-URL: Source, https://github.com/Sivivatu/AlteryxGalleryAPI
 Project-URL: Bug Tracker, https://github.com/Sivivatu/AlteryxGalleryAPI/issues
+Project-URL: Source, https://github.com/Sivivatu/AlteryxGalleryAPI
 Platform: UNKNOWN
-Classifier: License :: OSI Approved :: MIT License
-Classifier: Operating System :: OS Independent
-Classifier: Development Status :: 3 - Alpha
 Classifier: Programming Language :: Python :: 3
 Classifier: Programming Language :: Python :: 3.8
 Classifier: Programming Language :: Python :: 3.9
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Development Status :: 3 - Alpha
+Requires-Python: >=3.8
 Description-Content-Type: text/markdown
+Provides-Extra: testing
 License-File: LICENSE
 
 # AlteryxGalleryAPI
@@ -39,7 +41,7 @@ Note: This library is not avaliable through via PyPI and must be installed local
 ## Usage
 
 ```
-from AlteryxGalleryAPI import AlteryxGalleryAPI
+from AlteryxGallery import AlteryxGalleryAPI
 
 client_key = 'your_client_key_here'
 client_secret = 'your_client_secret_here'
