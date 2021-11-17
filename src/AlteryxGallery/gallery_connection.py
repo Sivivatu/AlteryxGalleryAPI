@@ -1,5 +1,4 @@
 import time
-import json
 import collections
 import random
 import math
@@ -8,9 +7,11 @@ import base64
 import urllib
 import hmac
 import hashlib
+from abc import ABC
 import requests
 
-class Gallery():
+class Gallery(ABC):
+    '''Base Class for a gallery connection details'''
     def __init__(self, api_location: str, api_key: str, api_secret: str):
         self.api_location = api_location
         self.api_key = api_key
@@ -18,6 +19,7 @@ class Gallery():
 
     @property
     def api_location(self):
+        '''define the api location as a property'''
         return self._api_location
 
     @api_location.setter
@@ -30,6 +32,7 @@ class Gallery():
 
     @property
     def api_key(self):
+        '''define the api key as a property'''
         return self._api_key
 
     @api_key.setter
@@ -42,6 +45,7 @@ class Gallery():
 
     @property
     def api_secret(self):
+        '''define the api secret as a property'''
         return self._api_secret
 
     @api_secret.setter
