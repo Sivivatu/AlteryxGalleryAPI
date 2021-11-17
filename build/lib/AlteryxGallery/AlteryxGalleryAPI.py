@@ -10,8 +10,7 @@ import hmac
 import hashlib
 import requests
 
-
-class Gallery:
+class Gallery():
     def __init__(self, api_location: str, api_key: str, api_secret: str):
         self.api_location = api_location
         self.api_key = api_key
@@ -53,7 +52,7 @@ class Gallery:
             raise TypeError(f"Invalid type {type(secret_key)} for variable 'api_secret'")
         self._api_secret = secret_key
 
-    def build_oauth_params(self):
+    def build_oauth_params(self) -> dict:
         """
         :return:  A dictionary consisting of params for third-party
         signature generation code based upon the OAuth 1.0a standard.
@@ -72,7 +71,7 @@ class Gallery:
         tmp_string = string.ascii_uppercase + string.digits + string.ascii_lowercase
         return ''.join([str(random.choice(tmp_string)) for i in range(length)])
 
-    def generate_signature(self, http_method, url, params):
+    def generate_signature(self, http_method, url, params) -> dict:
         """
         :return: returns HMAC-SHA1 signature
         """
@@ -126,9 +125,9 @@ class Gallery:
 
         if 'payload' in kwargs:
             output = requests.post(url,
-                                   json=kwargs['payload'],
-                                   headers={'Content-Type': 'application/json'},
-                                   params=params)
+                                json=kwargs['payload'],
+                                headers={'Content-Type': 'application/json'},
+                                params=params)
         else:
             output = requests.post(url, params=params)
 
@@ -186,4 +185,3 @@ class Gallery:
         output = requests.get(url, params=params)
         output, output_content = output, json.loads(output.content.decode("utf8"))
         return output, output_content
-
