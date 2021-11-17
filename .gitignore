@@ -7,6 +7,8 @@ __pycache__/
 # Distribution / packaging
 .Python
 build/
+
+build/lib/ 
 develop-eggs/
 dist/
 downloads/
@@ -53,3 +55,4 @@ venv.bak/
 # **/
 # **/__pycache__
 # .env
+
