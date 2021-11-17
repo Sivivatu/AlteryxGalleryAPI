@@ -1,6 +1,6 @@
 import json
 import requests
-from AlteryxGallery.gallery_connection import Gallery
+from Alteryx_Gallery.gallery_connection import Gallery
 
 class GalleryAdmin(Gallery):
     '''Extends the Gallery Class containing connection to access Alteryx Server API endpoints'''
