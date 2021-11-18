@@ -1,3 +1,4 @@
+import secrets
 import time
 import collections
 import random
@@ -9,6 +10,7 @@ import hmac
 import hashlib
 from abc import ABC
 import requests
+
 
 class Gallery(ABC):
     '''Base Class for a gallery connection details'''
@@ -62,18 +64,10 @@ class Gallery(ABC):
         signature generation code based upon the OAuth 1.0a standard.
         """
         return {'oauth_consumer_key': self.api_key,
-                'oauth_nonce': self.generate_nonce(5),
+                'oauth_nonce': secrets.token_urlsafe(5),
                 'oauth_signature_method': 'HMAC-SHA1',
                 'oauth_timestamp': str(int(math.floor(time.time()))),
                 'oauth_version': '1.0'}
-
-    @staticmethod
-    def generate_nonce(length=5):
-        """
-        :return: Generate pseudorandom number
-        """
-        tmp_string = string.ascii_uppercase + string.digits + string.ascii_lowercase
-        return ''.join([str(random.choice(tmp_string)) for i in range(length)])
 
     def generate_signature(self, http_method, url, params) -> dict:
         """
