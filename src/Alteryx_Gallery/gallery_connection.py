@@ -1,9 +1,7 @@
 import secrets
 import time
 import collections
-import random
 import math
-import string
 import base64
 import urllib
 import hmac
@@ -73,7 +71,8 @@ class Gallery(ABC):
         """
         :return: returns HMAC-SHA1 signature
         """
-        quote = lambda x: requests.utils.quote(x, safe="~")
+        def quote(x):
+            return requests.utils.quote(x, safe="~")
         sorted_params = collections.OrderedDict(sorted(params.items()))
 
         normalized_params = urllib.parse.urlencode(sorted_params)
