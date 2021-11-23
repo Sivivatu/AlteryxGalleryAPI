@@ -10,6 +10,7 @@ src/AlteryxGalleryAPI.egg-info/requires.txt
 src/AlteryxGalleryAPI.egg-info/top_level.txt
 src/Alteryx_Gallery/__init__.py
 src/Alteryx_Gallery/gallery_connection.py
+src/Alteryx_Gallery/py.typed
 src/Alteryx_Gallery/api_connections/__init__.py
 src/Alteryx_Gallery/api_connections/admin.py
 src/Alteryx_Gallery/api_connections/gallery.py

@@ -1,4 +1,4 @@
-requests
+requests>=2.26
 
 [testing]
 pytest>=6.0
