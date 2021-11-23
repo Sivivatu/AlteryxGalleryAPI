@@ -12,6 +12,8 @@ python-decouple = "*"
 pytest = "*"
 setuptools = "*"
 flake8 = "*"
+pytest-cov = "*"
+mypy = "*"
 
 [requires]
 python_version = "3.9"
