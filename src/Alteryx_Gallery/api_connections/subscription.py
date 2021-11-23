@@ -3,17 +3,19 @@ import requests
 from Alteryx_Gallery.gallery_connection import Gallery
 
 
-class GalleryUser(Gallery):
+class GallerySubscription(Gallery):
     '''Extends the Gallery Class containing connection to access Alteryx Server API endpoints'''
     def __init__(self, api_location: str, api_key: str, api_secret: str):
+        Gallery.__init__(self, api_location, api_key, api_secret)
         super().__init__(self.api_location, self.api_key, self.api_secret)
+        self.api_version = "/api/v1"
 
     def subscription(self):
         """
         :return: workflows in a subscription
         """
         method = 'GET'
-        url = self.api_location + '/workflows/subscription/'
+        url = f"{self.api_location}{self.api_version}/workflows/subscription/"
         params = self.build_oauth_params()
         signature = self.generate_signature(method, url, params)
         params.update({'oauth_signature': signature})
@@ -26,7 +28,7 @@ class GalleryUser(Gallery):
         :return: Returns the questions for the given Alteryx Analytics App
         """
         method = 'GET'
-        url = self.api_location + '/workflows/' + app_id + '/questions/'
+        url = self.api_location + self.api_version + '/workflows/' + app_id + '/questions/'
         params = self.build_oauth_params()
         signature = self.generate_signature(method, url, params)
         params.update({'oauth_signature': signature})
@@ -40,7 +42,7 @@ class GalleryUser(Gallery):
         :return:  Returns ID of the job
         """
         method = 'POST'
-        url = self.api_location + '/workflows/' + app_id + '/jobs/'
+        url = self.api_location + self.api_version + '/workflows/' + app_id + '/jobs/'
         params = self.build_oauth_params()
         signature = self.generate_signature(method, url, params)
         params.update({'oauth_signature': signature})
@@ -61,7 +63,7 @@ class GalleryUser(Gallery):
         :return: Returns the jobs for the given Alteryx Analytics App
         """
         method = 'GET'
-        url = self.api_location + '/workflows/' + app_id + '/jobs/'
+        url = self.api_location + self.api_version + '/workflows/' + app_id + '/jobs/'
         params = self.build_oauth_params()
         signature = self.generate_signature(method, url, params)
         params.update({'oauth_signature': signature})
@@ -74,7 +76,7 @@ class GalleryUser(Gallery):
         :return: Retrieves the job and its current state
         """
         method = 'GET'
-        url = self.api_location + '/jobs/' + job_id + '/'
+        url = self.api_location + self.api_version + '/jobs/' + job_id + '/'
         params = self.build_oauth_params()
         signature = self.generate_signature(method, url, params)
         params.update({'oauth_signature': signature})
@@ -87,7 +89,7 @@ class GalleryUser(Gallery):
         :return: Returns the output for a given job (FileURL)
         """
         method = 'GET'
-        url = self.api_location + '/jobs/' + job_id + '/output/' + output_id + '/'
+        url = self.api_location + self.api_version + '/jobs/' + job_id + '/output/' + output_id + '/'
         params = self.build_oauth_params()
         signature = self.generate_signature(method, url, params)
         params.update({'oauth_signature': signature})
@@ -100,7 +102,7 @@ class GalleryUser(Gallery):
         :return: Returns the App that was requested
         """
         method = 'GET'
-        url = self.api_location + '/' + app_id + '/package/'
+        url = self.api_location + self.api_version + '/' + app_id + '/package/'
         params = self.build_oauth_params()
         signature = self.generate_signature(method, url, params)
         params.update({'oauth_signature': signature})

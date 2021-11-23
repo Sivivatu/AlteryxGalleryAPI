@@ -6,6 +6,7 @@ from Alteryx_Gallery.gallery_connection import Gallery
 class GalleryAdmin(Gallery):
     '''Extends the Gallery Class containing connection to access Alteryx Server API endpoints'''
     def __init__(self, api_location: str, api_key: str, api_secret: str):
+        Gallery.__init__(self, api_location, api_key, api_secret)
         super().__init__(self.api_location, self.api_key, self.api_secret)
         api_location_base = api_location.rsplit("/", 1)
         self.api_location = api_location_base[0] + "/admin/" + api_location_base[1] + "/"
