@@ -11,7 +11,10 @@ import requests
 
 
 class Gallery(ABC):
-    '''Base Class for a gallery connection details'''
+    '''
+    Base Class for a gallery connection details
+    Order of arguments: api_location, api_key, api_secret
+    '''
     def __init__(self, api_location: str, api_key: str, api_secret: str):
         self.api_location = api_location
         self.api_key = api_key
