@@ -1,12 +1,12 @@
 from decouple import config
-from Alteryx_Gallery.api_connections.gallery import GalleryUser
+from Alteryx_Gallery.api_connections.subscription import GallerySubscription
 
 
 client_key = config('client_key')
 client_secret = config('client_secret')
 apiLocation = config('gallery_url')
 
-test_conn = GalleryUser(apiLocation, client_secret, client_key)
+test_conn = GallerySubscription(apiLocation, client_key, client_secret)
 
 
 def test_subscription():
