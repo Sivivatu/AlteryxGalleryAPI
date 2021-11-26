@@ -1,6 +1,16 @@
 import json
 import requests
 from Alteryx_Gallery.gallery_connection import Gallery
+import logging
+import sys
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
 
 
 class GallerySubscription(Gallery):
@@ -20,6 +30,7 @@ class GallerySubscription(Gallery):
         signature = self.generate_signature(method, url, params)
         params.update({'oauth_signature': signature})
         response = requests.get(url, params=params)
+        logging.info(f'subscription call URL: {response.url}')
         output, output_content = response, json.loads(response.content.decode("utf8"))
         return output, output_content
 
