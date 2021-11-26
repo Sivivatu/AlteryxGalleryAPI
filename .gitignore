@@ -56,3 +56,4 @@ venv.bak/
 # **/__pycache__
 # .env
 
+src/scratch.txt
