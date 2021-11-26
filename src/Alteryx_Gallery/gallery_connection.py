@@ -61,11 +61,12 @@ class Gallery(ABC):
         :return:  A dictionary consisting of params for third-party
         signature generation code based upon the OAuth 1.0a standard.
         """
-        return {'oauth_consumer_key': self.api_key,
-                'oauth_nonce': secrets.token_urlsafe(5),
+        return {'oauth_timestamp': str(int(math.floor(time.time()))),
                 'oauth_signature_method': 'HMAC-SHA1',
-                'oauth_timestamp': str(int(math.floor(time.time()))),
-                'oauth_version': '1.0'}
+                'oauth_consumer_key': self.api_key,
+                'oauth_version': '1.0',
+                'oauth_nonce': secrets.token_urlsafe(5),
+                }
 
     def generate_signature(self, http_method, url, params) -> dict:
         """
