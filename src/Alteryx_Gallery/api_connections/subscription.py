@@ -14,7 +14,10 @@ logging.basicConfig(
 
 
 class GallerySubscription(Gallery):
-    '''Extends the Gallery Class containing connection to access Alteryx Server API endpoints'''
+    '''
+    Extends the Gallery Class containing connection to access Alteryx Server API endpoints.
+    Order of arguments: api_location, api_key, api_secret
+    '''
     def __init__(self, api_location: str, api_key: str, api_secret: str):
         Gallery.__init__(self, api_location, api_key, api_secret)
         super().__init__(self.api_location, self.api_key, self.api_secret)
