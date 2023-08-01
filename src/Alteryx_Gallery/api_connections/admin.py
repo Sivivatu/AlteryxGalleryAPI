@@ -69,10 +69,20 @@ class GalleryAdmin(Gallery):
             url = self.admin_api_location + '/v1/workflows/migratable?subscriptionIds=' + kwargs['subscriptionIds']
         else:
             url = self.admin_api_location + '/v1/workflows/migratable'
-        params = self.build_oauth_params()
-        signature = self.generate_signature(method, url, params)
-        params.update({'oauth_signature': signature})
-        response = requests.get(url, params=params)
+        logging.info(f'workflows method URL: {url}')
+        header = self.build_oauth_params()
+        signature = self.generate_signature(method, url, header)
+        header.update({'oauth_signature': signature})
+        logging.info(f'Headers Dictionary: {header}')
+        response = requests.get(url, headers=header)
+        # use url string parameter instead of header
+        # TODO: convert process to use header instead of url string parameter.
+        # Initial testings with url string header failed.
+        # params = self.build_oauth_params()
+        # signature = self.generate_signature(method, url, params)
+        # params.update({'oauth_signature': signature})
+        # logging.info(f'Headers Dictionary: {params}')
+        # response = requests.get(url, params=params)
         logging.info(f'workflows migratable call URL: {response.url}')
         output, output_content = response, json.loads(response.content.decode("utf8"))
         return output, output_content
