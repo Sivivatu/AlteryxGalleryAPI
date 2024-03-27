@@ -33,3 +33,27 @@ def test_get_all_workflows(http_client: AlteryxGalleryAPI.GalleryClient):
     response, content = http_client.get_all_workflows(name="Non-existent Workflow")
     assert response.status_code == 200
     assert len(content) == 0
+
+# # Test case for the get_data method
+# def test_get_data(http_client: AlteryxGalleryAPI.GalleryClient):
+#     response, content = http_client.get_data()
+#     assert response.status_code == 200
+#     assert len(content) > 0
+#     assert "workflows" in content
+#     assert "users" in content
+#     assert "groups" in content
+#     assert "collections" in content
+#     assert "tags" in content
+#     assert "dataConnections"
+
+# Test case for the publishing new workflow
+def test_publish_workflow(http_client: AlteryxGalleryAPI.GalleryClient):
+    response, content = http_client.publish_workflow("tests/test.yxzp", "test_workflow")
+    assert response.status_code == 200
+    # assert content["name"] == "test_workflow"
+    # assert content["owner"] == "admin"
+    # assert content["type"] == "Workflow"
+    # assert content["status"] == "Published"
+    # assert content["version"] == 1
+    # assert content["description"] == "This is a test workflow"
+    # assert content["tags"] == ["test", "workflow"]
