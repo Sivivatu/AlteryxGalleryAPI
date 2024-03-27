@@ -78,6 +78,21 @@ class GalleryClient:
         logger.info("Getting all workflows...")
         return self._get("v3/workflows", params=kwargs)
     
+    def publish_workflow(self, file_path: str, name: str, description: str = None, tags: list[str] = None) -> Tuple[httpx.Response, Dict[str, Any]]:
+        # self._update_auth_header()
+        # logger.info("Publishing new workflow...")
+        # with open(file_path, "rb") as file:
+        #     files = {"file": (file.name, file)}
+        #     response = self.http_client.post(
+        #         f"{self.base_url}/v3/workflows",
+        #         data={"name": name, "description": description, "tags": tags},
+        #         files=files,
+        #     )
+        #     response.raise_for_status()
+        #     logger.debug("Workflow published successfully.")
+        #     return response, response.json()
+        pass
+    
 
     # # Example usage:
 # with AlteryxGalleryClient("https://your-alteryx-server/api/v3") as client:
