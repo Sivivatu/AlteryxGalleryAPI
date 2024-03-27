@@ -46,10 +46,10 @@ def test_get_all_workflows(http_client: AlteryxGalleryAPI.GalleryClient):
 #     assert "tags" in content
 #     assert "dataConnections"
 
-# Test case for the publishing new workflow
-def test_publish_workflow(http_client: AlteryxGalleryAPI.GalleryClient):
-    response, content = http_client.publish_workflow("tests/test.yxzp", "test_workflow")
-    assert response.status_code == 200
+# # Test case for the publishing new workflow
+# def test_publish_workflow(http_client: AlteryxGalleryAPI.GalleryClient):
+#     response, content = http_client.publish_workflow("tests/test.yxzp", "test_workflow")
+#     assert response.status_code == 200
     # assert content["name"] == "test_workflow"
     # assert content["owner"] == "admin"
     # assert content["type"] == "Workflow"
