@@ -79,13 +79,13 @@ class GalleryClient:
     """
 
     def _post(
-        self, endpoint: str, params: Optional[Dict[str, Any]] = None
+        self, endpoint: str, params: Optional[Dict[str, Any]] = None, **kwargs
     ) -> Tuple[httpx.Response, Dict[str, Any]]:
         self._update_auth_header()
         params = params or {}  # Ensure params is a dictionary
         logger.info(f"Making POST request to endpoint: {endpoint}")
         response = self.http_client.post(
-            f"{self.base_url}/{endpoint}", params=params, data=data, files=files
+            f"{self.base_url}/{endpoint}", params=params, **kwargs
         )
         response.raise_for_status()
         logger.debug("GET request successful.")
@@ -159,14 +159,13 @@ class GalleryClient:
         with open(file_path, "rb") as file:
             files = {"file": (file.name, file)}
             # TODO: Move the post method to _post method in same mananer as _get
-            response = self.http_client.post(
-                f"{self.base_url}/v3/workflows",
+            response = self._post(
+                "/v3/workflows",
                 data=data,
                 files=files,
             )
-            response.raise_for_status()
             logger.debug("Workflow published successfully.")
-            return response, response.json()
+            return response
 
     # # Example usage:
 
