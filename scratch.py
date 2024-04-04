@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-base_url = "https://spider.theinformationlab.co.uk/webapi/"
+base_url: str = os.getenv("BASE_URL", "NoValueFound")
 
 client_id: str = os.getenv("CLIENT_ID", "NoValueFound")
 client_secret: str = os.getenv("CLIENT_SECRET", "NoValueFound")
