@@ -1,6 +1,5 @@
 import logging
 import logging.config
-import os
 import time
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
