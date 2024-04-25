@@ -159,7 +159,6 @@ class GalleryClient:
         # Make the POST request
         logger.info("Publishing new workflow...")
         with open(file_path, "rb") as file:
-            # content_file = file
             files = {"file": (file.name, file, "application/yxzp")}
             headers = {
                 **self.http_client.headers,
