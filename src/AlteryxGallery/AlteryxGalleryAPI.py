@@ -1,8 +1,8 @@
 import logging
 import logging.config
 import time
-from email import header
-from pathlib import Path
+
+# from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
 import requests
@@ -82,7 +82,9 @@ class GalleryClient:
         endpoint = endpoint.strip("/")  # Remove leading slash if present
         logger.info(f"Making GET request to endpoint: {endpoint}")
         response = requests.get(
-            f"{self.host_url}/{api_version}/{endpoint}", params=params
+            f"{self.host_url}/{api_version}/{endpoint}",
+            headers=self.headers,
+            params=params,
         )
         response.raise_for_status()
         logger.debug("GET request successful.")
