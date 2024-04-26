@@ -7,37 +7,54 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-# Fixture to initialize the HTTPX client
+# Fixture to initialize the HTTPX params
 @pytest.fixture(scope="module")
-def http_client():
-    base_url = os.getenv("BASE_URL", "NoValueFound")
-    with AlteryxGalleryAPI.GalleryClient(base_url) as client:
-        client.client_id = os.getenv("CLIENT_ID", "NoValueFound")
-        client.client_secret = os.getenv("CLIENT_SECRET", "NoValueFound")
-        yield client
+def params():
+    params = {}
+    params["host_url"] = os.getenv("HOST_URL", "NoValueFound")
+    params["client_id"] = os.getenv("CLIENT_ID", "NoValueFound")
+    params["client_secret"] = os.getenv("CLIENT_SECRET", "NoValueFound")
+    return params
 
 
-# Test case for the authenticate method
-def test_authenticate(http_client: AlteryxGalleryAPI.GalleryClient):
-    # Test successful authentication
-    assert http_client.authenticate(http_client.client_id, http_client.client_secret)
-
-    # Test unsuccessful authentication
-    assert not http_client.authenticate("incorrect_username", "incorrect_password")
+@pytest.fixture(scope="module")
+def client(params: dict):
+    return AlteryxGalleryAPI.GalleryClient(**params)
 
 
-# Test case for the get_all_workflows method
-def test_get_all_workflows(http_client: AlteryxGalleryAPI.GalleryClient):
-    response, content = http_client.get_all_workflows(
-        name="00-Octopus Download Pipeline"
-    )
-    assert response.status_code == 200
-    assert content[0]["name"] == "00-Octopus Download Pipeline"  # type: ignore
-    assert len(content[0]["name"]) > 0  # type: ignore
+class TestAuthentication:
+    # Test case for the authenticate method
+    def test_successful_authentication(self, params: dict):
+        client = AlteryxGalleryAPI.GalleryClient(**params)
+        assert client.authenticate()
 
-    response, content = http_client.get_all_workflows(name="Non-existent Workflow")
-    assert response.status_code == 200
-    assert len(content) == 0
+    def test_bad_credentials(self):
+        params = {}
+        params["host_url"] = os.getenv("HOST_URL", "NoValueFound")
+        params["client_id"] = "incorrect_username"
+        params["client_secret"] = "incorrect_password"
+        client = AlteryxGalleryAPI.GalleryClient(**params)
+        assert not client.authenticate()
+
+
+class TestWorkflowMethods:
+    # Test case for the get_all_workflows method
+    def test_get_workflow(self, client: AlteryxGalleryAPI.GalleryClient):
+        response, content = client.get_all_workflows(
+            name="00-Octopus Download Pipeline"
+        )
+        assert response.status_code == 200
+        assert content[0]["name"] == "00-Octopus Download Pipeline"  # type: ignore
+        assert len(content[0]["name"]) > 0  # type: ignore
+
+        response, content = client.get_all_workflows(name="Non-existent Workflow")
+        assert response.status_code == 200
+        assert len(content) == 0
+
+    def test_get_all_workflows(self, client: AlteryxGalleryAPI.GalleryClient):
+        response, content = client.get_all_workflows()
+        assert response.status_code == 200
+        assert len(content[0]["name"]) > 0  # type: ignore
 
 
 # # Test case for the get_data method

@@ -1,12 +1,14 @@
 import os
 from pathlib import Path
 
-from AlteryxGallery import AlteryxGalleryAPI
+import requests
+
+# from AlteryxGallery import AlteryxGalleryAPI
 from dotenv import load_dotenv
 
 load_dotenv()
 
-base_url: str = os.getenv("BASE_URL", "NoValueFound")
+host_url: str = os.getenv("HOST_URL", "NoValueFound")
 
 client_id: str = os.getenv("CLIENT_ID", "NoValueFound")
 client_secret: str = os.getenv("CLIENT_SECRET", "NoValueFound")
