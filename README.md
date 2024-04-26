@@ -11,11 +11,14 @@ The official Alteryx API documentation can be found at: https://gallery.alteryx.
 
 In order to access the Gallery you must obtain an API key, secret and you must have the URL to your Alteryx Gallery.
 
-Install the package by cloning the repository, "cd" into the populartimes directory and run pip install.
+You will need [Poetry](https://python-poetry.org/docs/#installation) installed in your local python environment for local testing and development
+
+Install the package by cloning the repository, "cd" into the populartimes directory and run poetry install.
 
 Note: This library is not avaliable through via PyPI and must be installed locally and placed in your working directory.
 
-## Usage
+## Usage 
+#TODO: update the use process for httpx client methods
 
 ```
 from AlteryxGallery import AlteryxGalleryAPI
