@@ -1,8 +1,7 @@
 import logging
 import logging.config
 import time
-
-# from pathlib import Path
+from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
 import requests
@@ -112,8 +111,20 @@ class GalleryClient:
         api_version = api_version.strip("/")  # Remove leading slash if present
         endpoint = endpoint.strip("/")  # Remove leading slash if present
         logger.info(f"Making POST request to endpoint: {endpoint}")
+        # if headers:
+        #     headers["Authorization"] = f"Bearer {self.token}"
+        # else:
+        headers = self.headers
+
+        # remove the content type header as it is not needed for file uploads
+        headers.pop("Content-Type", None)
+        logger.debug(f"Content-Type header removed. Headers: {headers.keys()}")
+
         response = requests.post(
-            f"{self.host_url}/{api_version}/{endpoint}", params=params, **kwargs
+            f"{self.host_url}/{api_version}/{endpoint}",
+            headers=headers,
+            params=params,
+            **kwargs,
         )
         response.raise_for_status()
         logger.debug("GET request successful.")
@@ -129,7 +140,7 @@ class GalleryClient:
     #     self.close()
 
     # Workflow Interaction Methods
-    def get_all_workflows(self, **kwargs) -> Tuple[requests.Response, Dict[str, Any]]:
+    def get_workflows(self, **kwargs) -> Tuple[requests.Response, Dict[str, Any]]:
         logger.info("Getting all workflows...")
         return self._get("v3", "workflows", params=kwargs)
 
