@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-base_url: str = os.getenv("BASE_URL", "NoValueFound")
+host_url: str = os.getenv("HOST_URL", "NoValueFound")
 
 client_id: str = os.getenv("CLIENT_ID", "NoValueFound")
 client_secret: str = os.getenv("CLIENT_SECRET", "NoValueFound")
@@ -21,7 +21,7 @@ file_path = Path("tests/Test_Upload.yxzp")
 # print(response.text)
 
 
-with AlteryxGalleryAPI.GalleryClient(base_url=base_url) as client:
+with AlteryxGalleryAPI.GalleryClient(host_url=host_url) as client:
     client.authenticate(client_id, client_secret)
     # response, content = client.get_all_workflows(name="00-Octopus Download Pipeline")
     # print(f"workflow query status response: {response.status_code}")

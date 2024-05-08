@@ -19,8 +19,8 @@ logger = logging.getLogger(__name__)
 
 
 class GalleryClient:
-    def __init__(self, base_url: str):
-        self.base_url = base_url.rstrip("/")
+    def __init__(self, host_url: str):
+        self.host_url = host_url.rstrip("/")
         self.http_client = httpx.Client()
         self.token = None
         self.token_expiry = None
@@ -28,7 +28,7 @@ class GalleryClient:
     def authenticate(self, client_id: str, client_secret: str) -> bool:
         logger.info("Authenticating user...")
         auth_response = self.http_client.post(
-            f"{self.base_url}/oauth2/token",
+            f"{self.host_url}/oauth2/token",
             data={
                 "client_id": client_id,
                 "client_secret": client_secret,
@@ -68,7 +68,7 @@ class GalleryClient:
         params = params or {}  # Ensure params is a dictionary
         endpoint = endpoint.lstrip("/")  # Remove leading slash if present
         logger.info(f"Making GET request to endpoint: {endpoint}")
-        response = self.http_client.get(f"{self.base_url}/{endpoint}", params=params)
+        response = self.http_client.get(f"{self.host_url}/{endpoint}", params=params)
         response.raise_for_status()
         logger.debug("GET request successful.")
         return response, response.json()
@@ -87,7 +87,7 @@ class GalleryClient:
         endpoint = endpoint.lstrip("/")  # Remove leading slash if present
         logger.info(f"Making POST request to endpoint: {endpoint}")
         response = self.http_client.post(
-            f"{self.base_url}/{endpoint}", params=params, **kwargs
+            f"{self.host_url}/{endpoint}", params=params, **kwargs
         )
         response.raise_for_status()
         logger.debug("GET request successful.")
