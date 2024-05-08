@@ -10,8 +10,8 @@ load_dotenv()
 # Fixture to initialize the HTTPX client
 @pytest.fixture(scope="module")
 def http_client():
-    base_url = os.getenv("BASE_URL", "NoValueFound")
-    with AlteryxGalleryAPI.GalleryClient(base_url) as client:
+    host_url = os.getenv("HOST_URL", "NoValueFound")
+    with AlteryxGalleryAPI.GalleryClient(host_url) as client:
         client.client_id = os.getenv("CLIENT_ID", "NoValueFound")
         client.client_secret = os.getenv("CLIENT_SECRET", "NoValueFound")
         yield client
@@ -52,10 +52,19 @@ def test_get_all_workflows(http_client: AlteryxGalleryAPI.GalleryClient):
 #     assert "tags" in content
 #     assert "dataConnections"
 
+
 # # Test case for the publishing new workflow
-# def test_publish_workflow(http_client: AlteryxGalleryAPI.GalleryClient):
-#     response, content = http_client.publish_workflow("tests/test.yxzp", "test_workflow")
-#     assert response.status_code == 200
+def test_publish_workflow(http_client: AlteryxGalleryAPI.GalleryClient):
+    from pathlib import Path
+
+    file_path = Path("tests/Test_Upload.yxzp")
+    owner_id = os.getenv("TEST_OWNER_ID", "NoValueFound")
+    response, content = http_client.post_publish_workflow(
+        file_path=file_path, name="test_workflow", owner_id=owner_id
+    )
+    assert response.status_code == 200
+
+
 # assert content["name"] == "test_workflow"
 # assert content["owner"] == "admin"
 # assert content["type"] == "Workflow"
