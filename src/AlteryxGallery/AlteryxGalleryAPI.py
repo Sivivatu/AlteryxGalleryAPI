@@ -144,80 +144,80 @@ class GalleryClient:
         logger.info("Getting all workflows...")
         return self._get("v3", "workflows", params=kwargs)
 
-    # def post_publish_workflow(
-    #     self,
-    #     file_path: Path,
-    #     name: str,
-    #     owner_id: str,
-    #     is_public: bool = False,
-    #     is_ready_for_migration: bool = False,
-    #     others_may_download: bool = True,
-    #     others_can_execute: bool = True,
-    #     execution_mode: str = "Standard",
-    #     workflow_credential_type: str = "Default",
-    #     **kwargs,
-    # ) -> Tuple[httpx.Response, Dict[str, Any]]:
-    #     file_path = Path(file_path)
-    #     if file_path.suffix.lower() != ".yxzp":
-    #         raise ValueError("File extension must be '.yxzp'")
+    def post_publish_workflow(
+        self,
+        file_path: Path,
+        name: str,
+        owner_id: str,
+        is_public: bool = False,
+        is_ready_for_migration: bool = False,
+        others_may_download: bool = True,
+        others_can_execute: bool = True,
+        execution_mode: str = "Standard",
+        workflow_credential_type: str = "Default",
+        **kwargs,
+    ) -> Tuple[requests.Response, Dict[str, Any]]:
+        """
+        Publishes a new workflow to the Alteryx Gallery. Currently only supports .yxzp files.
 
-    #     # Check if the execution mode is one of the valid modes
-    #     valid_modes = ["Safe", "Semisafe", "Standard"]
-    #     if execution_mode not in valid_modes:
-    #         raise ValueError(
-    #             "execution_mode must be one of: 'Safe', 'Semisafe', 'Standard'"
-    #         )
-    #     del valid_modes
-    #     # Check if the workflow_credential_type mode is one of the valid modes
-    #     valid_credential_types = ["Default", "Required", "Specific"]
-    #     if workflow_credential_type not in valid_credential_types:
-    #         raise ValueError(
-    #             "workflow_credential_type must be one of: 'Default', 'Required', 'Specific'"
-    #         )
-    #     del valid_credential_types
+        """
+        api_version = "v3"
+        endpoint = "workflows"
+        file_path = Path(file_path)
+        logger.debug(f"File Name: {file_path.name}")
+        if file_path.suffix.lower() != ".yxzp":
+            raise ValueError("File extension must be '.yxzp'")
 
-    #     data = {
-    #         "name": name,
-    #         "ownerId": owner_id,
-    #         "isPublic": is_public,
-    #         "isReadyForMigration": is_ready_for_migration,
-    #         "othersMayDownload": others_may_download,
-    #         "othersCanExecute": others_can_execute,
-    #         "executionMode": execution_mode,
-    #         "workflowCredentialType": workflow_credential_type,
-    #     }
+        # Check if the execution mode is one of the valid modes
+        valid_modes = ["Safe", "Semisafe", "Standard"]
+        if execution_mode not in valid_modes:
+            raise ValueError(
+                "execution_mode must be one of: 'Safe', 'Semisafe', 'Standard'"
+            )
+        del valid_modes
+        # Check if the workflow_credential_type mode is one of the valid modes
+        valid_credential_types = ["Default", "Required", "Specific"]
+        if workflow_credential_type not in valid_credential_types:
+            raise ValueError(
+                "workflow_credential_type must be one of: 'Default', 'Required', 'Specific'"
+            )
+        del valid_credential_types
 
-    #     # Add keyword arguments to the data dictionary
-    #     for key, value in kwargs.items():
-    #         data[key] = value
+        data = {
+            "name": name,
+            "ownerId": owner_id,
+            "isPublic": is_public,
+            "isReadyForMigration": is_ready_for_migration,
+            "othersMayDownload": others_may_download,
+            "othersCanExecute": others_can_execute,
+            "executionMode": execution_mode,
+            "workflowCredentialType": workflow_credential_type,
+        }
 
-    #     # Update the authorization header
-    #     self._update_auth_header()
-    #     # Make the POST request
-    #     logger.info("Publishing new workflow...")
-    #     with open(file_path, "rb") as file:
-    #         files = {"file": (file.name, file, "application/yxzp")}
-    #         headers = {
-    #             **self.http_client.headers,
-    #             "Content-Type": "application/x-www-form-urlencoded",  # "multipart/form-data",
-    #         }
-    #         headers["Accept"] = "application/json"
-    #         # headers["Accept-Encoding"] = "gzip, deflate, br, zstd"
+        # Add keyword arguments to the data dictionary
+        for key, value in kwargs.items():
+            data[key] = value
 
-    #         # TODO: Move the post method to _post method in same mananer as _get
-    #         # from urllib.parse import urlencode
+        logger.info("Publishing new workflow...")
+        with open(file_path, "rb") as file:
+            logger.debug(f"Reading file: {file_path}")
+            logger.debug(f"File name: {file.name}")
+            files = {
+                "file": (
+                    file_path.name,
+                    file,
+                    "application/octet-stream",
+                )
+            }
 
-    #         # data["file"] = file
-
-    #         response = self._post(
-    #             "v3/workflows",
-    #             data=data,
-    #             files=files,
-    #             # content=content_file,
-    #             headers=headers,
-    #         )
-    #         logger.debug("Workflow published successfully.")
-    #         return response
+            response = self._post(
+                api_version=api_version,
+                endpoint=endpoint,
+                data=data,
+                files=files,
+            )
+            logger.debug("Workflow published successfully.")
+            return response
 
     # # Example usage:
 
