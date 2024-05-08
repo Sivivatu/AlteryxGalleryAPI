@@ -159,10 +159,10 @@ class GalleryClient:
         # Make the POST request
         logger.info("Publishing new workflow...")
         with open(file_path, "rb") as file:
-            files = {"file": (file.name, file, "application/yxzp")}
+            files = {"file": (file_path.name, file, "application/yxzp")}
             headers = {
                 **self.http_client.headers,
-                "Content-Type": "application/x-www-form-urlencoded",  # "multipart/form-data",
+                # "Content-Type": "application/x-www-form-urlencoded",  # "multipart/form-data",
             }
             headers["Accept"] = "application/json"
             # headers["Accept-Encoding"] = "gzip, deflate, br, zstd"
