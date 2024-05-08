@@ -40,19 +40,17 @@ class TestAuthentication:
 class TestWorkflowMethods:
     # Test case for the get_all_workflows method
     def test_get_workflow(self, client: AlteryxGalleryAPI.GalleryClient):
-        response, content = client.get_all_workflows(
-            name="00-Octopus Download Pipeline"
-        )
+        response, content = client.get_workflows(name="00-Octopus Download Pipeline")
         assert response.status_code == 200
         assert content[0]["name"] == "00-Octopus Download Pipeline"  # type: ignore
         assert len(content[0]["name"]) > 0  # type: ignore
 
-        response, content = client.get_all_workflows(name="Non-existent Workflow")
+        response, content = client.get_workflows(name="Non-existent Workflow")
         assert response.status_code == 200
         assert len(content) == 0
 
     def test_get_all_workflows(self, client: AlteryxGalleryAPI.GalleryClient):
-        response, content = client.get_all_workflows()
+        response, content = client.get_workflows()
         assert response.status_code == 200
         assert len(content[0]["name"]) > 0  # type: ignore
 
