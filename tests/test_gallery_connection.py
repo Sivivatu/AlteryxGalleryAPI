@@ -67,14 +67,22 @@ class TestWorkflowMethods:
 #     assert "tags" in content
 #     assert "dataConnections"
 
-# # Test case for the publishing new workflow
-# def test_publish_workflow(http_client: AlteryxGalleryAPI.GalleryClient):
-#     response, content = http_client.publish_workflow("tests/test.yxzp", "test_workflow")
-#     assert response.status_code == 200
-# assert content["name"] == "test_workflow"
-# assert content["owner"] == "admin"
-# assert content["type"] == "Workflow"
-# assert content["status"] == "Published"
-# assert content["version"] == 1
-# assert content["description"] == "This is a test workflow"
-# assert content["tags"] == ["test", "workflow"]
+
+# Test case for the publishing new workflow
+def test_publish_workflow(client: AlteryxGalleryAPI.GalleryClient):
+    from pathlib import Path
+
+    file_path = Path("tests/Test_Upload.yxzp")
+    owner_id = os.getenv("TEST_OWNER_ID", "NoValueFound")
+    response, content = client.post_publish_workflow(
+        file_path=file_path, name="test workflow", owner_id=owner_id
+    )
+    # response, content = http_client.publish_workflow("tests/test.yxzp", "test_workflow")
+    assert response.status_code == 200
+    # assert content["name"] == "test_workflow"
+    # assert content["owner"] == "admin"
+    # assert content["type"] == "Workflow"
+    # assert content["status"] == "Published"
+    # assert content["version"] == 1
+    # assert content["description"] == "This is a test workflow"
+    # assert content["tags"] == ["test", "workflow"]
