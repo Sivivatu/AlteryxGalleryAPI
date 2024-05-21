@@ -118,7 +118,7 @@ class GalleryClient:
 
         # remove the content type header as it is not needed for file uploads
         headers.pop("Content-Type", None)
-        logger.debug(f"Content-Type header removed. Headers: {headers.keys()}")
+        logger.debug(f"Content-Type header removed. Headers left: {headers.keys()}")
 
         response = requests.post(
             f"{self.host_url}/{api_version}/{endpoint}",
@@ -127,7 +127,8 @@ class GalleryClient:
             **kwargs,
         )
         response.raise_for_status()
-        logger.debug("GET request successful.")
+        logger.debug(f"POST request completed. Response: {response.content}")
+        # logger.debug("GET request successful.")
         return response, response.json()
 
     # def close(self) -> None:
