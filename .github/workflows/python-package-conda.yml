@@ -29,6 +29,7 @@ jobs:
           HOST_URL: ${{ secrets.HOST_URL }}
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          TEST_OWNER_ID: ${{ secrets.TEST_OWNER_ID }}
         run: poetry run pytest
       
 
