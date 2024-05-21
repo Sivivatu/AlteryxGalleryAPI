@@ -78,7 +78,11 @@ def test_publish_workflow(client: AlteryxGalleryAPI.GalleryClient):
         file_path=file_path, name="test workflow", owner_id=owner_id
     )
     # response, content = http_client.publish_workflow("tests/test.yxzp", "test_workflow")
-    assert response.status_code == 200
+    assert (
+        response.status_code == 200
+    ), "Expected status code 200, got {} with a message of {}".format(
+        response.status_code, response.text
+    )
     # assert content["name"] == "test_workflow"
     # assert content["owner"] == "admin"
     # assert content["type"] == "Workflow"
