@@ -11,7 +11,7 @@ def _post(
     params = params or {}  # Ensure params is a dictionary
     endpoint = endpoint.lstrip("/")  # Remove leading slash if present
     response = self.http_client.post(
-        f"{self.base_url}/{endpoint}", params=params, **kwargs
+        f"{self.host_url}/{endpoint}", params=params, **kwargs
     )
     response.raise_for_status()
     return response, response.json()
