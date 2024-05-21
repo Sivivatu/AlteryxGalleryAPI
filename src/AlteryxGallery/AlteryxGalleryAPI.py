@@ -126,8 +126,8 @@ class GalleryClient:
             params=params,
             **kwargs,
         )
-        response.raise_for_status()
         logger.debug(f"POST request completed. Response: {response.content}")
+        response.raise_for_status()
         # logger.debug("GET request successful.")
         return response, response.json()
 
