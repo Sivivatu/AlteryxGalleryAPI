@@ -7,37 +7,53 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-# Fixture to initialize the HTTPX client
+# Fixture to initialize the HTTPX params
 @pytest.fixture(scope="module")
-def http_client():
-    host_url = os.getenv("HOST_URL", "NoValueFound")
-    with AlteryxGalleryAPI.GalleryClient(host_url) as client:
-        client.client_id = os.getenv("CLIENT_ID", "NoValueFound")
-        client.client_secret = os.getenv("CLIENT_SECRET", "NoValueFound")
-        yield client
+def params():
+    params = {}
+    params["host_url"] = os.getenv("HOST_URL", "NoValueFound")
+    params["client_id"] = os.getenv("CLIENT_ID", "NoValueFound")
+    params["client_secret"] = os.getenv("CLIENT_SECRET", "NoValueFound")
+    return params
 
 
-# Test case for the authenticate method
-def test_authenticate(http_client: AlteryxGalleryAPI.GalleryClient):
-    # Test successful authentication
-    assert http_client.authenticate(http_client.client_id, http_client.client_secret)
 
-    # Test unsuccessful authentication
-    assert not http_client.authenticate("incorrect_username", "incorrect_password")
+@pytest.fixture(scope="module")
+def client(params: dict):
+    return AlteryxGalleryAPI.GalleryClient(**params)
 
 
-# Test case for the get_all_workflows method
-def test_get_all_workflows(http_client: AlteryxGalleryAPI.GalleryClient):
-    response, content = http_client.get_all_workflows(
-        name="00-Octopus Download Pipeline"
-    )
-    assert response.status_code == 200
-    assert content[0]["name"] == "00-Octopus Download Pipeline"  # type: ignore
-    assert len(content[0]["name"]) > 0  # type: ignore
+class TestAuthentication:
+    # Test case for the authenticate method
+    def test_successful_authentication(self, params: dict):
+        client = AlteryxGalleryAPI.GalleryClient(**params)
+        assert client.authenticate()
 
-    response, content = http_client.get_all_workflows(name="Non-existent Workflow")
-    assert response.status_code == 200
-    assert len(content) == 0
+    def test_bad_credentials(self):
+        params = {}
+        params["host_url"] = os.getenv("HOST_URL", "NoValueFound")
+        params["client_id"] = "incorrect_username"
+        params["client_secret"] = "incorrect_password"
+        client = AlteryxGalleryAPI.GalleryClient(**params)
+        assert not client.authenticate()
+
+
+class TestWorkflowMethods:
+    # Test case for the get_all_workflows method
+    def test_get_workflow(self, client: AlteryxGalleryAPI.GalleryClient):
+        response, content = client.get_workflows(name="00-Octopus Download Pipeline")
+        assert response.status_code == 200
+        assert content[0]["name"] == "00-Octopus Download Pipeline"  # type: ignore
+        assert len(content[0]["name"]) > 0  # type: ignore
+
+        response, content = client.get_workflows(name="Non-existent Workflow")
+        assert response.status_code == 200
+        assert len(content) == 0
+
+    def test_get_all_workflows(self, client: AlteryxGalleryAPI.GalleryClient):
+        response, content = client.get_workflows()
+        assert response.status_code == 200
+        assert len(content[0]["name"]) > 0  # type: ignore
 
 
 # # Test case for the get_data method
@@ -53,22 +69,27 @@ def test_get_all_workflows(http_client: AlteryxGalleryAPI.GalleryClient):
 #     assert "dataConnections"
 
 
-# # Test case for the publishing new workflow
-def test_publish_workflow(http_client: AlteryxGalleryAPI.GalleryClient):
+# Test case for the publishing new workflow
+def test_publish_workflow(client: AlteryxGalleryAPI.GalleryClient):
+
     from pathlib import Path
 
     file_path = Path("tests/Test_Upload.yxzp")
     owner_id = os.getenv("TEST_OWNER_ID", "NoValueFound")
-    response, content = http_client.post_publish_workflow(
-        file_path=file_path, name="test_workflow", owner_id=owner_id
+    response, content = client.post_publish_workflow(
+        file_path=file_path, name="test workflow", owner_id=owner_id
     )
-    assert response.status_code == 200
+    # response, content = http_client.publish_workflow("tests/test.yxzp", "test_workflow")
+    assert (
+        response.status_code == 200
+    ), "Expected status code 200, got {} with a message of {}".format(
+        response.status_code, response.text
+    )
+    # assert content["name"] == "test_workflow"
+    # assert content["owner"] == "admin"
+    # assert content["type"] == "Workflow"
+    # assert content["status"] == "Published"
+    # assert content["version"] == 1
+    # assert content["description"] == "This is a test workflow"
+    # assert content["tags"] == ["test", "workflow"]
 
-
-# assert content["name"] == "test_workflow"
-# assert content["owner"] == "admin"
-# assert content["type"] == "Workflow"
-# assert content["status"] == "Published"
-# assert content["version"] == 1
-# assert content["description"] == "This is a test workflow"
-# assert content["tags"] == ["test", "workflow"]

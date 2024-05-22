@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 
+import requests
 from AlteryxGallery import AlteryxGalleryAPI
 from dotenv import load_dotenv
 
@@ -21,11 +22,21 @@ file_path = Path("tests/Test_Upload.yxzp")
 # print(response.text)
 
 
-with AlteryxGalleryAPI.GalleryClient(host_url=host_url) as client:
-    client.authenticate(client_id, client_secret)
-    # response, content = client.get_all_workflows(name="00-Octopus Download Pipeline")
-    # print(f"workflow query status response: {response.status_code}")
-    # print(f"workflow query content: {content}")
-    response, content = client.post_publish_workflow(file_path, "Test_Upload", owner_id)
-    print(f"workflow publish query status response: {response.status_code}")
-    print(f"workflow publish query content: {content}")
+# with AlteryxGalleryAPI.GalleryClient(host_url=host_url) as client:
+#     client.authenticate(client_id, client_secret)
+# response, content = client.get_all_workflows(name="00-Octopus Download Pipeline")
+# print(f"workflow query status response: {response.status_code}")
+# print(f"workflow query content: {content}")
+# response, content = client.post_publish_workflow(file_path, "Test_Upload", owner_id)
+# print(f"workflow publish query status response: {response.status_code}")
+# print(f"workflow publish query content: {content}")
+
+
+client = AlteryxGalleryAPI.GalleryClient(
+    host_url=host_url, client_id=client_id, client_secret=client_secret
+)
+print(client)
+
+# response = requests.request("GET", url, headers=headers, data=payload)
+
+# print(response.text)
