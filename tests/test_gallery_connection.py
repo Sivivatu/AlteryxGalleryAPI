@@ -17,6 +17,7 @@ def params():
     return params
 
 
+
 @pytest.fixture(scope="module")
 def client(params: dict):
     return AlteryxGalleryAPI.GalleryClient(**params)
@@ -70,6 +71,7 @@ class TestWorkflowMethods:
 
 # Test case for the publishing new workflow
 def test_publish_workflow(client: AlteryxGalleryAPI.GalleryClient):
+
     from pathlib import Path
 
     file_path = Path("tests/Test_Upload.yxzp")
@@ -90,3 +92,4 @@ def test_publish_workflow(client: AlteryxGalleryAPI.GalleryClient):
     # assert content["version"] == 1
     # assert content["description"] == "This is a test workflow"
     # assert content["tags"] == ["test", "workflow"]
+
