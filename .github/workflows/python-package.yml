@@ -1,15 +1,18 @@
 name: Python Package using Poetry
 
-on: [push]
+on: 
+  push:
+    branches: 
+      - master
 
 jobs:
-  poetry_test:
+  poetry_full_matrix_test:
     strategy:
-      fail-fast: false
+      fail-fast: true
       matrix:
-        python-version: ["3.10"] # ["3.8", "3.9", "3.10", "3.11"] focus on 3.10 for now
+        python-version:  ["3.8", "3.9", "3.10", "3.11", "3.12"]
         poetry-version: ["1.8.2"]
-        os: [ubuntu-22.04] # macos-latest, , windows-latest # possibly readd when main process is working on ubuntu
+        os: [ubuntu-22.04, macos-latest, windows-latest ]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
