@@ -8,9 +8,7 @@ import requests
 
 # Set up logging
 # Set the logging format
-formatter = logging.Formatter(
-    "%(asctime)s - %(name)s - %(levelname)s - %(module)s - %(funcName)s - %(message)s"
-)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(module)s - %(funcName)s - %(message)s")
 
 # Create logger instance
 logging.config.fileConfig("logging.conf")
@@ -54,9 +52,7 @@ class GalleryClient:
             return False
 
     def _ensure_authenticated(self) -> None:
-        if self.token is None or (
-            self.token_expiry is not None and time.time() > self.token_expiry - 60
-        ):
+        if self.token is None or (self.token_expiry is not None and time.time() > self.token_expiry - 60):
             logger.info("Token is expired or about to expire. Renewing token...")
             self.authenticate()
 
@@ -165,16 +161,12 @@ class GalleryClient:
         # Check if the execution mode is one of the valid modes
         valid_modes = ["Safe", "Semisafe", "Standard"]
         if execution_mode not in valid_modes:
-            raise ValueError(
-                "execution_mode must be one of: 'Safe', 'Semisafe', 'Standard'"
-            )
+            raise ValueError("execution_mode must be one of: 'Safe', 'Semisafe', 'Standard'")
         del valid_modes
         # Check if the workflow_credential_type mode is one of the valid modes
         valid_credential_types = ["Default", "Required", "Specific"]
         if workflow_credential_type not in valid_credential_types:
-            raise ValueError(
-                "workflow_credential_type must be one of: 'Default', 'Required', 'Specific'"
-            )
+            raise ValueError("workflow_credential_type must be one of: 'Default', 'Required', 'Specific'")
         del valid_credential_types
 
         data = {

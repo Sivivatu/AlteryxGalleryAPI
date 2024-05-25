@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-import requests
+# import requests
 from AlteryxGallery import AlteryxGalleryAPI
 from dotenv import load_dotenv
 
@@ -32,9 +32,7 @@ file_path = Path("tests/Test_Upload.yxzp")
 # print(f"workflow publish query content: {content}")
 
 
-client = AlteryxGalleryAPI.GalleryClient(
-    host_url=host_url, client_id=client_id, client_secret=client_secret
-)
+client = AlteryxGalleryAPI.GalleryClient(host_url=host_url, client_id=client_id, client_secret=client_secret)
 print(client)
 
 # response = requests.request("GET", url, headers=headers, data=payload)
