@@ -60,13 +60,6 @@ class GalleryClient:
             logger.info("Token is expired or about to expire. Renewing token...")
             self.authenticate()
 
-    # TODO: Not needed below as will explicity call the authenticate method which sets headers
-    # def _update_auth_header(self) -> Dict[str, Any]:
-    #     self._ensure_authenticated()
-    #     self.headers["Authorization"] =  f"Bearer {self.token}"
-    #     logger.debug("Authorization header updated with the token.")
-    #     return self.headers
-
     def _get(
         self, api_version: str, endpoint: str, params: Optional[Dict[str, Any]] = None
     ) -> Tuple[requests.Response, Dict[str, Any]]:
