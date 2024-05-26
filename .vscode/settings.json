@@ -40,4 +40,6 @@
         "titleBar.inactiveBackground": "#1857a499",
         "titleBar.inactiveForeground": "#e7e7e799"
     },
+    "todo-tree.highlights.useColourScheme": true,
+
 }
