@@ -1,10 +1,23 @@
 {
+    // python settings
+    "python.defaultInterpreterPath": "${workspace}/.venv/Scripts/python",
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.analysis.autoSearchPaths": true,
+    "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.extraPaths": [
+        "{$workspaceFolder}/src"
+    ],
+
+    // Python Test Settings
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.cwd": "${workspaceFolder}/src",
+    "python.testing.pytestPath": "${workspaceFolder}/tests",
     "python.testing.pytestArgs": [
         "tests"
     ],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
-    "python.analysis.typeCheckingMode": "basic",
-    "todo-tree.highlights.useColourScheme": true,
-   
+    // "todo-tree.highlights.useColourScheme": true,
+    "workbench.colorCustomizations": {
+        "titleBar.activeBackground": "#7000cc",
+   },
 }
