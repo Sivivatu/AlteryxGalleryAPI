@@ -1,6 +1,7 @@
 import logging
 import logging.config
 import time
+from math import log
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
@@ -120,6 +121,63 @@ class GalleryClient:
         # logger.debug("GET request successful.")
         return response, response.json()
 
+    def _prepare_workflow_data(
+        self,
+        file_path: Path,
+        name: str,
+        owner_id: str,
+        others_may_download: bool,
+        others_can_execute: bool,
+        execution_mode: str,
+        workflow_credential_type: str,
+        **kwargs,
+    ) -> Dict[str, Any]:
+        file_path = Path(file_path)
+        logger.debug(f"File Name: {file_path.name}")
+        if file_path.suffix.lower() != ".yxzp":
+            raise ValueError("File extension must be '.yxzp'")
+
+        # Check if the execution mode is one of the valid modes
+        valid_modes = ["Safe", "Semisafe", "Standard"]
+        if execution_mode not in valid_modes:
+            raise ValueError("execution_mode must be one of: 'Safe', 'Semisafe', 'Standard'")
+        # Check if the workflow_credential_type mode is one of the valid modes
+        valid_credential_types = ["Default", "Required", "Specific"]
+        if workflow_credential_type not in valid_credential_types:
+            raise ValueError("workflow_credential_type must be one of: 'Default', 'Required', 'Specific'")
+
+        logger.debug(f"Preparing workflow data for file: {file_path.name}")
+        data = {
+            "name": name,
+            "ownerId": owner_id,
+            "othersMayDownload": others_may_download,
+            "othersCanExecute": others_can_execute,
+            "executionMode": execution_mode,
+            "workflowCredentialType": workflow_credential_type,
+        }
+
+        # Add keyword arguments to the data dictionary
+        data.update(kwargs)
+        return data
+
+    def _check_workflow_id(
+        self, workflow_name: str | None, workflow_id: str | None
+    ) -> Tuple[requests.Response, Dict[str, Any]]:
+        if workflow_id is None and workflow_name is None:
+            raise ValueError("Either workflow_id or workflow_name must be provided.")
+        if workflow_id:
+            response, content = self.get_workflows(
+                workflow_id=workflow_id
+            )  # FIXME: what if the workflow_id is provided but not found? - throws error?
+            logger.debug(f"Number of workflows: {len(content)}")
+            logger.debug(f"Workflow Name: {content['name']}")
+            logger.debug(f"Workflow ID: {workflow_id}")
+            return response, content
+        if workflow_name:
+            response, content = self.get_workflows(name=workflow_name)
+            return response, content
+        raise ValueError("Neither workflow_id or workflow_name were found.")
+
     # def close(self) -> None:
     #     self.http_client.close()
 
@@ -149,40 +207,24 @@ class GalleryClient:
     ) -> Tuple[requests.Response, Dict[str, Any]]:
         """
         Publishes a new workflow to the Alteryx Gallery. Currently only supports .yxzp files.
+        All keyword additional arguments must be passed individually as they appear in the API documentation.
 
         """
         api_version = "v3"
         endpoint = "workflows"
-        file_path = Path(file_path)
-        logger.debug(f"File Name: {file_path.name}")
-        if file_path.suffix.lower() != ".yxzp":
-            raise ValueError("File extension must be '.yxzp'")
 
-        # Check if the execution mode is one of the valid modes
-        valid_modes = ["Safe", "Semisafe", "Standard"]
-        if execution_mode not in valid_modes:
-            raise ValueError("execution_mode must be one of: 'Safe', 'Semisafe', 'Standard'")
-        del valid_modes
-        # Check if the workflow_credential_type mode is one of the valid modes
-        valid_credential_types = ["Default", "Required", "Specific"]
-        if workflow_credential_type not in valid_credential_types:
-            raise ValueError("workflow_credential_type must be one of: 'Default', 'Required', 'Specific'")
-        del valid_credential_types
-
-        data = {
-            "name": name,
-            "ownerId": owner_id,
-            "isPublic": is_public,
-            "isReadyForMigration": is_ready_for_migration,
-            "othersMayDownload": others_may_download,
-            "othersCanExecute": others_can_execute,
-            "executionMode": execution_mode,
-            "workflowCredentialType": workflow_credential_type,
-        }
-
-        # Add keyword arguments to the data dictionary
-        for key, value in kwargs.items():
-            data[key] = value
+        data = self._prepare_workflow_data(
+            file_path=file_path,
+            name=name,
+            owner_id=owner_id,
+            others_may_download=others_may_download,
+            others_can_execute=others_can_execute,
+            execution_mode=execution_mode,
+            workflow_credential_type=workflow_credential_type,
+            isReadyForMigration=is_ready_for_migration,
+            isPublic=is_public,
+            **kwargs,
+        )
 
         logger.info("Publishing new workflow...")
         with open(file_path, "rb") as file:
@@ -205,7 +247,70 @@ class GalleryClient:
             logger.debug("Workflow published successfully.")
             return response
 
-    # # Example usage:
+    # TODO: Implement the update post workflow method.
+    # this requires extracting the data and file sections for the post request to be extracted into separate methods
+    # Check https://chatgpt.com/share/7aeb8931-d627-4561-bcfb-4cc8a0e0825f for example of how to extend the existing post workflow method by extracting common processes
+
+    def post_publish_workflow_version(
+        self,
+        workflow_id: str,
+        file_path: Path,
+        name: str,
+        owner_id: str,
+        others_may_download: bool = True,
+        others_can_execute: bool = True,
+        execution_mode: str = "Standard",
+        workflow_credential_type: str = "Default",
+        make_published: bool = True,
+        **kwargs,
+    ) -> Tuple[requests.Response, Dict[str, Any]]:
+        """
+        Updates a workflow version to the Alteryx Gallery. Currently only supports .yxzp files.
+        All keyword additional arguments must be passed individually as they appear in the API documentation.
+        """
+        # Check if the workflow_id is a valid workflow id from the Alteryx Gallery
+        # if not search for workflow_id by name
+        # if not found, raise an error
+        self._check_workflow_id(workflow_id=workflow_id, workflow_name=name)
+
+        api_version = "v3"
+        endpoint = f"workflows/{workflow_id}/versions"
+
+        data = self._prepare_workflow_data(
+            file_path=file_path,
+            name=name,
+            owner_id=owner_id,
+            others_may_download=others_may_download,
+            others_can_execute=others_can_execute,
+            execution_mode=execution_mode,
+            workflow_credential_type=workflow_credential_type,
+            makePublished=make_published,
+            **kwargs,
+        )
+
+        logger.info("updating workflow: {name} workflow with new version...")
+        with open(file_path, "rb") as file:
+            logger.debug(f"Reading file: {file_path}")
+            logger.debug(f"File name: {file.name}")
+            files = {
+                "file": (
+                    file_path.name,
+                    file,
+                    "application/octet-stream",
+                )
+            }
+
+            response = self._post(
+                api_version=api_version,
+                endpoint=endpoint,
+                data=data,
+                files=files,
+            )
+            logger.debug("Workflow published successfully.")
+            return response
+
+
+# # Example usage:
 
 
 # with AlteryxGalleryClient("https://your-alteryx-server/api/v3") as client:
