@@ -161,3 +161,4 @@ cython_debug/
 #.idea/
 poetry.lock
 scratch2.py
+uv.lock
