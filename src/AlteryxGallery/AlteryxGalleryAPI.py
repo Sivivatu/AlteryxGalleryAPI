@@ -1,7 +1,6 @@
 import logging
 import logging.config
 import time
-from math import log
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
@@ -249,7 +248,8 @@ class GalleryClient:
 
     # TODO: Implement the update post workflow method.
     # this requires extracting the data and file sections for the post request to be extracted into separate methods
-    # Check https://chatgpt.com/share/7aeb8931-d627-4561-bcfb-4cc8a0e0825f for example of how to extend the existing post workflow method by extracting common processes
+    # Check https://chatgpt.com/share/7aeb8931-d627-4561-bcfb-4cc8a0e0825f for example of how to extend the
+    # existing post workflow method by extracting common processes
 
     def post_publish_workflow_version(
         self,
