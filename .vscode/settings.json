@@ -16,8 +16,4 @@
     "python.testing.pytestArgs": [
         "tests"
     ],
-    // "todo-tree.highlights.useColourScheme": true,
-    "workbench.colorCustomizations": {
-        "titleBar.activeBackground": "#7000cc",
-   },
 }
