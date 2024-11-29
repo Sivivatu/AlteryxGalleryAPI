@@ -1,35 +1,41 @@
-name: Python Package using Poetry
+name: Branch Update Linting and Testing
 
-on: pull_request
+on: 
+  push:
+    branches-ignore:
+      - master
 
 jobs:
   poetry_linting:
     strategy:
       fail-fast: true
       matrix:
-        python-version:  ["3.10"]
-        poetry-version: ["1.8.2"]
-        os: [ubuntu-22.04 ]
+        python-version:  ["3.10" , "3.12"]
+        poetry-version: ["1.8.2"] # TODO: change this to remove poetry
+        # uv-version: ["1.8.2"] # TODO: change this to remove poetry
+        os: ["ubuntu-22.04", "windows-latest" ]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Run image
-        uses: abatilo/actions-poetry@v3
-        with:
-          poetry-version: ${{ matrix.poetry-version }}
-      - name: Install dependencies
-        run: poetry install
-      - name: Lint with ruff
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        #   with:
+      #     uv-version: ${{ matrix.uv-version }}
+      - name: Install the project
+        run: uv sync --all-extras --dev
+      - name: Lint and Format with ruff
         run: |
-          poetry run ruff check
+          uv run ruff check
           # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-          poetry run ruff format . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+          uv run ruff format . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
 
-  poetry_targeted_test:
+
+  uv_targeted_tests:
     strategy:
       fail-fast: true
       matrix:
@@ -42,19 +48,21 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Run image
-        uses: abatilo/actions-poetry@v3
-        with:
-          poetry-version: ${{ matrix.poetry-version }}
-      - name: Install dependencies
-        run: poetry install
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        #   with:
+      #     uv-version: ${{ matrix.uv-version }}
+      - name: Install the project
+        run: uv sync --all-extras --dev
       - name: Run tests
         env:
           HOST_URL: ${{ secrets.HOST_URL }}
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           TEST_OWNER_ID: ${{ secrets.TEST_OWNER_ID }}
-        run: poetry run pytest
+        run: |
+          uv run pytest tests
+
       
 
 # jobs:
