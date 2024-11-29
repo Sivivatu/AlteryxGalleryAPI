@@ -1,6 +1,11 @@
+import logging
+import logging.config
 import os
+import time
 from pathlib import Path
+from typing import Any, Dict, Optional, Tuple
 
+import requests
 from dotenv import load_dotenv
 
 # import requests
@@ -40,14 +45,6 @@ print(client)
 
 # print(response.text)
 
-
-import logging
-import logging.config
-import time
-from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
-
-import requests
 
 # Set up logging
 # Set the logging format

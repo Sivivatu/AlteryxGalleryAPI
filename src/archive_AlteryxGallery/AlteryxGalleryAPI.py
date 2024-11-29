@@ -1,7 +1,6 @@
 import logging
 import logging.config
 import time
-from math import log
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
@@ -312,72 +311,6 @@ class GalleryClient:
             )
             logger.debug("Workflow published successfully.")
             return response
-
-<<<<<<< HEAD:src/archive_AlteryxGallery/AlteryxGalleryAPI.py
-=======
-    # TODO: Implement the update post workflow method.
-    # this requires extracting the data and file sections for the post request to be extracted into separate methods
-    # Check https://chatgpt.com/share/7aeb8931-d627-4561-bcfb-4cc8a0e0825f for example of how to extend the existing post workflow method by extracting common processes
-
-    def post_publish_workflow_version(
-        self,
-        workflow_id: str,
-        file_path: Path,
-        name: str,
-        owner_id: str,
-        others_may_download: bool = True,
-        others_can_execute: bool = True,
-        execution_mode: str = "Standard",
-        workflow_credential_type: str = "Default",
-        make_published: bool = True,
-        **kwargs,
-    ) -> Tuple[requests.Response, Dict[str, Any]]:
-        """
-        Updates a workflow version to the Alteryx Gallery. Currently only supports .yxzp files.
-        All keyword additional arguments must be passed individually as they appear in the API documentation.
-        """
-        # Check if the workflow_id is a valid workflow id from the Alteryx Gallery
-        # if not search for workflow_id by name
-        # if not found, raise an error
-        self._check_workflow_id(workflow_id=workflow_id, workflow_name=name)
-
-        api_version = "v3"
-        endpoint = f"workflows/{workflow_id}/versions"
-
-        data = self._prepare_workflow_data(
-            file_path=file_path,
-            name=name,
-            owner_id=owner_id,
-            others_may_download=others_may_download,
-            others_can_execute=others_can_execute,
-            execution_mode=execution_mode,
-            workflow_credential_type=workflow_credential_type,
-            makePublished=make_published,
-            **kwargs,
-        )
-
-        logger.info("updating workflow: {name} workflow with new version...")
-        with open(file_path, "rb") as file:
-            logger.debug(f"Reading file: {file_path}")
-            logger.debug(f"File name: {file.name}")
-            files = {
-                "file": (
-                    file_path.name,
-                    file,
-                    "application/octet-stream",
-                )
-            }
-
-            response = self._post(
-                api_version=api_version,
-                endpoint=endpoint,
-                data=data,
-                files=files,
-            )
-            logger.debug("Workflow published successfully.")
-            return response
-
->>>>>>> e409936 (uploading old codebase for checking):src/AlteryxGallery/AlteryxGalleryAPI.py
 
 # # Example usage:
 
