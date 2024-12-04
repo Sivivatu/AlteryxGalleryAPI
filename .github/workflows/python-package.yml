@@ -2,6 +2,8 @@ name: Python Package using Poetry
 
 on: 
   push:
+    # TODO: change this to only run on pull to the master branch
+    # TODO: and lock the master branch to pushes
     branches: 
       - master
 
