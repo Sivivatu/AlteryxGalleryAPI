@@ -1,2 +1,4 @@
 [version]
-path = "src/AlteryxGallery/__init__.py"
+# path = "src/AlteryxGallery/__init__.py"
+source = "vcs"
+prefix = "v"
