@@ -3,16 +3,18 @@ name = "alteryxgalleryapi"
 authors = [
     {name = "Paul Houghton", email = "paul.houghton@theinformationlab.co.uk"}
 ]
-version = "0.1.0"
-description = "An API for connecting to an Alteryx Gallery. Forked from the project by DAVID PRYOR, NICK SIMMONS, AND RITU GOWLIKAR"
+dynamic = ["version"]
+# version = "0.1.0"
+description = "An API wrapper for connecting to an Alteryx Gallery. Forked from the project by DAVID PRYOR, NICK SIMMONS, AND RITU GOWLIKAR"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
-# packages = [
-#     { include = "AlteryxGallery", from = "src" },
-# ]
-# repository = "https://github.com/Sivivatu/AlteryxGalleryAPI"
-keywords = ["Alteryx Server", "Atleryx Gallery", "API", "Alteryx Gallery API", "Alteryx Server API", "Alteryx API"]
+keywords = ["Alteryx Server", "Atleryx Gallery", "Alteryx Gallery API", "Alteryx Server API", "Alteryx API"]
+
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+]
 
 dependencies = [
     "python-dotenv>=1.0.1",
@@ -21,11 +23,28 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "hatch>=1.13.0",
     "pytest>=8.3.3",
     "ruff>=0.8.0",
 ]
+
+[project.urls]
+"API Documentation" = "https://help.alteryx.com/current/en/server/api-overview/alteryx-server-api-v3.html"
+"Repository" = "https://github.com/Sivivatu/AlteryxGalleryAPI"
+"Bug Tracker" = "https://github.com/Sivivatu/AlteryxGalleryAPI/issues"
 
 [tool.pytest.ini_options]
 # addopts = "--cov=AlteryxGallery --cov-report=term-missing"
 pythonpath = ["src"]
 testpaths = ["tests"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/AlteryxGallery"]
+
+# [tool.hatch.version]
+# source = "git-tag"
+# prefix = "v"
