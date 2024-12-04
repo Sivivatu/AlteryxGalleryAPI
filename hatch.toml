@@ -1,9 +1,13 @@
 [version]
 # path = "src/AlteryxGallery/__init__.py"
 source = "vcs"
+<<<<<<< HEAD
 prefix = "v"
 
 [build.hooks.vcs]
 version-file = "_version.py"
 
 [metadata.hooks.vcs]
+=======
+prefix = "v"
+>>>>>>> 6faaeb7 (Preparing version process)
