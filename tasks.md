@@ -310,3 +310,4 @@
 
 **Last Updated:** January 9, 2026  
 **Version:** 0.2.0-dev
+- Complete migration guide
