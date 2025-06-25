@@ -3,13 +3,13 @@ Pytest unit tests for the AlteryxClient authentication.
 """
 
 import pytest
-import responses
+import responses # TODO: this isnt needed and can be done with mocks from pytest directly using the mocker plugin (https://github.com/vilus/mocker)
 import json
 
 from alteryx_gallery_api.client import AlteryxClient
 from alteryx_gallery_api.exceptions import AuthenticationError
 
-BASE_URL = "http://mock-gallery.com/webapi/"
+BASE_URL = "https://mock-gallery.com/webapi/"
 API_KEY = "test_key"
 API_SECRET = "test_secret"
 TOKEN_ENDPOINT = f"{BASE_URL}oauth2/token"
