@@ -3,8 +3,8 @@ name = "alteryxgalleryapi"
 authors = [
     {name = "Paul Houghton", email = "paul.houghton@theinformationlab.co.uk"}
 ]
-dynamic = ["version"]
-# version = "0.1.0"
+# dynamic = ["version"]
+version = "0.1.0"
 description = "An API wrapper for connecting to an Alteryx Gallery. Forked from the project by DAVID PRYOR, NICK SIMMONS, AND RITU GOWLIKAR"
 readme = "README.md"
 requires-python = ">=3.10"

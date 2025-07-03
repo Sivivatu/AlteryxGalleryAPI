@@ -1,7 +1,8 @@
 {
   "name": "AlteryxGalleryAPI Dev (uv)",
   "build": {
-    "dockerfile": "Dockerfile"
+    "dockerfile": "Dockerfile",
+    "context": ".."
   },
   "customizations": {
     "vscode": {
