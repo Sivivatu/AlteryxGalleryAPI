@@ -7,7 +7,6 @@
         "aaron-bond.better-comments",
         "alexcvzz.vscode-sqlite",
         "ms-python.vscode-pylance",
-        "njpwerner.autodocstring",
-        "Continue.continue",
+        "njpwerner.autodocstring"
     ]
 }
