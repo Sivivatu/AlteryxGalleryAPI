@@ -9,7 +9,7 @@ import requests
 from dotenv import load_dotenv
 
 # import requests
-from AlteryxGallery import AlteryxGalleryAPI
+from src.archive_AlteryxGallery import AlteryxGalleryAPI
 
 load_dotenv()
 
