@@ -18,19 +18,21 @@ COPY pyproject.toml uv.lock ./
 # Install dependencies (but not the project itself)
 # RUN --mount=type=cache,target=/root/.cache/uv \
 #     uv sync --locked --no-install-project
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --no-install-project
+RUN --mount=type=cache,target=/root/.cache/uv uv sync --no-install-project
 
 # Now copy the rest of the source
 ADD . .
 
+# Set copy mode for uv
+ENV UV_LINK_MODE=copy
+
 # Install the project (editable mode for dev)
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --locked
+RUN --mount=type=cache,target=/root/.cache/uv uv sync --locked
 
 # Compile bytecode for faster startup (optional)
 ENV UV_COMPILE_BYTECODE=1
 RUN uv sync --compile-bytecode
+
 
 # Set venv path in PATH for dev shells
 ENV PATH="/app/.venv/bin:$PATH"

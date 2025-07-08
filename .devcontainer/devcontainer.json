@@ -20,7 +20,10 @@
         "aaron-bond.better-comments",
         "alexcvzz.vscode-sqlite",
         "ms-python.vscode-pylance",
-        "njpwerner.autodocstring"
+        "njpwerner.autodocstring",
+        "patbenatar.advanced-new-file",
+        "yzhang.markdown-all-in-one",
+        "shd101wyy.markdown-preview-enhanced"
       ]
     }
   },
