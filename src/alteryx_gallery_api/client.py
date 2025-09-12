@@ -250,7 +250,7 @@ class AlteryxClient:
             AlteryxAPIError: For other API request errors.
         """
         logger.info("Fetching subscription workflows...")
-        response = self._request("GET", "workflows/subscription/")
+        response = self._request("GET", "workflows")
         workflows = response.json()
         logger.info(f"Found {len(workflows)} workflows in subscription.")
         return workflows
