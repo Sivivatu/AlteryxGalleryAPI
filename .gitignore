@@ -165,3 +165,4 @@ uv.lock
 # testing files
 test.txt
 scratch2.py
+_version.py
