@@ -4,12 +4,15 @@ Core client for interacting with the Alteryx Gallery API.
 
 import logging
 import os
+import sys
 from typing import Any, Dict, List, Optional, Union
 
 import requests
 from dotenv import load_dotenv
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
+
+from .models import WorkflowId, Workflow
 
 from .exceptions import (
     AlteryxAPIError,
@@ -88,7 +91,8 @@ class AlteryxClient:
             self._session = self._create_session()
             # Test authentication on initialization
             try:
-                self.get_subscription_workflows()  # A simple call to verify credentials
+                # TODO: Replace with a lightweight endpoint currently returning all workflows.
+                self.get_workflows()  # A simple call to verify credentials
                 logger.info("Authentication successful.")
             except AlteryxAPIError as e:
                 logger.error(f"Initial authentication check failed: {e}")
@@ -237,30 +241,57 @@ class AlteryxClient:
 
     # --- Workflow Management ---
 
-    def get_subscription_workflows(self) -> List[Dict[str, Any]]:
+    def get_workflows(self, workflow_id: Optional[str] = None) -> List[Workflow]:
         """
-        Retrieves a list of workflows available in the user's subscription (V1 API).
+        Retrieves a list of workflows available to the user (V3 API).
+        If workflow_id is provided, retrieves details for that specific workflow.
+
+        Args:
+            workflow_id (str, optional): The ID of a specific workflow to retrieve.
 
         Returns:
-            List[Dict[str, Any]]: A list of dictionaries, each representing a workflow.
-                                  Structure includes keys like 'id', 'name', 'owner', etc.
+            List[Workflow]: A list of Workflow models.
 
         Raises:
             AuthenticationError: If authentication fails.
             AlteryxAPIError: For other API request errors.
         """
         logger.info("Fetching subscription workflows...")
-        response = self._request("GET", "workflows")
-        workflows = response.json()
-        logger.info(f"Found {len(workflows)} workflows in subscription.")
-        return workflows
+        if workflow_id is None:
+            response = self._request("GET", "workflows")
+            payload = response.json()
+            result: List[Workflow] = []
+            if isinstance(payload, list):
+                result = [Workflow.model_validate(item) for item in payload]
+            elif isinstance(payload, dict) and isinstance(payload.get("workflows"), list):
+                result = [Workflow.model_validate(item) for item in payload["workflows"]]
+            else:
+                # Attempt to coerce single item
+                try:
+                    result = [Workflow.model_validate(payload)]
+                except Exception:
+                    logger.warning("Unexpected workflows payload structure; returning empty list")
+                    result = []
+            logger.info(f"Found {len(result)} workflows.")
+            return result
+        else:
+            try:
+                response = self._request("GET", f"workflows/{workflow_id}")
+                payload = response.json()
+                wf = Workflow.model_validate(payload)
+                logger.info(f"Found {workflow_id}.")
+                return [wf]
+            except Exception as e:
+                logger.error(f"Error fetching workflow {workflow_id}: {e}")
+                logger.error(f"Exiting due to error: {e}")
+                sys.exit(1)
 
-    def get_workflow_info(self, workflow_id: str) -> Dict[str, Any]:
+    def get_workflow_info(self, workflow_id: WorkflowId) -> Dict[str, Any]:
         """
         Retrieves detailed information about a specific workflow (V1 API).
 
         Args:
-            workflow_id (str): The ID of the workflow (usually a MongoDB ObjectId).
+            workflow_id (WorkflowId): The ID of the workflow (usually a MongoDB ObjectId).
 
         Returns:
             Dict[str, Any]: A dictionary containing workflow details.
@@ -282,267 +313,267 @@ class AlteryxClient:
                 raise WorkflowNotFoundError(workflow_id) from e
             raise  # Re-raise other AlteryxAPIErrors
 
-    def publish_workflow(
-        self, file_path: str, name: str, owner_email: str, make_public: bool = False, **kwargs
-    ) -> Dict[str, Any]:
-        """
-        Publishes a new workflow to the gallery (V1 API).
+    # def publish_workflow(
+    #     self, file_path: str, name: str, owner_email: str, make_public: bool = False, **kwargs
+    # ) -> Dict[str, Any]:
+    #     """
+    #     Publishes a new workflow to the gallery (V1 API).
 
-        Note: This endpoint requires form-data, not JSON.
+    #     Note: This endpoint requires form-data, not JSON.
 
-        Args:
-            file_path (str): The local path to the .yxzp or .yxmd file to upload.
-            name (str): The name to give the workflow in the Gallery.
-            owner_email (str): The email address of the user who should own the workflow.
-                                This user must exist on the server.
-            make_public (bool): Set to True to make the workflow available in the public Gallery.
-                                Defaults to False (places in user's private studio).
-            **kwargs: Additional optional parameters accepted by the V1 POST /workflows/ endpoint.
-                      Common examples include:
-                      - 'workerTag': Assign a specific worker tag.
-                      - 'canDownload': (bool) Allow users to download the workflow file.
-                      - 'description': A description for the workflow.
+    #     Args:
+    #         file_path (str): The local path to the .yxzp or .yxmd file to upload.
+    #         name (str): The name to give the workflow in the Gallery.
+    #         owner_email (str): The email address of the user who should own the workflow.
+    #                             This user must exist on the server.
+    #         make_public (bool): Set to True to make the workflow available in the public Gallery.
+    #                             Defaults to False (places in user's private studio).
+    #         **kwargs: Additional optional parameters accepted by the V1 POST /workflows/ endpoint.
+    #                   Common examples include:
+    #                   - 'workerTag': Assign a specific worker tag.
+    #                   - 'canDownload': (bool) Allow users to download the workflow file.
+    #                   - 'description': A description for the workflow.
 
-        Returns:
-            Dict[str, Any]: A dictionary containing details of the newly published workflow,
-                            including its new ID.
+    #     Returns:
+    #         Dict[str, Any]: A dictionary containing details of the newly published workflow,
+    #                         including its new ID.
 
-        Raises:
-            FileNotFoundError: If the file_path does not exist.
-            AuthenticationError: If authentication fails.
-            AlteryxAPIError: For other API request errors (e.g., invalid owner email,
-                               upload failure).
-        """
-        logger.info(f"Attempting to publish workflow '{name}' from {file_path}")
-        endpoint = "workflows/"
+    #     Raises:
+    #         FileNotFoundError: If the file_path does not exist.
+    #         AuthenticationError: If authentication fails.
+    #         AlteryxAPIError: For other API request errors (e.g., invalid owner email,
+    #                            upload failure).
+    #     """
+    #     logger.info(f"Attempting to publish workflow '{name}' from {file_path}")
+    #     endpoint = "workflows/"
 
-        try:
-            with open(file_path, "rb") as f:
-                files = {"file": (file_path.split("\\")[-1], f)}  # Use filename from path
-                data = {
-                    "name": name,
-                    "owner": owner_email,
-                    "makePublic": str(make_public).lower(),  # API expects 'true' or 'false'
-                    **kwargs,  # Include any additional parameters
-                }
+    #     try:
+    #         with open(file_path, "rb") as f:
+    #             files = {"file": (file_path.split("\\")[-1], f)}  # Use filename from path
+    #             data = {
+    #                 "name": name,
+    #                 "owner": owner_email,
+    #                 "makePublic": str(make_public).lower(),  # API expects 'true' or 'false'
+    #                 **kwargs,  # Include any additional parameters
+    #             }
 
-                logger.debug(f"Publishing with data: {data}")
-                # Important: V1 publish expects form-data, so use 'data' and 'files', not 'json'
-                response = self._request("POST", endpoint, data=data, files=files)
+    #             logger.debug(f"Publishing with data: {data}")
+    #             # Important: V1 publish expects form-data, so use 'data' and 'files', not 'json'
+    #             response = self._request("POST", endpoint, data=data, files=files)
 
-            result = response.json()
-            logger.info(f"Successfully published workflow '{name}' with ID: {result.get('id')}")
-            return result
-        except FileNotFoundError as e:
-            logger.error(f"Workflow file not found at path: {file_path}")
-            raise e
-        except AlteryxAPIError as e:
-            logger.error(f"Failed to publish workflow '{name}': {e}")
-            raise e  # Re-raise the specific API error
+    #         result = response.json()
+    #         logger.info(f"Successfully published workflow '{name}' with ID: {result.get('id')}")
+    #         return result
+    #     except FileNotFoundError as e:
+    #         logger.error(f"Workflow file not found at path: {file_path}")
+    #         raise e
+    #     except AlteryxAPIError as e:
+    #         logger.error(f"Failed to publish workflow '{name}': {e}")
+    #         raise e  # Re-raise the specific API error
 
-    def update_workflow(self, workflow_id: str, file_path: str, **kwargs) -> Dict[str, Any]:
-        """
-        Updates an existing workflow by publishing a new version (V1 API).
+    # def update_workflow(self, workflow_id: str, file_path: str, **kwargs) -> Dict[str, Any]:
+    #     """
+    #     Updates an existing workflow by publishing a new version (V1 API).
 
-        Note: This endpoint requires form-data, not JSON.
+    #     Note: This endpoint requires form-data, not JSON.
 
-        Args:
-            workflow_id (str): The ID of the workflow to update.
-            file_path (str): The local path to the new .yxzp or .yxmd file version.
-            **kwargs: Additional optional parameters accepted by the V1 PUT /workflows/{appId} endpoint.
-                      Common examples include:
-                      - 'makePublic': (bool) Change the public status.
-                      - 'workerTag': Change the assigned worker tag.
-                      - 'canDownload': (bool) Change download permission.
-                      - 'description': Update the description.
-                      - 'owner': Reassign ownership (provide user email).
+    #     Args:
+    #         workflow_id (str): The ID of the workflow to update.
+    #         file_path (str): The local path to the new .yxzp or .yxmd file version.
+    #         **kwargs: Additional optional parameters accepted by the V1 PUT /workflows/{appId} endpoint.
+    #                   Common examples include:
+    #                   - 'makePublic': (bool) Change the public status.
+    #                   - 'workerTag': Change the assigned worker tag.
+    #                   - 'canDownload': (bool) Change download permission.
+    #                   - 'description': Update the description.
+    #                   - 'owner': Reassign ownership (provide user email).
 
-        Returns:
-            Dict[str, Any]: A dictionary containing details of the updated workflow.
+    #     Returns:
+    #         Dict[str, Any]: A dictionary containing details of the updated workflow.
 
-        Raises:
-            FileNotFoundError: If the file_path does not exist.
-            WorkflowNotFoundError: If the workflow with the given ID is not found.
-            AuthenticationError: If authentication fails.
-            AlteryxAPIError: For other API request errors.
-        """
-        logger.info(f"Attempting to update workflow ID: {workflow_id} from {file_path}")
-        endpoint = f"workflows/{workflow_id}/"
+    #     Raises:
+    #         FileNotFoundError: If the file_path does not exist.
+    #         WorkflowNotFoundError: If the workflow with the given ID is not found.
+    #         AuthenticationError: If authentication fails.
+    #         AlteryxAPIError: For other API request errors.
+    #     """
+    #     logger.info(f"Attempting to update workflow ID: {workflow_id} from {file_path}")
+    #     endpoint = f"workflows/{workflow_id}/"
 
-        try:
-            # First, check if workflow exists to provide a better error message
-            self.get_workflow_info(workflow_id)
+    #     try:
+    #         # First, check if workflow exists to provide a better error message
+    #         self.get_workflow_info(workflow_id)
 
-            with open(file_path, "rb") as f:
-                files = {"file": (file_path.split("\\")[-1], f)}  # Use filename from path
-                data = {k: str(v).lower() if isinstance(v, bool) else v for k, v in kwargs.items()}  # Convert bools
+    #         with open(file_path, "rb") as f:
+    #             files = {"file": (file_path.split("\\")[-1], f)}  # Use filename from path
+    #             data = {k: str(v).lower() if isinstance(v, bool) else v for k, v in kwargs.items()}  # Convert bools
 
-                logger.debug(f"Updating with data: {data}")
-                # Important: V1 update expects form-data, so use 'data' and 'files', not 'json'
-                response = self._request("PUT", endpoint, data=data, files=files)
+    #             logger.debug(f"Updating with data: {data}")
+    #             # Important: V1 update expects form-data, so use 'data' and 'files', not 'json'
+    #             response = self._request("PUT", endpoint, data=data, files=files)
 
-            result = response.json()
-            logger.info(f"Successfully updated workflow ID: {workflow_id}")
-            return result
-        except FileNotFoundError as e:
-            logger.error(f"New workflow file version not found at path: {file_path}")
-            raise e
-        except AlteryxAPIError as e:
-            if e.status_code == 404:  # Handle 404 from PUT specifically
-                raise WorkflowNotFoundError(
-                    workflow_id, message=f"Failed to update: Workflow ID '{workflow_id}' not found."
-                ) from e
-            logger.error(f"Failed to update workflow ID {workflow_id}: {e}")
-            raise e  # Re-raise other API errors
+    #         result = response.json()
+    #         logger.info(f"Successfully updated workflow ID: {workflow_id}")
+    #         return result
+    #     except FileNotFoundError as e:
+    #         logger.error(f"New workflow file version not found at path: {file_path}")
+    #         raise e
+    #     except AlteryxAPIError as e:
+    #         if e.status_code == 404:  # Handle 404 from PUT specifically
+    #             raise WorkflowNotFoundError(
+    #                 workflow_id, message=f"Failed to update: Workflow ID '{workflow_id}' not found."
+    #             ) from e
+    #         logger.error(f"Failed to update workflow ID {workflow_id}: {e}")
+    #         raise e  # Re-raise other API errors
 
-    def delete_workflow(self, workflow_id: str) -> None:
-        """
-        Deletes a workflow from the Gallery (V1 API).
+    # def delete_workflow(self, workflow_id: str) -> None:
+    #     """
+    #     Deletes a workflow from the Gallery (V1 API).
 
-        Args:
-            workflow_id (str): The ID of the workflow to delete.
+    #     Args:
+    #         workflow_id (str): The ID of the workflow to delete.
 
-        Returns:
-            None
+    #     Returns:
+    #         None
 
-        Raises:
-            WorkflowNotFoundError: If the workflow with the given ID is not found.
-            AuthenticationError: If authentication fails.
-            AlteryxAPIError: For other API request errors.
-        """
-        logger.info(f"Attempting to delete workflow ID: {workflow_id}")
-        endpoint = f"workflows/{workflow_id}/"
-        try:
-            # Use _request directly, expecting 200 OK on success, no JSON body needed
-            self._request("DELETE", endpoint)
-            logger.info(f"Successfully deleted workflow ID: {workflow_id}")
-        except AlteryxAPIError as e:
-            if e.status_code == 404:
-                raise WorkflowNotFoundError(
-                    workflow_id, message=f"Failed to delete: Workflow ID '{workflow_id}' not found."
-                ) from e
-            logger.error(f"Failed to delete workflow ID {workflow_id}: {e}")
-            raise e  # Re-raise other API errors
+    #     Raises:
+    #         WorkflowNotFoundError: If the workflow with the given ID is not found.
+    #         AuthenticationError: If authentication fails.
+    #         AlteryxAPIError: For other API request errors.
+    #     """
+    #     logger.info(f"Attempting to delete workflow ID: {workflow_id}")
+    #     endpoint = f"workflows/{workflow_id}/"
+    #     try:
+    #         # Use _request directly, expecting 200 OK on success, no JSON body needed
+    #         self._request("DELETE", endpoint)
+    #         logger.info(f"Successfully deleted workflow ID: {workflow_id}")
+    #     except AlteryxAPIError as e:
+    #         if e.status_code == 404:
+    #             raise WorkflowNotFoundError(
+    #                 workflow_id, message=f"Failed to delete: Workflow ID '{workflow_id}' not found."
+    #             ) from e
+    #         logger.error(f"Failed to delete workflow ID {workflow_id}: {e}")
+    #         raise e  # Re-raise other API errors
 
-    # --- Job Management ---
+    # # --- Job Management ---
 
-    def queue_job(
-        self, workflow_id: str, questions: Optional[List[Dict[str, Any]]] = None, priority: Optional[str] = None
-    ) -> Dict[str, Any]:
-        """
-        Queues a job to run a specific workflow (V1 API).
+    # def queue_job(
+    #     self, workflow_id: str, questions: Optional[List[Dict[str, Any]]] = None, priority: Optional[str] = None
+    # ) -> Dict[str, Any]:
+    #     """
+    #     Queues a job to run a specific workflow (V1 API).
 
-        Args:
-            workflow_id (str): The ID of the workflow to run.
-            questions (Optional[List[Dict[str, Any]]]): A list of dictionaries representing answers
-                                                       to Analytic App questions, if applicable.
-                                                       Each dict should have 'name' and 'value' keys.
-                                                       Example: `[{"name": "Input File", "value": "data.csv"}]`
-            priority (Optional[str]): The priority level for the job (e.g., 'Low', 'Medium', 'High', 'Critical').
-                                      Server defaults if not provided.
+    #     Args:
+    #         workflow_id (str): The ID of the workflow to run.
+    #         questions (Optional[List[Dict[str, Any]]]): A list of dictionaries representing answers
+    #                                                    to Analytic App questions, if applicable.
+    #                                                    Each dict should have 'name' and 'value' keys.
+    #                                                    Example: `[{"name": "Input File", "value": "data.csv"}]`
+    #         priority (Optional[str]): The priority level for the job (e.g., 'Low', 'Medium', 'High', 'Critical').
+    #                                   Server defaults if not provided.
 
-        Returns:
-            Dict[str, Any]: A dictionary containing details of the queued job,
-                            including the new job ID.
+    #     Returns:
+    #         Dict[str, Any]: A dictionary containing details of the queued job,
+    #                         including the new job ID.
 
-        Raises:
-            WorkflowNotFoundError: If the workflow with the given ID is not found.
-            JobExecutionError: If there's an error queuing the job (e.g., bad questions,
-                               permissions).
-            AuthenticationError: If authentication fails.
-            AlteryxAPIError: For other API request errors.
-        """
-        logger.info(f"Queuing job for workflow ID: {workflow_id}")
-        endpoint = f"workflows/{workflow_id}/jobs/"
-        payload: Dict[str, Any] = {}
-        if questions:
-            payload["questions"] = questions
-        if priority:
-            payload["priority"] = priority
+    #     Raises:
+    #         WorkflowNotFoundError: If the workflow with the given ID is not found.
+    #         JobExecutionError: If there's an error queuing the job (e.g., bad questions,
+    #                            permissions).
+    #         AuthenticationError: If authentication fails.
+    #         AlteryxAPIError: For other API request errors.
+    #     """
+    #     logger.info(f"Queuing job for workflow ID: {workflow_id}")
+    #     endpoint = f"workflows/{workflow_id}/jobs/"
+    #     payload: Dict[str, Any] = {}
+    #     if questions:
+    #         payload["questions"] = questions
+    #     if priority:
+    #         payload["priority"] = priority
 
-        try:
-            # Jobs endpoint expects JSON payload
-            response = self._request("POST", endpoint, json_data=payload if payload else None)
-            job_details = response.json()
-            logger.info(f"Successfully queued job for workflow {workflow_id}. Job ID: {job_details.get('id')}")
-            return job_details
-        except AlteryxAPIError as e:
-            if e.status_code == 404:
-                raise WorkflowNotFoundError(
-                    workflow_id, message=f"Failed to queue job: Workflow ID '{workflow_id}' not found."
-                ) from e
-            # Use JobExecutionError for other failures related to queuing
-            logger.error(f"Failed to queue job for workflow {workflow_id}: {e}")
-            raise JobExecutionError(
-                f"Failed to queue job for workflow {workflow_id}: {e}",
-                status_code=e.status_code,
-                response_text=e.response_text,
-            ) from e
+    #     try:
+    #         # Jobs endpoint expects JSON payload
+    #         response = self._request("POST", endpoint, json_data=payload if payload else None)
+    #         job_details = response.json()
+    #         logger.info(f"Successfully queued job for workflow {workflow_id}. Job ID: {job_details.get('id')}")
+    #         return job_details
+    #     except AlteryxAPIError as e:
+    #         if e.status_code == 404:
+    #             raise WorkflowNotFoundError(
+    #                 workflow_id, message=f"Failed to queue job: Workflow ID '{workflow_id}' not found."
+    #             ) from e
+    #         # Use JobExecutionError for other failures related to queuing
+    #         logger.error(f"Failed to queue job for workflow {workflow_id}: {e}")
+    #         raise JobExecutionError(
+    #             f"Failed to queue job for workflow {workflow_id}: {e}",
+    #             status_code=e.status_code,
+    #             response_text=e.response_text,
+    #         ) from e
 
-    def get_job_status(self, job_id: str) -> Dict[str, Any]:
-        """
-        Retrieves the status and details of a specific job (V1 API).
+    # def get_job_status(self, job_id: str) -> Dict[str, Any]:
+    #     """
+    #     Retrieves the status and details of a specific job (V1 API).
 
-        Args:
-            job_id (str): The ID of the job.
+    #     Args:
+    #         job_id (str): The ID of the job.
 
-        Returns:
-            Dict[str, Any]: A dictionary containing job details, including its 'status'
-                            (e.g., 'Queued', 'Running', 'Complete', 'Error').
+    #     Returns:
+    #         Dict[str, Any]: A dictionary containing job details, including its 'status'
+    #                         (e.g., 'Queued', 'Running', 'Complete', 'Error').
 
-        Raises:
-            JobExecutionError: If the job with the given ID is not found (returns 404).
-            AuthenticationError: If authentication fails.
-            AlteryxAPIError: For other API request errors.
-        """
-        logger.info(f"Fetching status for job ID: {job_id}")
-        endpoint = f"jobs/{job_id}/"
-        try:
-            response = self._request("GET", endpoint)
-            status = response.json()
-            logger.info(f"Retrieved status for job ID {job_id}: {status.get('status')}")
-            return status
-        except AlteryxAPIError as e:
-            if e.status_code == 404:
-                logger.warning(f"Job ID '{job_id}' not found.")
-                raise JobExecutionError(f"Job ID '{job_id}' not found.", job_id=job_id, status_code=404) from e
-            logger.error(f"Failed to get status for job ID {job_id}: {e}")
-            raise e  # Re-raise other errors
+    #     Raises:
+    #         JobExecutionError: If the job with the given ID is not found (returns 404).
+    #         AuthenticationError: If authentication fails.
+    #         AlteryxAPIError: For other API request errors.
+    #     """
+    #     logger.info(f"Fetching status for job ID: {job_id}")
+    #     endpoint = f"jobs/{job_id}/"
+    #     try:
+    #         response = self._request("GET", endpoint)
+    #         status = response.json()
+    #         logger.info(f"Retrieved status for job ID {job_id}: {status.get('status')}")
+    #         return status
+    #     except AlteryxAPIError as e:
+    #         if e.status_code == 404:
+    #             logger.warning(f"Job ID '{job_id}' not found.")
+    #             raise JobExecutionError(f"Job ID '{job_id}' not found.", job_id=job_id, status_code=404) from e
+    #         logger.error(f"Failed to get status for job ID {job_id}: {e}")
+    #         raise e  # Re-raise other errors
 
-    def get_job_output(self, job_id: str, output_id: str) -> requests.Response:
-        """
-        Retrieves a specific output file from a completed job (V1 API).
+    # def get_job_output(self, job_id: str, output_id: str) -> requests.Response:
+    #     """
+    #     Retrieves a specific output file from a completed job (V1 API).
 
-        Note: This returns the raw requests.Response object, allowing the caller
-              to handle the potentially large output data (stream, save to file, etc.).
-              Access the content via `response.content` or `response.iter_content()`.
+    #     Note: This returns the raw requests.Response object, allowing the caller
+    #           to handle the potentially large output data (stream, save to file, etc.).
+    #           Access the content via `response.content` or `response.iter_content()`.
 
-        Args:
-            job_id (str): The ID of the job.
-            output_id (str): The ID of the specific output anchor/file desired.
-                             You can find output IDs in the results from `get_job_status`
-                             for a completed job.
+    #     Args:
+    #         job_id (str): The ID of the job.
+    #         output_id (str): The ID of the specific output anchor/file desired.
+    #                          You can find output IDs in the results from `get_job_status`
+    #                          for a completed job.
 
-        Returns:
-            requests.Response: The raw response object containing the output file data.
+    #     Returns:
+    #         requests.Response: The raw response object containing the output file data.
 
-        Raises:
-            JobExecutionError: If the job or output ID is not found (returns 404).
-            AuthenticationError: If authentication fails.
-            AlteryxAPIError: For other API request errors.
-        """
-        logger.info(f"Fetching output ID '{output_id}' for job ID: {job_id}")
-        endpoint = f"jobs/{job_id}/output/{output_id}/"
-        try:
-            # Stream might be useful here for large outputs, but let caller handle for now
-            response = self._request("GET", endpoint, stream=True)
-            logger.info(f"Successfully retrieved stream for output {output_id} of job {job_id}.")
-            return response
-        except AlteryxAPIError as e:
-            if e.status_code == 404:
-                logger.warning(f"Job ID '{job_id}' or Output ID '{output_id}' not found.")
-                raise JobExecutionError(
-                    f"Job ID '{job_id}' or Output ID '{output_id}' not found.", job_id=job_id, status_code=404
-                ) from e
-            logger.error(f"Failed to get output {output_id} for job ID {job_id}: {e}")
-            raise e  # Re-raise other errors
+    #     Raises:
+    #         JobExecutionError: If the job or output ID is not found (returns 404).
+    #         AuthenticationError: If authentication fails.
+    #         AlteryxAPIError: For other API request errors.
+    #     """
+    #     logger.info(f"Fetching output ID '{output_id}' for job ID: {job_id}")
+    #     endpoint = f"jobs/{job_id}/output/{output_id}/"
+    #     try:
+    #         # Stream might be useful here for large outputs, but let caller handle for now
+    #         response = self._request("GET", endpoint, stream=True)
+    #         logger.info(f"Successfully retrieved stream for output {output_id} of job {job_id}.")
+    #         return response
+    #     except AlteryxAPIError as e:
+    #         if e.status_code == 404:
+    #             logger.warning(f"Job ID '{job_id}' or Output ID '{output_id}' not found.")
+    #             raise JobExecutionError(
+    #                 f"Job ID '{job_id}' or Output ID '{output_id}' not found.", job_id=job_id, status_code=404
+    #             ) from e
+    #         logger.error(f"Failed to get output {output_id} for job ID {job_id}: {e}")
+    #         raise e  # Re-raise other errors
