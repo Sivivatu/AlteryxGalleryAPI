@@ -283,7 +283,7 @@
 
 | Phase | Tasks | Status | Priority |
 |-------|-------|--------|----------|
-| **Phase 1: Core Infrastructure** | 11 | Complete (11/11) | High |
+| **Phase 1: Core Infrastructure** | 11 | Complete - [PR #4](https://github.com/Sivivatu/AlteryxGalleryAPI/pull/4) | High |
 | **Phase 2: Workflow & Job Resources** | 9 | Pending | High |
 | **Phase 3: Schedule & User Management** | 6 | Pending | Medium |
 | **Phase 4: Collections, Credentials & Server** | 7 | Pending | Low |
@@ -294,10 +294,10 @@
 
 ## Next Steps
 
-1. Start Phase 1: Core Infrastructure
-2. Begin with task 1.1: Rename package structure
-3. Update pyproject.toml with UV build backend
-4. Migrate to httpx for sync/async support
+1. Start Phase 2: Workflow & Job Resources
+2. Begin with task 2.1: Implement WorkflowResource with full CRUD
+3. Implement JobResource with polling helpers
+4. Add unit and integration tests
 
 ---
 
