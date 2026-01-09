@@ -4,6 +4,7 @@ import os
 import time
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
+from pydantic import BaseModel
 
 import requests
 from dotenv import load_dotenv
