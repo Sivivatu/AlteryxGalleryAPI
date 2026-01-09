@@ -1,6 +1,3 @@
-import os
-import tempfile
-import pytest
 from alteryx_gallery_api.client import AlteryxClient
 
 def test_env_loading(monkeypatch):
