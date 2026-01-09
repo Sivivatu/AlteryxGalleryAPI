@@ -35,11 +35,11 @@
 
 ## Phase 1: Core Infrastructure (Week 1-2)
 
-**Status:** Pending  
+**Status:** In Progress (4/11 complete)  
 **Priority:** High  
 **Goal:** Migrate to modern architecture with httpx, UV build system, and resource-based API design
 
-- [ ] **1.1** Rename package from alteryx_gallery_api to alteryx_server_py
+- [x] **1.1** Rename package from alteryx_gallery_api to alteryx_server_py
     - Move `src/alteryx_gallery_api/` → `src/alteryx_server_py/`
     - Update all imports across codebase
     - Archive old code to separate branch
@@ -48,7 +48,7 @@
     - Update package name to `alteryx-server-py`
     - Update dependencies list
     - Add respx for httpx mocking
-- [ ] **1.3** Migrate from requests to httpx for unified sync/async
+- [x] **1.3** Migrate from requests to httpx for unified sync/async
     - Replace `requests` and `requests-oauthlib` with `httpx`
     - Update all HTTP request calls
     - Implement OAuth2 with httpx
@@ -56,7 +56,7 @@
     - Create base class for common client functionality
     - Implement URL building logic
     - Add request/response handling
-- [ ] **1.5** Implement OAuth2 authentication with token refresh in auth.py
+- [x] **1.5** Implement OAuth2 authentication with token refresh in auth.py
     - Create `auth.py` module
     - Implement token fetching with Client Credentials flow
     - Add automatic token refresh logic
@@ -69,16 +69,16 @@
     - Create `async_client.py`
     - Implement async versions of all methods
     - Add context manager support (`async with`)
-- [ ] **1.8** Implement retry logic with exponential backoff in utils/retry.py
+- [x] **1.8** Implement retry logic with exponential backoff in utils/retry.py
     - Create `utils/retry.py`
     - Implement configurable retry decorator
     - Add exponential backoff with jitter
     - Handle rate limiting (429 responses)
-- [ ] **1.9** Update exception hierarchy
+- [x] **1.9** Update exception hierarchy
     - Enhance `exceptions.py` with new exception types
     - Add `AuthorizationError`, `ValidationError`, `RateLimitError`, `TimeoutError`
     - Update existing exceptions to match PRD
-- [ ] **1.10** Implement configuration management (config.py)
+- [x] **1.10** Implement configuration management (config.py)
     - Create `config.py` with `ClientConfig` class
     - Support configuration from env vars, .env file, and explicit params
     - Add validation for config values
@@ -283,12 +283,12 @@
 
 | Phase | Tasks | Status | Priority |
 |-------|-------|--------|----------|
-| **Phase 1: Core Infrastructure** | 11 | Pending | High |
+| **Phase 1: Core Infrastructure** | 11 | 4/11 (36%) | High |
 | **Phase 2: Workflow & Job Resources** | 9 | Pending | High |
 | **Phase 3: Schedule & User Management** | 6 | Pending | Medium |
 | **Phase 4: Collections, Credentials & Server** | 7 | Pending | Low |
 | **Phase 5: Documentation & Release** | 10 | Pending | High |
-| **Total** | **43** | **0% Complete** | - |
+| **Total** | **43** | **4/43 (9%)** | - |
 
 ---
 
