@@ -1,20 +1,21 @@
 [project]
-name = "alteryxgalleryapi"
+name = "alteryx-server-py"
 authors = [
     {name = "Paul Houghton", email = "paul.houghton@theinformationlab.co.uk"}
 ]
-# dynamic = ["version"]
-version = "0.1.0"
-description = "An API wrapper for connecting to an Alteryx Gallery. Forked from the project by DAVID PRYOR, NICK SIMMONS, AND RITU GOWLIKAR"
+dynamic = ["version"]
+version = "0.2.0"
+description = "Modern Python client for Alteryx Server API V3 with sync/async support"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
-keywords = ["Alteryx Server", "Atleryx Gallery", "Alteryx Gallery API", "Alteryx Server API", "Alteryx API"]
+keywords = ["alteryx", "server", "api", "gallery", "workflow", "ci-cd", "automation"]
 
 classifiers = [
-    "Development Status :: 3 - Alpha",
+    "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
@@ -24,37 +25,48 @@ classifiers = [
 ]
 
 dependencies = [
-    "requests>=2.25.1,<3.0.0",
-    "requests-oauthlib>=1.3.0,<2.0.0",
-    "python-dotenv>=1.1.0",
-    "requests-oauthlib>=1.3.1",
     "httpx>=0.28.1",
-    "pydantic>=2.11.7",
+    "pydantic>=2.11.0",
+    "python-dotenv>=1.1.0",
 ]
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
-    "hatch-vcs>=0.4.0",
-    "hatch>=1.13.0",
     "pytest>=8.3.3",
-    "ruff>=0.8.0",
     "pytest-cov>=6.0.0",
-    "responses>=0.25.7",
+    "pytest-asyncio>=0.24.0",
+    "respx>=0.22.0",
+    "ruff>=0.8.0",
 ]
 
 [project.urls]
-"API Documentation" = "https://help.alteryx.com/current/en/server/api-overview/alteryx-server-api-v3.html"
+"Documentation" = "https://github.com/Sivivatu/AlteryxGalleryAPI#readme"
 "Repository" = "https://github.com/Sivivatu/AlteryxGalleryAPI"
 "Bug Tracker" = "https://github.com/Sivivatu/AlteryxGalleryAPI/issues"
 
-[tool.pytest.ini_options]
-# addopts = "--cov=AlteryxGallery --cov-report=term-missing"
-pythonpath = ["src"]
-testpaths = ["tests"]
+[project.scripts]
 
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.9.22,<0.10.0"]
+build-backend = "uv_build"
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/alteryx_gallery_api"]
+[tool.uv]
+dev-dependencies = [
+    "pytest>=8.3.3",
+    "pytest-cov>=6.0.0",
+    "pytest-asyncio>=0.24.0",
+    "respx>=0.22.0",
+    "ruff>=0.8.0",
+]
+
+[tool.ruff]
+line-length = 125
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src"]
