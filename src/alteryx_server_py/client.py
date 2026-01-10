@@ -17,6 +17,9 @@ logger = logging.getLogger(__name__)
 
 
 class AlteryxClient(_BaseClient):
+
+
+class AlteryxClient(_BaseClient):
     """Synchronous client for Alteryx Server API.
 
     Example:
@@ -199,12 +202,23 @@ class AlteryxClient(_BaseClient):
     @property
     def workflows(self) -> WorkflowResource:
         """Access workflow resource.
-
+        
         Returns:
             WorkflowResource: Workflow API operations
         """
         if self._workflows is None:
             from .resources.workflows import WorkflowResource
-
             self._workflows = WorkflowResource(self)
         return self._workflows
+    
+    @property
+    def jobs(self) -> object:
+        """Access job resource.
+        
+        Returns:
+            JobResource: Job API operations
+        """
+        if not hasattr(self, "_jobs") or self._jobs is None:
+            from .resources.jobs import JobResource
+            self._jobs = JobResource(self)
+        return self._jobs
