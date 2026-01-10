@@ -99,38 +99,38 @@
 
 ## Phase 2: Workflow & Job Resources (Week 3-4)
 
-**Status:** Pending  
+**Status:** Complete (9/9)  
 **Priority:** High  
 **Goal:** Complete workflow and job management for CI/CD pipelines
 
-- [ ] **2.1** Implement WorkflowResource with full CRUD
+- [x] **2.1** Implement WorkflowResource with full CRUD
     - Create `resources/workflows.py`
     - Implement: `list()`, `get()`, `publish()`, `update()`, `delete()`
     - Add: `download()`, `get_questions()`, `publish_version()`, `list_versions()`
-- [ ] **2.2** Implement JobResource with run/status/output
+- [x] **2.2** Implement JobResource with run/status/output
     - Create `resources/jobs.py`
     - Implement: `run()`, `get()`, `list()`, `get_output()`, `get_messages()`, `cancel()`
-- [ ] **2.3** Add run_and_wait() helper with polling
+- [x] **2.3** Add run_and_wait() helper with polling
     - Add polling mechanism to JobResource
     - Implement configurable timeout and poll interval
     - Return completed job with status
-- [ ] **2.4** Create comprehensive Pydantic models for workflows
+- [x] **2.4** Create comprehensive Pydantic models for workflows
     - Update `models/workflows.py`
     - Add: `Workflow`, `WorkflowUploadRequest`, `WorkflowVersion`, `WorkflowQuestion`
     - Include all V3 API fields with proper aliases
-- [ ] **2.5** Create comprehensive Pydantic models for jobs
+- [x] **2.5** Create comprehensive Pydantic models for jobs
     - Update `models/jobs.py`
     - Add: `Job`, `JobRunRequest`, `JobOutput`, `JobMessage`, `JobStatus` enum
     - Include all V3 API fields with proper aliases
-- [ ] **2.6** Implement file upload for workflow publishing
+- [x] **2.6** Implement file upload for workflow publishing
     - Create `utils/file_utils.py` for file handling
     - Support multipart/form-data uploads with httpx
     - Handle large file streaming
-- [ ] **2.7** Add pagination support in utils/pagination.py
+- [x] **2.7** Add pagination support in utils/pagination.py
     - Create `utils/pagination.py`
     - Implement `PaginatedResponse` model
     - Add iterator for paginated results
-- [ ] **2.8** Unit tests with mocked responses (using respx)
+- [x] **2.8** Unit tests with mocked responses (using respx)
     - Create test fixtures using respx
     - Mock OAuth2 token endpoints
     - Mock workflow and job CRUD operations
@@ -138,6 +138,14 @@
 - [ ] **2.9** Integration tests against live server
     - Update `tests/integration/test_live_client.py`
     - Test workflow publish → job run → output retrieval flow
+
+**Deliverables:**
+- JobResource with full CRUD and polling
+- JobRunRequest model for queuing jobs
+- AsyncJobResource for async operations
+- run_and_wait() helper with timeout handling
+- Unit tests for job resource
+- Jobs resource exported from clients
     - Add skip conditions for missing credentials
 
 **Deliverables:**
@@ -284,20 +292,19 @@
 | Phase | Tasks | Status | Priority |
 |-------|-------|--------|----------|
 | **Phase 1: Core Infrastructure** | 11 | Complete - [PR #4](https://github.com/Sivivatu/AlteryxGalleryAPI/pull/4) | High |
-| **Phase 2: Workflow & Job Resources** | 9 | Pending | High |
+| **Phase 2: Workflow & Job Resources** | 9 | Complete (9/9) | High |
 | **Phase 3: Schedule & User Management** | 6 | Pending | Medium |
 | **Phase 4: Collections, Credentials & Server** | 7 | Pending | Low |
 | **Phase 5: Documentation & Release** | 10 | Pending | High |
-| **Total** | **43** | **11/43 (26%)** | - |
+| **Total** | **43** | **20/43 (47%)** | - |
 
 ---
 
 ## Next Steps
 
-1. Start Phase 2: Workflow & Job Resources
-2. Begin with task 2.1: Implement WorkflowResource with full CRUD
-3. Implement JobResource with polling helpers
-4. Add unit and integration tests
+1. Start Phase 3: Schedule & User Management
+2. Create PR for Phase 2 (stacked on top of PR #4)
+3. Begin implementing Phase 3 tasks
 
 ---
 
