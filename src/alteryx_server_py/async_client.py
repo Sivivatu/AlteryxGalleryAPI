@@ -203,3 +203,15 @@ class AsyncAlteryxClient(_BaseClient):
 
             self._workflows = WorkflowResource(self)
         return self._workflows
+
+    @property
+    def jobs(self) -> object:
+        """Access job resource.
+        
+        Returns:
+            AsyncJobResource: Job API operations
+        """
+        if not hasattr(self, "_jobs") or self._jobs is None:
+            from .resources.jobs import AsyncJobResource
+            self._jobs = AsyncJobResource(self)
+        return self._jobs
