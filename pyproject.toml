@@ -8,7 +8,7 @@ authors = [
 license = { text = "MIT" }
 readme = "README.md"
 requires-python = ">=3.8"
-keywords = ["Alteryx Server", "Atleryx Gallery", "API", "Alteryx Gallery API", "Alteryx Server API", "Alteryx API"]
+keywords = ["Alteryx Server", "Alteryx Gallery", "API", "Alteryx Gallery API", "Alteryx Server API", "Alteryx API"]
 dependencies = [
     "python-dotenv>=1.0.1",
     "requests>=2.31.0",
