@@ -10,13 +10,10 @@ import httpx
 from ._base_client import _BaseClient
 from .config import ClientConfig, from_env as config_from_env
 from .exceptions import ConfigurationError
-from .models import PaginatedResponse
+from .utils.pagination import PaginatedResponse
 from .resources import WorkflowResource
 
 logger = logging.getLogger(__name__)
-
-
-class AlteryxClient(_BaseClient):
 
 
 class AlteryxClient(_BaseClient):
