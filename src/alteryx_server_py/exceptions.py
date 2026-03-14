@@ -39,9 +39,9 @@ class NotFoundError(AlteryxError):
 class WorkflowNotFoundError(NotFoundError):
     """Raised when a workflow is not found."""
 
-    def __init__(self, workflow_id: str):
+    def __init__(self, workflow_id: str, message: str | None = None):
         self.workflow_id = workflow_id
-        super().__init__(f"Workflow '{workflow_id}' not found")
+        super().__init__(message or f"Workflow '{workflow_id}' not found")
 
 
 class JobNotFoundError(NotFoundError):
