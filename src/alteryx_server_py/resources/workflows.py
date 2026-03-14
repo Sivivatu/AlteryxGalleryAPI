@@ -198,7 +198,7 @@ class WorkflowResource(_BaseResource):
         try:
             self.get(workflow_id)
         except WorkflowNotFoundError:
-            raise WorkflowNotFoundError(workflow_id, message=f"Workflow '{workflow_id}' not found for update")
+            raise WorkflowNotFoundError(workflow_id)
 
         filename, file_object, _ = open_file_for_upload(file_path)
 
