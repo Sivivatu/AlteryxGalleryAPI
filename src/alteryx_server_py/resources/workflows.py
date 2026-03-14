@@ -15,7 +15,7 @@ from ..models import (
     WorkflowVersion,
 )
 from ..utils import open_file_for_upload, validate_file_size
-from ..exceptions import WorkflowNotFoundError, ValidationError
+from ..exceptions import WorkflowNotFoundError
 from ._base import _BaseResource
 
 logger = logging.getLogger(__name__)
@@ -126,9 +126,6 @@ class WorkflowResource(_BaseResource):
 
         Returns:
             Workflow: Published workflow details
-
-        Raises:
-            ValidationError: If file is invalid
         """
         validate_file_size(file_path)
 
