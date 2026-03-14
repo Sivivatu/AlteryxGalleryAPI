@@ -8,6 +8,8 @@ from dataclasses import dataclass, field
 
 from dotenv import load_dotenv
 
+from .exceptions import ConfigurationError
+
 
 @dataclass
 class ClientConfig:

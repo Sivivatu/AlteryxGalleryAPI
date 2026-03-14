@@ -2,9 +2,9 @@ from alteryx_gallery_api.client import AlteryxClient
 
 def test_env_loading(monkeypatch):
     # Set environment variables
-    monkeypatch.setenv("BASE_URL", "https://env-gallery.com/webapi/")
-    monkeypatch.setenv("API_KEY", "env_key")
-    monkeypatch.setenv("API_SECRET", "env_secret")
+    monkeypatch.setenv("ALTERYX_BASE_URL", "https://env-gallery.com/webapi/")
+    monkeypatch.setenv("ALTERYX_CLIENT_ID", "env_key")
+    monkeypatch.setenv("ALTERYX_CLIENT_SECRET", "env_secret")
 
     # Should load from environment if not provided
     client = AlteryxClient(authenticate_on_init=False)

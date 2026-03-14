@@ -15,7 +15,7 @@ from ..models import (
     WorkflowVersion,
 )
 from ..utils import open_file_for_upload, validate_file_size
-from ..exceptions import WorkflowNotFoundError, ValidationError
+from ..exceptions import WorkflowNotFoundError
 from ._base import _BaseResource
 
 logger = logging.getLogger(__name__)
@@ -126,9 +126,6 @@ class WorkflowResource(_BaseResource):
 
         Returns:
             Workflow: Published workflow details
-
-        Raises:
-            ValidationError: If file is invalid
         """
         validate_file_size(file_path)
 
@@ -198,7 +195,7 @@ class WorkflowResource(_BaseResource):
         try:
             self.get(workflow_id)
         except WorkflowNotFoundError:
-            raise WorkflowNotFoundError(workflow_id, message=f"Workflow '{workflow_id}' not found for update")
+            raise WorkflowNotFoundError(workflow_id)
 
         filename, file_object, _ = open_file_for_upload(file_path)
 

@@ -7,7 +7,7 @@ import random
 from functools import wraps
 from typing import Callable, Any, Type
 
-from .exceptions import RateLimitError
+from ..exceptions import RateLimitError
 
 
 def retry_with_backoff(
@@ -58,7 +58,8 @@ def retry_with_backoff(
                     else:
                         raise
 
-            raise last_exception
+            if last_exception is not None:
+                raise last_exception
 
         return wrapper
 
