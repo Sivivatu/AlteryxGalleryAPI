@@ -7,8 +7,8 @@ import responses
 import json
 from pathlib import Path
 
-from alteryx_gallery_api.client import AlteryxClient
-from alteryx_gallery_api.exceptions import WorkflowNotFoundError, AlteryxAPIError
+from alteryx_server_py.client import AlteryxClient
+from alteryx_server_py.exceptions import WorkflowNotFoundError, AlteryxError
 
 BASE_URL = "https://mock-gallery.com/webapi/"
 API_KEY = "test_key"
