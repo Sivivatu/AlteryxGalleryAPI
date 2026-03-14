@@ -35,5 +35,5 @@ six @ file:///tmp/build/80754af9/six_1644875935023/work
 tqdm @ file:///croot/tqdm_1679561862951/work
 truststore @ file:///croot/truststore_1695244293384/work
 urllib3 @ file:///croot/urllib3_1707770551213/work
-virtualenv==20.25.1
+virtualenv==20.36.1
 zstandard @ file:///work/ci_py311_2/zstandard_1679339489613/work
