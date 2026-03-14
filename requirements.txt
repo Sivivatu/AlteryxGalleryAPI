@@ -12,7 +12,7 @@ conda_package_streaming @ file:///croot/conda-package-streaming_1690987966409/wo
 cryptography @ file:///croot/cryptography_1686613057838/work
 distlib==0.3.8
 distro @ file:///croot/distro_1701455004953/work
-filelock==3.13.1
+filelock==3.20.3
 frozendict @ file:///croot/frozendict_1713194832637/work
 idna @ file:///work/ci_py311/idna_1676822698822/work
 jsonpatch @ file:///croot/jsonpatch_1710807507480/work
