@@ -160,4 +160,9 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 poetry.lock
+uv.lock
+
+# testing files
+test.txt
 scratch2.py
+_version.py

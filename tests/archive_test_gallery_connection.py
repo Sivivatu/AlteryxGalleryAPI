@@ -1,4 +1,5 @@
 import os
+from http.client import NON_AUTHORITATIVE_INFORMATION
 
 import pytest
 from AlteryxGallery import AlteryxGalleryAPI
@@ -21,6 +22,31 @@ def params():
 @pytest.fixture(scope="module")
 def client(params: dict):
     return AlteryxGalleryAPI.GalleryClient(**params)
+
+
+class TestHelperMethods:
+    def test_no_workflow_provided(self, client: AlteryxGalleryAPI.GalleryClient):
+        with pytest.raises(ValueError) as no_value:
+            client._check_workflow_id(workflow_name=None, workflow_id=None)
+        assert no_value.group_contains(ValueError)
+        # assert len(content) == 0
+
+    # def test_check_workflow_by_name(self, client: AlteryxGalleryAPI.GalleryClient):
+    #     response, content = client._check_workflow_id(workflow_name="test", workflow_id=None)
+    #     assert response.status_code == 200
+    #     assert content[0]["name"] == "00-Octopus Download Pipeline"  # type: ignore
+    #     assert len(content[0]["name"]) > 0  # type: ignore
+
+    def test_check_workflow_by_id(self, client: AlteryxGalleryAPI.GalleryClient):
+        response, content = client._check_workflow_id(workflow_name="test workflow", workflow_id="664e07c7a414ac5c0afe93f7")
+        assert response.status_code == 200
+        assert content[0]["name"] == self.workflow_name  # type: ignore
+        assert len(content[0]["name"]) > 0  # type: ignore
+
+    # def test_check_workflow_not_found(self, client: AlteryxGalleryAPI.GalleryClient):
+    #     response, content = client._check_workflow_id(workflow_name="doesnt exist", workflow_id="123456789")
+    #     assert response.status_code == 200
+    #     assert len(content) == 0
 
 
 class TestAuthentication:
@@ -76,15 +102,12 @@ def test_publish_workflow(client: AlteryxGalleryAPI.GalleryClient):
 
     file_path = Path("tests/Test_Upload.yxzp")
     owner_id = os.getenv("TEST_OWNER_ID", "NoValueFound")
-    response, content = client.post_publish_workflow(
-        file_path=file_path, name="test workflow", owner_id=owner_id
-    )
+    response, content = client.post_publish_workflow(file_path=file_path, name="test workflow", owner_id=owner_id)
     # response, content = http_client.publish_workflow("tests/test.yxzp", "test_workflow")
-    assert (
-        response.status_code == 200
-    ), "Expected status code 200, got {} with a message of {}".format(
-        response.status_code, response.text
-    )
+    assert response.status_code == 200
+    # , "Expected status code 200, got {} with a message of {}".format(
+    #     response.status_code, response.text
+    # )
     # assert content["name"] == "test_workflow"
     # assert content["owner"] == "admin"
     # assert content["type"] == "Workflow"

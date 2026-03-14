@@ -1,0 +1,45 @@
+{
+  "name": "AlteryxGalleryAPI Dev (uv)",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "python.defaultInterpreterPath": "/app/.venv/bin/python",
+        "python.formatting.provider": "black",
+        "python.linting.enabled": true,
+        "python.linting.ruffEnabled": true
+      },
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff",
+        "tamasfe.even-better-toml",
+        "github.vscode-github-actions",
+        "aaron-bond.better-comments",
+        "alexcvzz.vscode-sqlite",
+        "ms-python.vscode-pylance",
+        "njpwerner.autodocstring",
+        "patbenatar.advanced-new-file",
+        "yzhang.markdown-all-in-one",
+        "shd101wyy.markdown-preview-enhanced"
+      ]
+    }
+  },
+  // "features": {
+  //   "ghcr.io/devcontainers/features/vscode-extensions:1": {
+  //     "extensions": [
+  //       "ms-python.python",
+  //       "charliermarsh.ruff",
+  //       "tamasfe.even-better-toml",
+  //       "github.vscode-github-actions",
+  //       "aaron-bond.better-comments",
+  //       "alexcvzz.vscode-sqlite",
+  //       "ms-python.vscode-pylance",
+  //       "njpwerner.autodocstring"
+  //     ]
+  //   }
+  // },
+  "remoteUser": "root"
+}

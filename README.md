@@ -1,6 +1,8 @@
 # AlteryxGalleryAPI
 
-AlteryxGalleryAPI is a python client helper used for connecting to the Alteryx Workflow Gallery.
+
+AlteryxGalleryAPI is a modern Python client for connecting to the Alteryx Workflow Gallery API.
+It supports secure authentication, workflow management, and job execution, and is designed for CI/CD and PyPI publishing.
 
 It includes methods that can request Gallery information, send workflow execution commands, monitor
 job status, and retrieving the desired workflow output.
@@ -9,84 +11,70 @@ The official Alteryx API documentation can be found at: https://gallery.alteryx.
 
 ## Setup and Install
 
-In order to access the Gallery you must obtain an API key, secret and you must have the URL to your Alteryx Gallery.
 
-You will need [UV](https://docs.astral.sh/uv/) installed in your local python environment for local testing and development
+## Environment Setup
 
-Install the package by cloning the repository, "cd" into the AlteryxGalleryAPI directory and run uv sync.
+1. **Clone the repository**
+2. **Install dependencies** using [UV](https://docs.astral.sh/uv/):
+   ```bash
+   uv pip install -r requirements.txt
+   ```
+   Or, for development:
+   ```bash
+   uv pip install -r requirements.txt -r dev-requirements.txt
+   ```
 
-Note: This library is not avaliable through via PyPI and must be installed locally and placed in your working directory.
+3. **Configure environment variables**:
+   - Copy `.env.example` to `.env` and fill in your credentials:
+     ```bash
+     cp .env.example .env
+     # Edit .env and set BASE_URL, API_KEY, API_SECRET, TEST_OWNER_ID
+     ```
 
-## Usage 
-#TODO: update the use process for httpx client methods
+4. **Run tests**:
+   ```bash
+   uv pip install pytest
+   uv run pytest
+   ```
 
-```
-from AlteryxGallery import AlteryxGalleryAPI
+## Environment Variables
 
-client_key = 'your_client_key_here'
-client_secret = 'your_client_secret_here'
-gallery_url = 'your_gallery_url'
+The following variables must be set in your `.env` file or your environment:
 
-con = Gallery(gallery_url, client_key, client_secret)
-```
+- `BASE_URL` - The base URL of your Alteryx Gallery (e.g., https://your-gallery-url/webapi/)
+- `API_KEY` - Your Alteryx API key
+- `API_SECRET` - Your Alteryx API secret
+- `TEST_OWNER_ID` - (For tests) The owner ID for test workflows
 
-### con.subscription()
+The client will automatically load these from `.env` using `python-dotenv`.
 
-GET request that returns all workflows in a subscription
 
-endpoint = /v1/workflows/subscription
+## Usage
 
-### con.questions(appID)
+```python
+from alteryx_gallery_api.client import AlteryxClient
 
-GET request that returns the questions for the given Alteryx Analytics App
+# Credentials are loaded automatically from .env or environment variables
+client = AlteryxClient()
 
-endpoint = /v1/workflows/{appId}/questions/
+# Or, you can pass credentials directly (overrides .env):
+# client = AlteryxClient(base_url="https://your-gallery-url/webapi/", api_key="...", api_secret="...")
 
-### con.executeWorkflow(appID, **_payload = values_**)
-
-POST request that queues an app execution job and returns ID of the job
-
-endpoint = /v1/workflows/{appId}/jobs/
-
-**_PAYLOAD PARAMETER IS OPTIONAL, ONLY NECESSARY IF YOUR APP HAS QUESTIONS_**
-
-Payload Example:
-
-```
-date = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
-values = {'questions': [{'name': 'TB_StartDate', 'value': date}, {'name': 'TB_EndDate', 'value': date}]}
-
-con.executeWorkflow('5bc4a813156ae016dcb442bd', payload = values)
-```
-
-Non-Payload Example:
-
-```
-con.executeWorkflow('5bb78ffa6b2bdd1870007570')
+# Example: List workflows
+workflows = client.get_subscription_workflows()
+print(workflows)
 ```
 
-### con.getJobs(appID)
 
-GET request that returns the jobs for the given Alteryx Analytics App
+## Example API Methods
 
-endpoint = /v1/workflows/{appId}/jobs/
+- `get_subscription_workflows()` — List all workflows in your subscription
+- `get_workflow_info(workflow_id)` — Get details for a workflow
+- `publish_workflow(file_path, name, owner_email, ...)` — Publish a new workflow
+- `update_workflow(workflow_id, file_path, ...)` — Update an existing workflow
+- `delete_workflow(workflow_id)` — Delete a workflow
+- `queue_job(workflow_id, questions=None, priority=None)` — Queue a job for a workflow
+- `get_job_status(job_id)` — Get the status of a job
+- `get_job_output(job_id, output_id)` — Download job output
 
-### con.getJobStatus(jobID)
-
-GET request that requires a jobID input and returns the status of that job
-
-endpoint = /v1/jobs/{jobId}/
-
-### con.getJobOutput(jobID, outputID)
-
-GET request that requires a jobID and an outputID which returns the output for a given job (FileURL)
-
-endpoint = /v1/jobs/{jobId}/output/{outputId}/
-
-### con.getApp(appID)
-
-GET request that returns the App that was requested
-
-endpoint = /v1/jobs/{jobId}/output/{outputId}/
-
-ls
+See the code and docstrings for full details and parameters.
