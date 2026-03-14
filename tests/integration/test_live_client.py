@@ -5,13 +5,13 @@ from alteryx_gallery_api.client import AlteryxClient
 
 load_dotenv()
 
-HOST_URL = os.getenv("HOST_URL")
-CLIENT_ID = os.getenv("CLIENT_ID")
-CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+HOST_URL = os.getenv("ALTERYX_BASE_URL")
+CLIENT_ID = os.getenv("ALTERYX_CLIENT_ID")
+CLIENT_SECRET = os.getenv("ALTERYX_CLIENT_SECRET")
 
 @pytest.mark.skipif(
     not all([HOST_URL, CLIENT_ID, CLIENT_SECRET]),
-    reason="Missing HOST_URL, CLIENT_ID, or CLIENT_SECRET environment variables",
+    reason="Missing ALTERYX_BASE_URL, ALTERYX_CLIENT_ID, or ALTERYX_CLIENT_SECRET environment variables",
 )
 
 def test_live_authentication():
