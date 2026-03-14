@@ -3,7 +3,6 @@ name = "alteryx-server-py"
 authors = [
     {name = "Paul Houghton", email = "paul.houghton@theinformationlab.co.uk"}
 ]
-dynamic = ["version"]
 version = "0.2.0"
 description = "Modern Python client for Alteryx Server API V3 with sync/async support"
 readme = "README.md"
