@@ -57,15 +57,15 @@ class AlteryxClient:
             timeout (int, optional): Default request timeout in seconds. Defaults to 30.
         """
         load_dotenv()
-        _base_webapi_url = base_url or os.getenv("BASE_URL")
-        _api_key = api_key or os.getenv("API_KEY")
-        _api_secret = api_secret or os.getenv("API_SECRET")
+        _base_webapi_url = base_url or os.getenv("ALTERYX_BASE_URL")
+        _api_key = api_key or os.getenv("ALTERYX_CLIENT_ID")
+        _api_secret = api_secret or os.getenv("ALTERYX_CLIENT_SECRET")
         if not _base_webapi_url:
-            raise ValueError("BASE_URL must be provided as an argument or environment variable.")
+            raise ValueError("ALTERYX_BASE_URL must be provided as an argument or environment variable.")
         if not _api_key:
-            raise ValueError("API_KEY must be provided as an argument or environment variable.")
+            raise ValueError("ALTERYX_CLIENT_ID must be provided as an argument or environment variable.")
         if not _api_secret:
-            raise ValueError("API_SECRET must be provided as an argument or environment variable.")
+            raise ValueError("ALTERYX_CLIENT_SECRET must be provided as an argument or environment variable.")
         self.base_webapi_url = _base_webapi_url
         self.api_key = _api_key
         self.api_secret = _api_secret
