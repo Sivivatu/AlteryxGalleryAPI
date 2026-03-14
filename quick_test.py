@@ -3,21 +3,6 @@ Quick test script for alteryx_server_py package.
 This demonstrates the new package functionality without needing live credentials.
 """
 
-from alteryx_server_py import AlteryxClient, AsyncAlteryxClient
-from alteryx_server_py.models import (
-    Workflow,
-    WorkflowStatus,
-    JobStatus,
-    JobPriority,
-    ExecutionMode,
-    WorkflowType,
-)
-from alteryx_server_py.exceptions import (
-    AlteryxError,
-    ConfigurationError,
-    AuthenticationError,
-    WorkflowNotFoundError,
-)
 import asyncio
 
 
@@ -31,22 +16,22 @@ def test_imports():
             ClientConfig,
             from_env,
         )
-        from alteryx_server_py.models import (
-            Workflow,
-            Job,
-            WorkflowType,
-            JobStatus,
-            ExecutionMode,
-        )
-        from alteryx_server_py.resources import (
-            WorkflowResource,
-            JobResource,
-        )
         from alteryx_server_py.exceptions import (
             AlteryxError,
-            ConfigurationError,
             AuthenticationError,
+            ConfigurationError,
             WorkflowNotFoundError,
+        )
+        from alteryx_server_py.models import (
+            ExecutionMode,
+            Job,
+            JobStatus,
+            Workflow,
+            WorkflowType,
+        )
+        from alteryx_server_py.resources import (
+            JobResource,
+            WorkflowResource,
         )
 
         print("✅ All imports successful!")
@@ -108,8 +93,9 @@ def test_config_from_env():
     """Test configuration from environment variables."""
     print("\nTesting configuration from env vars...")
     try:
-        from alteryx_server_py import from_env
         import os
+
+        from alteryx_server_py import from_env
 
         # Mock env vars for testing
         os.environ["ALTERYX_BASE_URL"] = "https://test.example.com/webapi/"
