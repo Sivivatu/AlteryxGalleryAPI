@@ -17,9 +17,6 @@ logger = logging.getLogger(__name__)
 
 
 class AlteryxClient(_BaseClient):
-
-
-class AlteryxClient(_BaseClient):
     """Synchronous client for Alteryx Server API.
 
     Example:
