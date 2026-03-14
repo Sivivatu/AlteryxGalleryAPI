@@ -13,7 +13,7 @@ In order to access the Gallery you must obtain an API key, secret and you must h
 
 You will need [UV](https://docs.astral.sh/uv/) installed in your local python environment for local testing and development
 
-Install the package by cloning the repository, "cd" into the populartimes directory and run uv sync.
+Install the package by cloning the repository, "cd" into the AlteryxGalleryAPI directory and run uv sync.
 
 Note: This library is not avaliable through via PyPI and must be installed locally and placed in your working directory.
 
