@@ -1,6 +1,5 @@
 from alteryx_server_py.client import AlteryxClient
 
-
 def test_env_loading(monkeypatch):
     # Set environment variables
     monkeypatch.setenv("ALTERYX_BASE_URL", "https://env-gallery.com/webapi/")
