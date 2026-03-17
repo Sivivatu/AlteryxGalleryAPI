@@ -13,7 +13,6 @@ keywords = ["alteryx", "server", "api", "gallery", "workflow", "ci-cd", "automat
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -48,11 +47,11 @@ dev = [
 [project.scripts]
 
 [build-system]
-requires = ["uv_build>=0.9.22,<0.10.0"]
+requires = ["uv_build>=0.9.22,<1"]
 build-backend = "uv_build"
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "pytest>=8.3.3",
     "pytest-cov>=6.0.0",
     "pytest-asyncio>=0.24.0",
