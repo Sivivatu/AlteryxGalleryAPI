@@ -2,18 +2,18 @@
 Job resource for API operations.
 """
 
-import logging
 import asyncio
-from typing import Optional, List, Dict, Any
+import logging
 from datetime import datetime
+from typing import Any, Dict, List, Optional
 
+from ..exceptions import JobExecutionError, JobNotFoundError, NotFoundError
 from ..models import (
-    JobId,
     Job,
-    JobStatus,
+    JobId,
     JobRunRequest,
+    JobStatus,
 )
-from ..exceptions import JobNotFoundError, JobExecutionError, NotFoundError
 from ._base import _BaseResource
 
 logger = logging.getLogger(__name__)
@@ -288,7 +288,7 @@ class JobResource(_BaseResource):
             try:
                 job = self.get(job.id)
                 elapsed = (datetime.now() - start_time).total_seconds()
-                logger.debug(f"Job {job.id} status: {job.status} " f"({elapsed}s elapsed)")
+                logger.debug(f"Job {job.id} status: {job.status} ({elapsed}s elapsed)")
             except Exception as e:
                 logger.error(f"Error polling job status: {e}")
                 raise
@@ -545,7 +545,7 @@ class AsyncJobResource(_BaseResource):
             try:
                 job = await self.get(job.id)
                 elapsed = (datetime.now() - start_time).total_seconds()
-                logger.debug(f"Job {job.id} status: {job.status} " f"({elapsed}s elapsed)")
+                logger.debug(f"Job {job.id} status: {job.status} ({elapsed}s elapsed)")
             except Exception as e:
                 logger.error(f"Error polling job status: {e}")
                 raise
