@@ -5,16 +5,21 @@ Job resource for API operations.
 import asyncio
 import logging
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 from ..exceptions import JobExecutionError, JobNotFoundError, NotFoundError
 from ..models import (
     Job,
     JobId,
+    JobPriority,
     JobRunRequest,
     JobStatus,
 )
 from ._base import _BaseResource
+
+if TYPE_CHECKING:
+    from ..async_client import AsyncAlteryxClient
+    from ..client import AlteryxClient
 
 logger = logging.getLogger(__name__)
 
@@ -31,6 +36,8 @@ class JobResource(_BaseResource):
         - Cancel jobs
         - Wait for job completion
     """
+
+    _client: "AlteryxClient"
 
     def run(
         self,
@@ -58,8 +65,8 @@ class JobResource(_BaseResource):
 
         request = JobRunRequest(
             questions=questions,
-            priority=priority,
-            worker_tag=worker_tag,
+            priority=JobPriority(priority),
+            workerTag=worker_tag,
         )
 
         data = request.model_dump(by_alias=True, exclude_none=True)
@@ -167,16 +174,16 @@ class JobResource(_BaseResource):
 
             # The raw response should contain file content
             if hasattr(response, "content"):
-                return response.content
+                return cast(bytes, response.content)
             elif isinstance(response, bytes):
                 return response
             elif isinstance(response, str):
                 return response.encode()
 
-            return response.encode() if isinstance(response, str) else response
+            return cast(bytes, response)
         except Exception as e:
             if "not found" in str(e).lower() or "404" in str(e):
-                raise JobNotFoundError(job_id, message=f"Output '{output_id}' not found")
+                raise JobNotFoundError(job_id) from e
             raise
 
     def get_messages(self, job_id: JobId) -> List[Dict[str, Any]]:
@@ -313,6 +320,8 @@ class AsyncJobResource(_BaseResource):
     Provides async versions of all JobResource methods.
     """
 
+    _client: "AsyncAlteryxClient"
+
     async def run(
         self,
         workflow_id: str,
@@ -335,8 +344,8 @@ class AsyncJobResource(_BaseResource):
 
         request = JobRunRequest(
             questions=questions,
-            priority=priority,
-            worker_tag=worker_tag,
+            priority=JobPriority(priority),
+            workerTag=worker_tag,
         )
 
         data = request.model_dump(by_alias=True, exclude_none=True)
@@ -437,16 +446,16 @@ class AsyncJobResource(_BaseResource):
             )
 
             if hasattr(response, "content"):
-                return response.content
+                return cast(bytes, response.content)
             elif isinstance(response, bytes):
                 return response
             elif isinstance(response, str):
                 return response.encode()
 
-            return response.encode() if isinstance(response, str) else response
+            return cast(bytes, response)
         except Exception as e:
             if "not found" in str(e).lower() or "404" in str(e):
-                raise JobNotFoundError(job_id, message=f"Output '{output_id}' not found")
+                raise JobNotFoundError(job_id) from e
             raise
 
     async def get_messages(self, job_id: JobId) -> List[Dict[str, Any]]:

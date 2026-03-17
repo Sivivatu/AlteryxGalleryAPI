@@ -3,7 +3,7 @@ Synchronous Alteryx Server API client.
 """
 
 import logging
-from typing import Any, Dict, Optional, Union
+from typing import Any, Dict, Optional
 
 import httpx
 
@@ -104,7 +104,7 @@ class AlteryxClient(_BaseClient):
         endpoint: str,
         api_version: str = "v3",
         params: Optional[Dict[str, Any]] = None,
-        data: Optional[Union[Dict[str, Any], str]] = None,
+        data: Optional[Dict[str, Any]] = None,
         json_data: Optional[Dict[str, Any]] = None,
         files: Optional[Dict[str, Any]] = None,
         **kwargs,
@@ -131,6 +131,10 @@ class AlteryxClient(_BaseClient):
         logger.debug(f"Params: {params}")
         logger.debug(f"Data: {data}")
         logger.debug(f"JSON: {json_data}")
+
+        if self._client is None:
+            self._initialize_client()
+        assert self._client is not None
 
         try:
             response = self._client.request(
