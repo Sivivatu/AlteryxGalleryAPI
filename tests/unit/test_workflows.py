@@ -3,47 +3,50 @@ Pytest unit tests for AlteryxClient workflow management methods.
 """
 
 import pytest
-import responses
-import json
+from unittest.mock import MagicMock
 from pathlib import Path
 
 from alteryx_server_py.client import AlteryxClient
+from alteryx_server_py.models import Workflow
 from alteryx_server_py.exceptions import WorkflowNotFoundError, AlteryxError
 
 BASE_URL = "https://mock-gallery.com/webapi/"
-API_KEY = "test_key"
-API_SECRET = "test_secret"
+CLIENT_ID = "test_key"
+CLIENT_SECRET = "test_secret"
 
 @pytest.fixture
 def client():
-    with responses.RequestsMock() as rsps:
-        # Mock token endpoint for authentication
-        rsps.add(
-            responses.POST,
-            f"{BASE_URL}oauth2/token",
-            json={"access_token": "mock_token", "token_type": "Bearer", "expires_in": 3600},
-            status=200,
-        )
-        # Mock subscription endpoint for initial auth check
-        rsps.add(
-            responses.GET,
-            f"{BASE_URL}v3/workflows/",
-            json=[{"id": "wf1", "name": "Test Workflow"}],
-            status=200,
-        )
-        yield AlteryxClient(BASE_URL, API_KEY, API_SECRET)
-
-@responses.activate
-def test_get_workflows(client):
-    responses.add(
-        responses.GET,
-        f"{BASE_URL}v3/workflows/",
-        json=[{"id": "wf1", "name": "Test Workflow"}],
-        status=200,
+    """Create an AlteryxClient with mocked auth to avoid real HTTP calls."""
+    c = AlteryxClient(
+        base_url=BASE_URL,
+        client_id=CLIENT_ID,
+        client_secret=CLIENT_SECRET,
     )
-    workflows = client.get_workflows()
+    # Monkey-patch auth to avoid real token fetching
+    c._auth_client = MagicMock()
+    c._auth_client.get_token.return_value = "Bearer mock_token"
+    return c
+
+
+def test_get_workflows(client, monkeypatch):
+    """Test listing workflows through the resource-based API."""
+    payload = [
+        {
+            "id": "wf1",
+            "name": "Test Workflow",
+            "ownerId": "owner-1",
+            "workflowType": "Standard",
+            "executionMode": "Safe",
+            "dateCreated": "2024-01-01T00:00:00Z",
+        }
+    ]
+    monkeypatch.setattr(client, "_request", lambda *a, **k: payload)
+
+    workflows = client.workflows.list()
     assert isinstance(workflows, list)
-    assert workflows[0]["id"] == "wf1"
+    assert len(workflows) == 1
+    assert isinstance(workflows[0], Workflow)
+    assert workflows[0].id == "wf1"
 
 # @responses.activate
 # def test_get_workflow_info_success(client):
