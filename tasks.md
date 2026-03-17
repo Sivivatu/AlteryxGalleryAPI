@@ -300,6 +300,20 @@
 
 ---
 
+## Discovered During Work
+
+- [x] **Fix failing test suite** (2026-03-17)
+    - Fixed 4 test files still importing from old `alteryx_gallery_api` package (renamed to `alteryx_server_py`)
+    - Fixed `test_exceptions.py` infinite recursion caused by Windows path separator mismatch in `importlib.util.spec_from_file_location`
+    - Fixed `test_workflows.py` calling non-existent `get_workflows()` method (now uses `client.workflows.list()`)
+    - Fixed `test_job_resource.py` async/sync mismatch (used sync client with `await`) and broken `respx` mock patterns
+    - Fixed `test_client.py` and `test_client_get_workflows_models.py` using `responses` library (migrated to `respx`/`unittest.mock`)
+    - Fixed test data using invalid `ExecutionMode` enum value (`"Standard"` → `"Safe"`)
+    - Fixed duplicate empty `class AlteryxClient` definition in `client.py` causing `IndentationError`
+    - Fixed `AsyncJobResource.cancel()` string-based error detection to use explicit `NotFoundError` type catching
+
+---
+
 ## Next Steps
 
 1. Start Phase 3: Schedule & User Management
