@@ -13,7 +13,7 @@ from ..models import (
     JobStatus,
     JobRunRequest,
 )
-from ..exceptions import JobNotFoundError, JobExecutionError
+from ..exceptions import JobNotFoundError, JobExecutionError, NotFoundError
 from ._base import _BaseResource
 
 logger = logging.getLogger(__name__)
@@ -491,9 +491,9 @@ class AsyncJobResource(_BaseResource):
                 f"jobs/{job_id}",
             )
             logger.info(f"Successfully cancelled job: {job_id}")
+        except NotFoundError:
+            raise JobNotFoundError(job_id)
         except Exception as e:
-            if "not found" in str(e).lower() or "404" in str(e):
-                raise JobNotFoundError(job_id)
             raise JobExecutionError(job_id, "Unknown", messages=[str(e)])
 
     async def run_and_wait(
