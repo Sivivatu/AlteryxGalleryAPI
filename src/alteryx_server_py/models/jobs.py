@@ -2,7 +2,7 @@
 Job models for API.
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 
@@ -89,9 +89,8 @@ class JobRunRequest(BaseModel):
         worker_tag: Worker assignment tag
     """
 
+    model_config = ConfigDict(populate_by_name=True)
+
     questions: Optional[Dict[str, Any]] = None
     priority: JobPriority = Field(JobPriority.DEFAULT)
     worker_tag: Optional[str] = Field(None, alias="workerTag")
-
-    class Config:
-        populate_by_name = True

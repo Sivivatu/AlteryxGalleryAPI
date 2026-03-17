@@ -2,7 +2,7 @@
 Authentication models for API.
 """
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
 
 
@@ -16,10 +16,9 @@ class TokenResponse(BaseModel):
         scope: OAuth2 scope (optional)
     """
 
+    model_config = ConfigDict(populate_by_name=True)
+
     access_token: str = Field(..., alias="access_token")
     token_type: str = Field("Bearer", alias="token_type")
     expires_in: int = Field(3600, alias="expires_in")
     scope: Optional[str] = Field(None, alias="scope")
-
-    class Config:
-        populate_by_name = True

@@ -3,7 +3,7 @@ Common types and enums for API models.
 """
 
 from typing import Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from enum import Enum
 
 
@@ -78,9 +78,8 @@ class CredentialType(str, Enum):
 class ApiError(BaseModel):
     """API error response model."""
 
+    model_config = ConfigDict(populate_by_name=True)
+
     message: str
     error_code: Optional[str] = Field(None, alias="errorCode")
     details: Optional[dict[str, object]] = None
-
-    class Config:
-        populate_by_name = True
