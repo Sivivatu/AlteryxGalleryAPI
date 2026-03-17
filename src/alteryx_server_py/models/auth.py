@@ -2,8 +2,9 @@
 Authentication models for API.
 """
 
-from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class TokenResponse(BaseModel):
