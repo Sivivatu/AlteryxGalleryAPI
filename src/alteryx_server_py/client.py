@@ -1,9 +1,7 @@
-"""
-Synchronous Alteryx Server API client.
-"""
+"""Synchronous Alteryx Server API client."""
 
 import logging
-from typing import Any, Dict, Optional
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 import httpx
 
@@ -11,6 +9,12 @@ from ._base_client import _BaseClient
 from .config import ClientConfig
 from .config import from_env as config_from_env
 from .resources import WorkflowResource
+
+if TYPE_CHECKING:
+    from .resources.jobs import JobResource
+    from .resources.schedules import ScheduleResource
+    from .resources.user_groups import UserGroupResource
+    from .resources.users import UserResource
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +78,10 @@ class AlteryxClient(_BaseClient):
 
         self._client: Optional[httpx.Client] = None
         self._workflows: Optional[WorkflowResource] = None
+        self._jobs: Optional["JobResource"] = None
+        self._schedules: Optional["ScheduleResource"] = None
+        self._users: Optional["UserResource"] = None
+        self._user_groups: Optional["UserGroupResource"] = None
 
         if config_obj.base_url and config_obj.client_id and config_obj.client_secret:
             self._initialize_client()
@@ -224,3 +232,42 @@ class AlteryxClient(_BaseClient):
 
             self._jobs = JobResource(self)
         return self._jobs
+
+    @property
+    def schedules(self) -> object:
+        """Access schedule resource.
+
+        Returns:
+            ScheduleResource: Schedule API operations
+        """
+        if self._schedules is None:
+            from .resources.schedules import ScheduleResource
+
+            self._schedules = ScheduleResource(self)
+        return self._schedules
+
+    @property
+    def users(self) -> object:
+        """Access user resource.
+
+        Returns:
+            UserResource: User API operations
+        """
+        if self._users is None:
+            from .resources.users import UserResource
+
+            self._users = UserResource(self)
+        return self._users
+
+    @property
+    def user_groups(self) -> object:
+        """Access user group resource.
+
+        Returns:
+            UserGroupResource: User group API operations
+        """
+        if self._user_groups is None:
+            from .resources.user_groups import UserGroupResource
+
+            self._user_groups = UserGroupResource(self)
+        return self._user_groups

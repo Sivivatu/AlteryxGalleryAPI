@@ -3,13 +3,13 @@ Asynchronous Alteryx Server API client.
 """
 
 import logging
-from typing import Optional, Any, Dict, Union
+from typing import Any, Dict, Optional, Union
 
 import httpx
 
 from ._base_client import _BaseClient
-from .config import ClientConfig, from_env as config_from_env
-from .exceptions import ConfigurationError
+from .config import ClientConfig
+from .config import from_env as config_from_env
 from .resources import WorkflowResource
 
 logger = logging.getLogger(__name__)
@@ -207,11 +207,51 @@ class AsyncAlteryxClient(_BaseClient):
     @property
     def jobs(self) -> object:
         """Access job resource.
-        
+
         Returns:
             AsyncJobResource: Job API operations
         """
         if not hasattr(self, "_jobs") or self._jobs is None:
             from .resources.jobs import AsyncJobResource
+
             self._jobs = AsyncJobResource(self)
         return self._jobs
+
+    @property
+    def schedules(self) -> object:
+        """Access schedule resource.
+
+        Returns:
+            AsyncScheduleResource: Schedule API operations
+        """
+        if not hasattr(self, "_schedules") or self._schedules is None:
+            from .resources.schedules import AsyncScheduleResource
+
+            self._schedules = AsyncScheduleResource(self)
+        return self._schedules
+
+    @property
+    def users(self) -> object:
+        """Access user resource.
+
+        Returns:
+            AsyncUserResource: User API operations
+        """
+        if not hasattr(self, "_users") or self._users is None:
+            from .resources.users import AsyncUserResource
+
+            self._users = AsyncUserResource(self)
+        return self._users
+
+    @property
+    def user_groups(self) -> object:
+        """Access user group resource.
+
+        Returns:
+            AsyncUserGroupResource: User group API operations
+        """
+        if not hasattr(self, "_user_groups") or self._user_groups is None:
+            from .resources.user_groups import AsyncUserGroupResource
+
+            self._user_groups = AsyncUserGroupResource(self)
+        return self._user_groups

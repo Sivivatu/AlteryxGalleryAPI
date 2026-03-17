@@ -2,13 +2,12 @@
 Pytest unit tests for AlteryxClient workflow management methods.
 """
 
-import pytest
 from unittest.mock import MagicMock
-from pathlib import Path
+
+import pytest
 
 from alteryx_server_py.client import AlteryxClient
 from alteryx_server_py.models import Workflow
-from alteryx_server_py.exceptions import WorkflowNotFoundError, AlteryxError
 
 BASE_URL = "https://mock-gallery.com/webapi/"
 CLIENT_ID = "test_key"

@@ -4,6 +4,11 @@
     "python.envFile": "${workspaceFolder}/.env",
     "python.analysis.autoSearchPaths": true,
     "python.analysis.typeCheckingMode": "basic",
+    "python.analysis.exclude": [
+        "src/alteryx_gallery_api/**",
+        "src/archive_AlteryxGallery/**",
+        "scratch.py"
+    ],
     "python.analysis.extraPaths": [
         "${workspaceFolder}/src"
     ],

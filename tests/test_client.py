@@ -2,11 +2,11 @@
 Pytest unit tests for the AlteryxClient initialization and configuration.
 """
 
+
 import pytest
-from unittest.mock import MagicMock, patch
 
 from alteryx_server_py.client import AlteryxClient
-from alteryx_server_py.exceptions import AuthenticationError, ConfigurationError
+from alteryx_server_py.exceptions import ConfigurationError
 
 BASE_URL = "https://mock-gallery.com/webapi/"
 CLIENT_ID = "test_key"

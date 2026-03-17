@@ -3,19 +3,18 @@ Workflow resource for API operations.
 """
 
 import logging
-from typing import Optional, List
-from pathlib import Path
+from typing import List, Optional
 
+from ..exceptions import WorkflowNotFoundError
 from ..models import (
     Workflow,
     WorkflowId,
-    WorkflowUploadRequest,
-    WorkflowUpdateRequest,
     WorkflowQuestion,
+    WorkflowUpdateRequest,
+    WorkflowUploadRequest,
     WorkflowVersion,
 )
 from ..utils import open_file_for_upload, validate_file_size
-from ..exceptions import WorkflowNotFoundError
 from ._base import _BaseResource
 
 logger = logging.getLogger(__name__)
