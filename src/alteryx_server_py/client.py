@@ -11,8 +11,11 @@ from .config import from_env as config_from_env
 from .resources import WorkflowResource
 
 if TYPE_CHECKING:
+    from .resources.collections import CollectionResource
+    from .resources.credentials import CredentialResource
     from .resources.jobs import JobResource
     from .resources.schedules import ScheduleResource
+    from .resources.server import ServerResource
     from .resources.user_groups import UserGroupResource
     from .resources.users import UserResource
 
@@ -82,6 +85,9 @@ class AlteryxClient(_BaseClient):
         self._schedules: Optional["ScheduleResource"] = None
         self._users: Optional["UserResource"] = None
         self._user_groups: Optional["UserGroupResource"] = None
+        self._collections: Optional["CollectionResource"] = None
+        self._credentials: Optional["CredentialResource"] = None
+        self._server: Optional["ServerResource"] = None
 
         if config_obj.base_url and config_obj.client_id and config_obj.client_secret:
             self._initialize_client()
@@ -134,6 +140,12 @@ class AlteryxClient(_BaseClient):
         """
         url = self._build_endpoint_url(endpoint, api_version)
         headers = self._add_auth_header({})
+        if files:
+            headers.pop("Content-Type", None)
+        elif data is not None:
+            headers["Content-Type"] = "application/x-www-form-urlencoded"
+        elif json_data is not None:
+            headers["Content-Type"] = "application/json"
 
         logger.debug(f"{method} {url}")
         logger.debug(f"Params: {params}")
@@ -271,3 +283,42 @@ class AlteryxClient(_BaseClient):
 
             self._user_groups = UserGroupResource(self)
         return self._user_groups
+
+    @property
+    def collections(self) -> object:
+        """Access collection resource.
+
+        Returns:
+            CollectionResource: Collection API operations
+        """
+        if self._collections is None:
+            from .resources.collections import CollectionResource
+
+            self._collections = CollectionResource(self)
+        return self._collections
+
+    @property
+    def credentials(self) -> object:
+        """Access credential resource.
+
+        Returns:
+            CredentialResource: Credential API operations
+        """
+        if self._credentials is None:
+            from .resources.credentials import CredentialResource
+
+            self._credentials = CredentialResource(self)
+        return self._credentials
+
+    @property
+    def server(self) -> object:
+        """Access server resource.
+
+        Returns:
+            ServerResource: Server API operations
+        """
+        if self._server is None:
+            from .resources.server import ServerResource
+
+            self._server = ServerResource(self)
+        return self._server

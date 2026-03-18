@@ -76,6 +76,22 @@ class UserGroupNotFoundError(NotFoundError):
         super().__init__(f"User group '{group_id}' not found")
 
 
+class CollectionNotFoundError(NotFoundError):
+    """Raised when a collection is not found."""
+
+    def __init__(self, collection_id: str):
+        self.collection_id = collection_id
+        super().__init__(f"Collection '{collection_id}' not found")
+
+
+class CredentialNotFoundError(NotFoundError):
+    """Raised when a credential is not found."""
+
+    def __init__(self, credential_id: str):
+        self.credential_id = credential_id
+        super().__init__(f"Credential '{credential_id}' not found")
+
+
 class ValidationError(AlteryxError):
     """Raised when request validation fails (400)."""
 
