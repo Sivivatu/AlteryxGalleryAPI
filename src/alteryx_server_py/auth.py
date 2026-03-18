@@ -3,12 +3,12 @@ OAuth2 authentication for Alteryx Server API.
 """
 
 import logging
-from typing import Optional
 from datetime import datetime, timedelta
+from typing import Optional
 
 import httpx
 
-from .exceptions import AuthenticationError, ConfigurationError
+from .exceptions import AuthenticationError
 
 logger = logging.getLogger(__name__)
 
@@ -143,7 +143,7 @@ class OAuth2Client:
             raise AuthenticationError(f"Network error fetching token: {e}") from e
         except KeyError as e:
             logger.error(f"Invalid token response: missing key {e}")
-            raise AuthenticationError(f"Invalid token response from server") from e
+            raise AuthenticationError("Invalid token response from server") from e
 
     def get_token(self) -> str:
         """Get current valid access token, fetching new one if expired.

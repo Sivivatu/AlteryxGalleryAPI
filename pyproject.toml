@@ -62,6 +62,13 @@ dev = [
 [tool.ruff]
 line-length = 125
 target-version = "py312"
+force-exclude = true
+extend-exclude = [
+    "src/alteryx_gallery_api",
+    "src/archive_AlteryxGallery",
+    "scratch.py",
+    "tests/archive_test_gallery_connection.py",
+]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM"]

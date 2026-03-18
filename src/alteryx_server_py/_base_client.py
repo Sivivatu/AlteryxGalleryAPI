@@ -3,19 +3,18 @@ Base client with shared logic for sync and async clients.
 """
 
 import logging
-from typing import Optional, Any, Dict
+from typing import Any, Dict, Optional
 from urllib.parse import urljoin
 
-from .config import ClientConfig
 from .auth import OAuth2Client
+from .config import ClientConfig
 from .exceptions import (
     AuthenticationError,
     NotFoundError,
-    ValidationError,
     RateLimitError,
     ServerError,
+    ValidationError,
 )
-from .utils import retry_with_backoff
 
 logger = logging.getLogger(__name__)
 
@@ -115,7 +114,7 @@ class _BaseClient:
 
         elif status == 429:
             retry_after = response.headers.get("Retry-After")
-            logger.warning(f"Rate limit exceeded for {endpoint}. " f"Retry after {retry_after}s")
+            logger.warning(f"Rate limit exceeded for {endpoint}. Retry after {retry_after}s")
             raise RateLimitError(retry_after=int(retry_after) if retry_after else None)
 
         elif status >= 500:

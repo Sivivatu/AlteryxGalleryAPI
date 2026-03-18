@@ -2,36 +2,52 @@
 Pydantic models for API requests and responses.
 """
 
+from .auth import TokenResponse
 from .base import BaseApiModel
 from .common import (
-    WorkflowId,
-    UserId,
-    SubscriptionId,
-    JobId,
-    ScheduleId,
+    ApiError,
     CollectionId,
     CredentialId,
-    UserGroupId,
-    ExecutionMode,
-    WorkflowType,
-    JobStatus,
-    JobPriority,
     CredentialType,
-    ApiError,
-)
-from .auth import TokenResponse
-from .workflows import (
-    Workflow,
-    WorkflowUploadRequest,
-    WorkflowUpdateRequest,
-    WorkflowQuestion,
-    WorkflowVersion,
+    ExecutionMode,
+    JobId,
+    JobPriority,
+    JobStatus,
+    ScheduleFrequency,
+    ScheduleId,
+    ScheduleStatus,
+    SubscriptionId,
+    UserGroupId,
+    UserId,
+    UserRole,
+    WorkflowId,
+    WorkflowType,
 )
 from .jobs import (
     Job,
-    JobOutput,
     JobMessage,
+    JobOutput,
     JobRunRequest,
+)
+from .schedules import (
+    Schedule,
+    ScheduleCreateRequest,
+    ScheduleUpdateRequest,
+)
+from .users import (
+    User,
+    UserCreateRequest,
+    UserGroup,
+    UserGroupCreateRequest,
+    UserGroupUpdateRequest,
+    UserUpdateRequest,
+)
+from .workflows import (
+    Workflow,
+    WorkflowQuestion,
+    WorkflowUpdateRequest,
+    WorkflowUploadRequest,
+    WorkflowVersion,
 )
 
 __all__ = [
@@ -52,6 +68,9 @@ __all__ = [
     "JobStatus",
     "JobPriority",
     "CredentialType",
+    "ScheduleFrequency",
+    "ScheduleStatus",
+    "UserRole",
     "ApiError",
     # Auth models
     "TokenResponse",
@@ -66,4 +85,15 @@ __all__ = [
     "JobOutput",
     "JobMessage",
     "JobRunRequest",
+    # Schedule models
+    "Schedule",
+    "ScheduleCreateRequest",
+    "ScheduleUpdateRequest",
+    # User models
+    "User",
+    "UserCreateRequest",
+    "UserUpdateRequest",
+    "UserGroup",
+    "UserGroupCreateRequest",
+    "UserGroupUpdateRequest",
 ]

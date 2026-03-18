@@ -1,28 +1,13 @@
-"""
-Unit tests for JobResource.
-"""
+"""Unit tests for JobResource."""
 
-import pytest
 from unittest.mock import MagicMock
 
+import pytest
 import respx
 
-from alteryx_server_py import AlteryxClient, AsyncAlteryxClient
-from alteryx_server_py.models import Job, JobStatus, JobOutput, JobMessage, JobId
-from alteryx_server_py.exceptions import JobNotFoundError, JobExecutionError, TimeoutError
-
-
-@pytest.fixture
-def mock_client():
-    """Create a mock sync client for testing."""
-    client = AlteryxClient(
-        base_url="https://test.example.com/webapi/",
-        client_id="test-id",
-        client_secret="test-secret",
-    )
-    client._auth_client = MagicMock()
-    client._auth_client.get_token.return_value = "Bearer test-token"
-    return client
+from alteryx_server_py import AsyncAlteryxClient
+from alteryx_server_py.exceptions import JobExecutionError, JobNotFoundError, TimeoutError
+from alteryx_server_py.models import Job, JobStatus
 
 
 @pytest.fixture
@@ -177,3 +162,72 @@ class TestJobResource:
 
             with pytest.raises(JobNotFoundError):
                 await async_client.jobs.cancel("job-999")
+
+    @pytest.mark.asyncio
+    async def test_run_and_wait_raises_timeout(self, async_client):
+        """Test run_and_wait raises TimeoutError when a job never finishes."""
+        with respx.mock:
+            respx.post(
+                "https://test.example.com/webapi/v3/workflows/workflow-456/jobs",
+            ).respond(
+                json={
+                    "id": "job-123",
+                    "workflowId": "workflow-456",
+                    "status": "Queued",
+                    "priority": "Default",
+                    "createDate": "2024-01-01T12:00:00Z",
+                },
+            )
+            respx.get(
+                "https://test.example.com/webapi/v3/jobs/job-123",
+            ).respond(
+                json={
+                    "id": "job-123",
+                    "workflowId": "workflow-456",
+                    "status": "Running",
+                    "priority": "Default",
+                    "createDate": "2024-01-01T12:00:00Z",
+                },
+            )
+
+            with pytest.raises(TimeoutError):
+                await async_client.jobs.run_and_wait(
+                    "workflow-456",
+                    timeout=0,
+                    poll_interval=0,
+                )
+
+    @pytest.mark.asyncio
+    async def test_run_and_wait_raises_job_execution_error(self, async_client):
+        """Test run_and_wait raises JobExecutionError when the job fails."""
+        with respx.mock:
+            respx.post(
+                "https://test.example.com/webapi/v3/workflows/workflow-456/jobs",
+            ).respond(
+                json={
+                    "id": "job-123",
+                    "workflowId": "workflow-456",
+                    "status": "Queued",
+                    "priority": "Default",
+                    "createDate": "2024-01-01T12:00:00Z",
+                },
+            )
+            respx.get(
+                "https://test.example.com/webapi/v3/jobs/job-123",
+            ).respond(
+                json={
+                    "id": "job-123",
+                    "workflowId": "workflow-456",
+                    "status": "Error",
+                    "priority": "Default",
+                    "createDate": "2024-01-01T12:00:00Z",
+                    "messages": [{"message": "Job failed", "level": "Error"}],
+                },
+            )
+
+            with pytest.raises(JobExecutionError):
+                await async_client.jobs.run_and_wait(
+                    "workflow-456",
+                    timeout=1,
+                    poll_interval=0,
+                )

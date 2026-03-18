@@ -2,8 +2,9 @@
 Base model for all API response models.
 """
 
-from pydantic import BaseModel, ConfigDict, Field
 from typing import Any
+
+from pydantic import BaseModel, ConfigDict
 
 
 class BaseApiModel(BaseModel):

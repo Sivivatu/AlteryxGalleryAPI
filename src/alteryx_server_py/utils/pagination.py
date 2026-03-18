@@ -2,7 +2,7 @@
 Pagination helpers for API responses.
 """
 
-from typing import Callable, Generic, TypeVar, Iterator, Optional
+from typing import Callable, Generic, Iterator, TypeVar
 
 from pydantic import BaseModel
 

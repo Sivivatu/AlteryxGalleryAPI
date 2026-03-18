@@ -2,10 +2,10 @@
 Retry logic with exponential backoff for API requests.
 """
 
-import time
 import random
+import time
 from functools import wraps
-from typing import Callable, Any, Type
+from typing import Any, Callable, Type
 
 from ..exceptions import RateLimitError
 

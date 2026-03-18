@@ -52,6 +52,30 @@ class JobNotFoundError(NotFoundError):
         super().__init__(f"Job '{job_id}' not found")
 
 
+class ScheduleNotFoundError(NotFoundError):
+    """Raised when a schedule is not found."""
+
+    def __init__(self, schedule_id: str):
+        self.schedule_id = schedule_id
+        super().__init__(f"Schedule '{schedule_id}' not found")
+
+
+class UserNotFoundError(NotFoundError):
+    """Raised when a user is not found."""
+
+    def __init__(self, user_id: str):
+        self.user_id = user_id
+        super().__init__(f"User '{user_id}' not found")
+
+
+class UserGroupNotFoundError(NotFoundError):
+    """Raised when a user group is not found."""
+
+    def __init__(self, group_id: str):
+        self.group_id = group_id
+        super().__init__(f"User group '{group_id}' not found")
+
+
 class ValidationError(AlteryxError):
     """Raised when request validation fails (400)."""
 
@@ -64,7 +88,7 @@ class RateLimitError(AlteryxError):
 
     def __init__(self, retry_after: int | None = None):
         self.retry_after = retry_after
-        msg = f"Rate limit exceeded"
+        msg = "Rate limit exceeded"
         if retry_after:
             msg += f". Retry after {retry_after}s"
         super().__init__(msg)

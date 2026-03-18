@@ -2,10 +2,10 @@
 Common types and enums for API models.
 """
 
-from typing import Optional
-from pydantic import BaseModel, ConfigDict, Field
 from enum import Enum
+from typing import Optional
 
+from pydantic import BaseModel, ConfigDict, Field
 
 # Type aliases
 WorkflowId = str
@@ -52,6 +52,35 @@ class JobPriority(str, Enum):
     MEDIUM = "Medium"
     HIGH = "High"
     CRITICAL = "Critical"
+
+
+class ScheduleFrequency(str, Enum):
+    """Schedule execution frequency."""
+
+    ONCE = "Once"
+    HOURLY = "Hourly"
+    DAILY = "Daily"
+    WEEKLY = "Weekly"
+    MONTHLY = "Monthly"
+    CUSTOM = "Custom"
+
+
+class ScheduleStatus(str, Enum):
+    """Schedule status."""
+
+    ACTIVE = "Active"
+    INACTIVE = "Inactive"
+
+
+class UserRole(str, Enum):
+    """User role on Alteryx Server."""
+
+    NO_ACCESS = "NoAccess"
+    VIEWER = "Viewer"
+    MEMBER = "Member"
+    ARTISAN = "Artisan"
+    CURATOR = "Curator"
+    ADMIN = "Admin"
 
 
 class CredentialType(str, Enum):

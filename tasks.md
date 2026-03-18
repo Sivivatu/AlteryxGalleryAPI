@@ -158,32 +158,33 @@
 
 ## Phase 3: Schedule & User Management (Week 5-6)
 
-**Status:** Pending  
+**Status:** Complete (6/6)  
 **Priority:** Medium  
 **Goal:** Enable schedule automation and user provisioning
 
-- [ ] **3.1** Implement ScheduleResource
+- [x] **3.1** Implement ScheduleResource
     - Create `resources/schedules.py`
     - Implement: `list()`, `get()`, `create()`, `update()`, `delete()`
     - Add: `enable()`, `disable()`
-- [ ] **3.2** Implement UserResource
+- [x] **3.2** Implement UserResource
     - Create `resources/users.py`
     - Implement: `list()`, `get()`, `create()`, `update()`, `delete()`
     - Add: `get_assets()`
-- [ ] **3.3** Implement UserGroupResource
+- [x] **3.3** Implement UserGroupResource
     - Create `resources/user_groups.py`
     - Implement: `list()`, `get()`, `create()`, `update()`, `delete()`
     - Add: `add_users()`, `remove_user()`
-- [ ] **3.4** Create Pydantic models for schedules
+- [x] **3.4** Create Pydantic models for schedules
     - Create `models/schedules.py`
-    - Add: `Schedule`, `ScheduleCreateRequest`, `ScheduleFrequency` enum
-- [ ] **3.5** Create Pydantic models for users/groups
+    - Add: `Schedule`, `ScheduleCreateRequest`, `ScheduleUpdateRequest`, `ScheduleFrequency` enum, `ScheduleStatus` enum
+- [x] **3.5** Create Pydantic models for users/groups
     - Create `models/users.py`
-    - Add: `User`, `UserGroup`, `UserCreateRequest`, `UserRole` enum
-- [ ] **3.6** Unit and integration tests for schedules/users
-    - Create test files for schedule and user resources
-    - Mock API responses with respx
-    - Test permission scenarios
+    - Add: `User`, `UserCreateRequest`, `UserUpdateRequest`, `UserGroup`, `UserGroupCreateRequest`, `UserGroupUpdateRequest`, `UserRole` enum
+- [x] **3.6** Unit and integration tests for schedules/users
+    - Created test files for schedule, user, and user group resources
+    - Created model-level tests for schedules and users/groups
+    - Mocked API responses with respx
+    - 90 tests passing, 4 skipped (live integration)
 
 **Deliverables:**
 - Schedule CRUD operations with enable/disable
@@ -302,6 +303,14 @@
 
 ## Discovered During Work
 
+- [x] **Stabilize branch after merge-conflict fallout** (2026-03-18)
+    - Removed committed merge conflict markers from active source, tests, task docs, and repo instructions
+    - Repaired `src/alteryx_server_py/client.py` request signature and restored sync accessors for jobs, schedules, users, and user groups
+    - Rebuilt conflicted workflow/job/environment tests against the current `alteryx_server_py` API surface
+    - Excluded archived legacy packages and scratch files from current lint/type-analysis scope
+    - Verified `uv run ruff check src/alteryx_server_py tests .github/copilot-instructions.md` passes
+    - Verified `uv run pytest` passes with live integration tests skipped when credentials are absent
+
 - [x] **Fix failing test suite** (2026-03-17)
     - Fixed 4 test files still importing from old `alteryx_gallery_api` package (renamed to `alteryx_server_py`)
     - Fixed `test_exceptions.py` infinite recursion caused by Windows path separator mismatch in `importlib.util.spec_from_file_location`
@@ -322,6 +331,6 @@
 
 ---
 
-**Last Updated:** January 9, 2026  
+**Last Updated:** March 18, 2026  
 **Version:** 0.2.0-dev
 - Complete migration guide
