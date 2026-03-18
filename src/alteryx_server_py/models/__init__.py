@@ -23,6 +23,23 @@ from .common import (
     WorkflowId,
     WorkflowType,
 )
+from .collections import (
+    Collection,
+    CollectionCreateRequest,
+    CollectionPermission,
+    CollectionPermissionUpdateRequest,
+    CollectionShareGroupRequest,
+    CollectionShareUserRequest,
+    CollectionUpdateRequest,
+    CollectionWorkflowRequest,
+)
+from .credentials import (
+    Credential,
+    CredentialCreateRequest,
+    CredentialUpdateRequest,
+    CredentialUserGroupShareRequest,
+    CredentialUserShareRequest,
+)
 from .jobs import (
     Job,
     JobMessage,
@@ -42,6 +59,7 @@ from .users import (
     UserGroupUpdateRequest,
     UserUpdateRequest,
 )
+from .server import ServerInfo, ServerSettings
 from .workflows import (
     Workflow,
     WorkflowQuestion,
@@ -74,6 +92,21 @@ __all__ = [
     "ApiError",
     # Auth models
     "TokenResponse",
+    # Collection models
+    "Collection",
+    "CollectionPermission",
+    "CollectionCreateRequest",
+    "CollectionUpdateRequest",
+    "CollectionShareUserRequest",
+    "CollectionShareGroupRequest",
+    "CollectionPermissionUpdateRequest",
+    "CollectionWorkflowRequest",
+    # Credential models
+    "Credential",
+    "CredentialCreateRequest",
+    "CredentialUpdateRequest",
+    "CredentialUserShareRequest",
+    "CredentialUserGroupShareRequest",
     # Workflow models
     "Workflow",
     "WorkflowUploadRequest",
@@ -96,4 +129,7 @@ __all__ = [
     "UserGroup",
     "UserGroupCreateRequest",
     "UserGroupUpdateRequest",
+    # Server models
+    "ServerInfo",
+    "ServerSettings",
 ]
