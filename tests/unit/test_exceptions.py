@@ -4,18 +4,7 @@ Unit tests for custom exceptions in alteryx_server_py.
 
 import pytest
 
-import importlib.util
-import sys
-
-# Load exceptions module directly to avoid broken imports in other modules
-_spec = importlib.util.spec_from_file_location(
-    "alteryx_server_py.exceptions",
-    __file__.replace("tests/unit/test_exceptions.py", "src/alteryx_server_py/exceptions.py"),
-)
-_mod = importlib.util.module_from_spec(_spec)
-_spec.loader.exec_module(_mod)
-WorkflowNotFoundError = _mod.WorkflowNotFoundError
-NotFoundError = _mod.NotFoundError
+from alteryx_server_py.exceptions import WorkflowNotFoundError, NotFoundError
 
 
 class TestWorkflowNotFoundError:

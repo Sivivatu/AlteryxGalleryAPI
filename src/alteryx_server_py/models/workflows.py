@@ -2,9 +2,11 @@
 Workflow models for API.
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional, List
 from datetime import datetime
+from typing import List, Optional
+
+from pydantic import BaseModel, ConfigDict, Field
+
 from .base import BaseApiModel
 from .common import (
     ExecutionMode,
@@ -67,6 +69,8 @@ class WorkflowUploadRequest(BaseModel):
         can_download: Allow download permission
     """
 
+    model_config = ConfigDict(populate_by_name=True)
+
     name: str
     owner_id: str = Field(..., alias="ownerId")
     is_public: bool = Field(False, alias="isPublic")
@@ -74,9 +78,6 @@ class WorkflowUploadRequest(BaseModel):
     worker_tag: Optional[str] = Field(None, alias="workerTag")
     comments: Optional[str] = None
     can_download: Optional[bool] = Field(None, alias="canDownload")
-
-    class Config:
-        populate_by_name = True
 
 
 class WorkflowUpdateRequest(BaseModel):
@@ -91,15 +92,14 @@ class WorkflowUpdateRequest(BaseModel):
         can_download: Update download permission
     """
 
+    model_config = ConfigDict(populate_by_name=True)
+
     name: Optional[str] = None
     is_public: Optional[bool] = Field(None, alias="isPublic")
     execution_mode: Optional[ExecutionMode] = Field(None, alias="executionMode")
     worker_tag: Optional[str] = Field(None, alias="workerTag")
     comments: Optional[str] = None
     can_download: Optional[bool] = Field(None, alias="canDownload")
-
-    class Config:
-        populate_by_name = True
 
 
 class WorkflowQuestion(BaseModel):
@@ -133,11 +133,10 @@ class WorkflowVersion(BaseModel):
         owner_id: Creator user ID
     """
 
+    model_config = ConfigDict(populate_by_name=True)
+
     id: str
     version_number: int = Field(..., alias="versionNumber")
     created_date: datetime = Field(..., alias="dateCreated")
     comments: Optional[str] = None
     owner_id: str = Field(..., alias="ownerId")
-
-    class Config:
-        populate_by_name = True

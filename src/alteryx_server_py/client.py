@@ -3,20 +3,16 @@ Synchronous Alteryx Server API client.
 """
 
 import logging
-from typing import Optional, Any, Dict, Union
+from typing import Any, Dict, Optional
 
 import httpx
 
 from ._base_client import _BaseClient
-from .config import ClientConfig, from_env as config_from_env
-from .exceptions import ConfigurationError
-from .utils.pagination import PaginatedResponse
+from .config import ClientConfig
+from .config import from_env as config_from_env
 from .resources import WorkflowResource
 
 logger = logging.getLogger(__name__)
-
-
-class AlteryxClient(_BaseClient):
 
 
 class AlteryxClient(_BaseClient):
@@ -108,7 +104,7 @@ class AlteryxClient(_BaseClient):
         endpoint: str,
         api_version: str = "v3",
         params: Optional[Dict[str, Any]] = None,
-        data: Optional[Union[Dict[str, Any], str]] = None,
+        data: Optional[Dict[str, Any]] = None,
         json_data: Optional[Dict[str, Any]] = None,
         files: Optional[Dict[str, Any]] = None,
         **kwargs,
@@ -135,6 +131,10 @@ class AlteryxClient(_BaseClient):
         logger.debug(f"Params: {params}")
         logger.debug(f"Data: {data}")
         logger.debug(f"JSON: {json_data}")
+
+        if self._client is None:
+            self._initialize_client()
+        assert self._client is not None
 
         try:
             response = self._client.request(
@@ -202,23 +202,25 @@ class AlteryxClient(_BaseClient):
     @property
     def workflows(self) -> WorkflowResource:
         """Access workflow resource.
-        
+
         Returns:
             WorkflowResource: Workflow API operations
         """
         if self._workflows is None:
             from .resources.workflows import WorkflowResource
+
             self._workflows = WorkflowResource(self)
         return self._workflows
-    
+
     @property
     def jobs(self) -> object:
         """Access job resource.
-        
+
         Returns:
             JobResource: Job API operations
         """
         if not hasattr(self, "_jobs") or self._jobs is None:
             from .resources.jobs import JobResource
+
             self._jobs = JobResource(self)
         return self._jobs

@@ -40,7 +40,7 @@
 **Goal:** Migrate to modern architecture with httpx, UV build system, and resource-based API design
 
 - [x] **1.1** Rename package from alteryx_gallery_api to alteryx_server_py
-    - Move `src/alteryx_gallery_api/` → `src/alteryx_server_py/`
+    - Move `src/alteryx_gallery_api/` ├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬«├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö¼┬¼├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬¬ `src/alteryx_server_py/`
     - Update all imports across codebase
     - Archive old code to separate branch
 - [x] **1.2** Update pyproject.toml with UV build backend and new package name
@@ -83,9 +83,9 @@
     - Support configuration from env vars, .env file, and explicit params
     - Add validation for config values
 - [x] **1.11** Update environment variable names (ALTERYX_*)
-    - Rename `BASE_URL` → `ALTERYX_BASE_URL`
-    - Rename `API_KEY` → `ALTERYX_CLIENT_ID`
-    - Rename `API_SECRET` → `ALTERYX_CLIENT_SECRET`
+    - Rename `BASE_URL` ├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬«├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö¼┬¼├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬¬ `ALTERYX_BASE_URL`
+    - Rename `API_KEY` ├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬«├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö¼┬¼├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬¬ `ALTERYX_CLIENT_ID`
+    - Rename `API_SECRET` ├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬«├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö¼┬¼├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬¬ `ALTERYX_CLIENT_SECRET`
     - Update `.env.example`
     - Update all tests
 
@@ -137,7 +137,7 @@
     - Achieve 85%+ coverage
 - [ ] **2.9** Integration tests against live server
     - Update `tests/integration/test_live_client.py`
-    - Test workflow publish → job run → output retrieval flow
+    - Test workflow publish ├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬«├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö¼┬¼├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬¬ job run ├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬«├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö¼┬¼├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬¬ output retrieval flow
 
 **Deliverables:**
 - JobResource with full CRUD and polling
@@ -274,7 +274,7 @@
     - Verify package listing
     - Test installation: `pip install alteryx-server-py`
 - [ ] **5.10** Create CHANGELOG.md
-    - Document all changes from v0.1.0 → v0.2.0
+    - Document all changes from v0.1.0 ├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬«├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö¼┬¼├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬¬ v0.2.0
     - List breaking changes
     - Include migration guide
     - Add contributors
@@ -300,6 +300,20 @@
 
 ---
 
+## Discovered During Work
+
+- [x] **Fix failing test suite** (2026-03-17)
+    - Fixed 4 test files still importing from old `alteryx_gallery_api` package (renamed to `alteryx_server_py`)
+    - Fixed `test_exceptions.py` infinite recursion caused by Windows path separator mismatch in `importlib.util.spec_from_file_location`
+    - Fixed `test_workflows.py` calling non-existent `get_workflows()` method (now uses `client.workflows.list()`)
+    - Fixed `test_job_resource.py` async/sync mismatch (used sync client with `await`) and broken `respx` mock patterns
+    - Fixed `test_client.py` and `test_client_get_workflows_models.py` using `responses` library (migrated to `respx`/`unittest.mock`)
+    - Fixed test data using invalid `ExecutionMode` enum value (`"Standard"` → `"Safe"`)
+    - Fixed duplicate empty `class AlteryxClient` definition in `client.py` causing `IndentationError`
+    - Fixed `AsyncJobResource.cancel()` string-based error detection to use explicit `NotFoundError` type catching
+
+---
+
 ## Next Steps
 
 1. Start Phase 3: Schedule & User Management
@@ -310,3 +324,4 @@
 
 **Last Updated:** January 9, 2026  
 **Version:** 0.2.0-dev
+- Complete migration guide

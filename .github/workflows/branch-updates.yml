@@ -6,13 +6,12 @@ on:
       - master
 
 jobs:
-  poetry_linting:
+  project_linting:
     strategy:
       fail-fast: true
       matrix:
         python-version:  ["3.10" , "3.12"]
-        poetry-version: ["1.8.2"] # TODO: change this to remove poetry
-        # uv-version: ["1.8.2"] # TODO: change this to remove poetry
+        uv-version: ["1.8.2"]
         os: ["ubuntu-22.04", "windows-latest" ]
     runs-on: ${{ matrix.os }}
     steps:
@@ -22,7 +21,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v7
         #   with:
       #     uv-version: ${{ matrix.uv-version }}
       - name: Install the project
@@ -49,7 +48,7 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install uv
-        uses: astral-sh/setup-uv@v4
+        uses: astral-sh/setup-uv@v7
         #   with:
       #     uv-version: ${{ matrix.uv-version }}
       - name: Install the project

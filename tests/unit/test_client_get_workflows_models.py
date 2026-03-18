@@ -1,65 +1,48 @@
-from types import SimpleNamespace
-from typing import Any, Dict
+from unittest.mock import MagicMock
 
 import pytest
 
-from alteryx_gallery_api.client import AlteryxClient
-from alteryx_gallery_api.models import Workflow
-
-
-class DummyResponse:
-    def __init__(self, payload: Any, status_code: int = 200):
-        self._payload = payload
-        self.status_code = status_code
-        self.text = ""
-        self.headers = {}
-
-    def json(self) -> Any:
-        return self._payload
-
-    def raise_for_status(self) -> None:
-        if not (200 <= self.status_code < 300):
-            raise Exception("HTTP error")
+from alteryx_server_py.client import AlteryxClient
+from alteryx_server_py.models import Workflow
 
 
 @pytest.fixture
-def client(monkeypatch):
+def client():
+    """Create an AlteryxClient with mocked auth."""
     c = AlteryxClient(
         base_url="https://example.com/webapi/",
-        api_key="key",
-        api_secret="secret",
-        authenticate_on_init=False,
+        client_id="key",
+        client_secret="secret",
     )
+    c._auth_client = MagicMock()
+    c._auth_client.get_token.return_value = "Bearer mock_token"
     return c
 
 
 def test_get_workflows_list_payload(monkeypatch, client: AlteryxClient):
+    # Reason: _request already returns parsed JSON (list/dict), not a Response object.
     payload = [
         {
             "id": "wf-1",
-            "sourceAppId": "app-1",
             "name": "One",
             "ownerId": "sub-1",
             "dateCreated": "2024-01-01T00:00:00Z",
-            "publishedVersionNumber": 1,
-            "isAmp": True,
-            "executionMode": "Standard",
+            "workflowType": "Standard",
+            "executionMode": "Safe",
         },
         {
             "id": "wf-2",
-            "sourceAppId": "app-2",
             "name": "Two",
             "ownerId": "sub-2",
             "dateCreated": "2024-01-02T00:00:00Z",
-            "publishedVersionNumber": 2,
-            "isAmp": False,
+            "workflowType": "Standard",
             "executionMode": "Safe",
         },
     ]
 
-    monkeypatch.setattr(client, "_request", lambda *a, **k: DummyResponse(payload))
+    monkeypatch.setattr(client, "_request", lambda *a, **k: payload)
 
-    result = client.get_workflows()
+    result = client.workflows.list()
     assert isinstance(result, list)
     assert len(result) == 2
     assert all(isinstance(w, Workflow) for w in result)
@@ -72,18 +55,16 @@ def test_get_workflows_list_payload(monkeypatch, client: AlteryxClient):
 def test_get_workflows_single_payload(monkeypatch, client: AlteryxClient):
     payload = {
         "id": "wf-9",
-        "sourceAppId": "app-9",
         "name": "Nine",
         "ownerId": "sub-9",
         "dateCreated": "2024-02-02T00:00:00Z",
-        "publishedVersionNumber": 9,
-        "isAmp": True,
+        "workflowType": "Standard",
         "executionMode": "SemiSafe",
     }
 
-    monkeypatch.setattr(client, "_request", lambda *a, **k: DummyResponse(payload))
+    monkeypatch.setattr(client, "_request", lambda *a, **k: payload)
 
-    result = client.get_workflows("wf-9")
+    result = client.workflows.list()
     assert isinstance(result, list)
     assert len(result) == 1
     wf = result[0]
