@@ -12,6 +12,13 @@ from .config import ClientConfig
 from .config import from_env as config_from_env
 from .resources import WorkflowResource
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .resources.collections import AsyncCollectionResource
+    from .resources.credentials import AsyncCredentialResource
+    from .resources.server import AsyncServerResource
+
 logger = logging.getLogger(__name__)
 
 
@@ -70,6 +77,9 @@ class AsyncAlteryxClient(_BaseClient):
 
         self._client: Optional[httpx.AsyncClient] = None
         self._workflows: Optional[WorkflowResource] = None
+        self._collections: Optional["AsyncCollectionResource"] = None
+        self._credentials: Optional["AsyncCredentialResource"] = None
+        self._server: Optional["AsyncServerResource"] = None
 
         if config_obj.base_url and config_obj.client_id and config_obj.client_secret:
             self._initialize_client()
@@ -122,6 +132,12 @@ class AsyncAlteryxClient(_BaseClient):
         """
         url = self._build_endpoint_url(endpoint, api_version)
         headers = self._add_auth_header({})
+        if files:
+            headers.pop("Content-Type", None)
+        elif data is not None:
+            headers["Content-Type"] = "application/x-www-form-urlencoded"
+        elif json_data is not None:
+            headers["Content-Type"] = "application/json"
 
         logger.debug(f"ASYNC {method} {url}")
         logger.debug(f"Params: {params}")
@@ -255,3 +271,42 @@ class AsyncAlteryxClient(_BaseClient):
 
             self._user_groups = AsyncUserGroupResource(self)
         return self._user_groups
+
+    @property
+    def collections(self) -> object:
+        """Access collection resource.
+
+        Returns:
+            AsyncCollectionResource: Collection API operations
+        """
+        if self._collections is None:
+            from .resources.collections import AsyncCollectionResource
+
+            self._collections = AsyncCollectionResource(self)
+        return self._collections
+
+    @property
+    def credentials(self) -> object:
+        """Access credential resource.
+
+        Returns:
+            AsyncCredentialResource: Credential API operations
+        """
+        if self._credentials is None:
+            from .resources.credentials import AsyncCredentialResource
+
+            self._credentials = AsyncCredentialResource(self)
+        return self._credentials
+
+    @property
+    def server(self) -> object:
+        """Access server resource.
+
+        Returns:
+            AsyncServerResource: Server API operations
+        """
+        if self._server is None:
+            from .resources.server import AsyncServerResource
+
+            self._server = AsyncServerResource(self)
+        return self._server
