@@ -4,6 +4,16 @@ Pydantic models for API requests and responses.
 
 from .auth import TokenResponse
 from .base import BaseApiModel
+from .collections import (
+    Collection,
+    CollectionCreateRequest,
+    CollectionPermission,
+    CollectionPermissionUpdateRequest,
+    CollectionShareGroupRequest,
+    CollectionShareUserRequest,
+    CollectionUpdateRequest,
+    CollectionWorkflowRequest,
+)
 from .common import (
     ApiError,
     CollectionId,
@@ -23,16 +33,6 @@ from .common import (
     WorkflowId,
     WorkflowType,
 )
-from .collections import (
-    Collection,
-    CollectionCreateRequest,
-    CollectionPermission,
-    CollectionPermissionUpdateRequest,
-    CollectionShareGroupRequest,
-    CollectionShareUserRequest,
-    CollectionUpdateRequest,
-    CollectionWorkflowRequest,
-)
 from .credentials import (
     Credential,
     CredentialCreateRequest,
@@ -51,6 +51,7 @@ from .schedules import (
     ScheduleCreateRequest,
     ScheduleUpdateRequest,
 )
+from .server import ServerInfo, ServerSettings
 from .users import (
     User,
     UserCreateRequest,
@@ -59,7 +60,6 @@ from .users import (
     UserGroupUpdateRequest,
     UserUpdateRequest,
 )
-from .server import ServerInfo, ServerSettings
 from .workflows import (
     Workflow,
     WorkflowQuestion,
