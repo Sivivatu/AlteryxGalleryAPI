@@ -3,7 +3,7 @@ Asynchronous Alteryx Server API client.
 """
 
 import logging
-from typing import Any, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
 import httpx
 
@@ -11,8 +11,6 @@ from ._base_client import _BaseClient
 from .config import ClientConfig
 from .config import from_env as config_from_env
 from .resources import WorkflowResource
-
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .resources.collections import AsyncCollectionResource

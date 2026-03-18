@@ -195,30 +195,30 @@
 
 ## Phase 4: Collections, Credentials & Server (Week 7)
 
-**Status:** Pending  
+**Status:** Complete (7/7)  
 **Priority:** Low  
 **Goal:** Complete remaining API coverage
 
-- [ ] **4.1** Implement CollectionResource
+- [x] **4.1** Implement CollectionResource
     - Create `resources/collections.py`
     - Implement: `list()`, `get()`, `create()`, `update()`, `delete()`
     - Add: `add_workflow()`, `remove_workflow()`, `set_permissions()`
-- [ ] **4.2** Implement CredentialResource (DCM)
+- [x] **4.2** Implement CredentialResource (DCM)
     - Create `resources/credentials.py`
     - Implement: `list()`, `get()`, `create()`, `update()`, `delete()`
-- [ ] **4.3** Implement ServerResource
+- [x] **4.3** Implement ServerResource
     - Create `resources/server.py`
     - Implement: `get_info()`, `get_settings()`
-- [ ] **4.4** Create Pydantic models for collections
+- [x] **4.4** Create Pydantic models for collections
     - Create `models/collections.py`
     - Add: `Collection`, `CollectionPermission`
-- [ ] **4.5** Create Pydantic models for credentials
+- [x] **4.5** Create Pydantic models for credentials
     - Create `models/credentials.py`
     - Add: `Credential`, `CredentialType` enum
-- [ ] **4.6** Create Pydantic models for server info
+- [x] **4.6** Create Pydantic models for server info
     - Create `models/server.py`
     - Add: `ServerInfo`, `ServerSettings`
-- [ ] **4.7** Unit and integration tests for collections/credentials/server
+- [x] **4.7** Unit and integration tests for collections/credentials/server
     - Create test files for remaining resources
     - Achieve 80%+ coverage
 
@@ -294,10 +294,10 @@
 |-------|-------|--------|----------|
 | **Phase 1: Core Infrastructure** | 11 | Complete - [PR #4](https://github.com/Sivivatu/AlteryxGalleryAPI/pull/4) | High |
 | **Phase 2: Workflow & Job Resources** | 9 | Complete (9/9) | High |
-| **Phase 3: Schedule & User Management** | 6 | Pending | Medium |
-| **Phase 4: Collections, Credentials & Server** | 7 | Pending | Low |
+| **Phase 3: Schedule & User Management** | 6 | Complete (6/6) | Medium |
+| **Phase 4: Collections, Credentials & Server** | 7 | Complete (7/7) | Low |
 | **Phase 5: Documentation & Release** | 10 | Pending | High |
-| **Total** | **43** | **20/43 (47%)** | - |
+| **Total** | **43** | **33/43 (77%)** | - |
 
 ---
 
@@ -321,13 +321,20 @@
     - Fixed duplicate empty `class AlteryxClient` definition in `client.py` causing `IndentationError`
     - Fixed `AsyncJobResource.cancel()` string-based error detection to use explicit `NotFoundError` type catching
 
+- [x] **Complete Phase 4 API coverage** (2026-03-18)
+    - Added collection, credential, and server models under `src/alteryx_server_py/models`
+    - Added sync and async resources for collections, credentials, and server endpoints
+    - Wired new resources into both clients and exported new not-found exception types
+    - Corrected request content-type handling so form-encoded V3 endpoints send the expected headers
+    - Added unit tests for Phase 4 resources and models
+
 ---
 
 ## Next Steps
 
-1. Start Phase 3: Schedule & User Management
-2. Create PR for Phase 2 (stacked on top of PR #4)
-3. Begin implementing Phase 3 tasks
+1. Start Phase 5: Documentation & Release
+2. Update README and environment examples for the full V0.2.0 surface area
+3. Prepare build, publish, and CI release tasks
 
 ---
 
