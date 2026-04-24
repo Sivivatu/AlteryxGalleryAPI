@@ -76,3 +76,8 @@ select = ["E", "F", "I", "UP", "B", "SIM"]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["src"]
+markers = [
+    "live: tests that run against a real Alteryx Server environment",
+    "smoke: safe live tests that do not mutate server state",
+    "destructive: live tests that create, modify, or delete server resources",
+]

@@ -247,6 +247,25 @@ Run the test suite:
 uv run pytest
 ```
 
+Run only the live smoke suite against a real server:
+
+```bash
+uv run pytest tests/integration -m "live and not destructive"
+```
+
+Run the full live integration suite against a sandbox server:
+
+```bash
+uv run pytest tests/integration -m live
+```
+
+Live integration test environment variables:
+
+- `ALTERYX_BASE_URL`, `ALTERYX_CLIENT_ID`, `ALTERYX_CLIENT_SECRET`: required for all live tests
+- `ALTERYX_TEST_OWNER_ID`: required for publish, run, and delete tests
+- `ALTERYX_TEST_WORKFLOW_ID`: optional workflow ID for smoke read verification
+- `ALTERYX_TEST_JOB_TIMEOUT`, `ALTERYX_TEST_POLL_INTERVAL`: optional run-and-wait tuning
+
 Run linting:
 
 ```bash

@@ -135,9 +135,11 @@
     - Mock OAuth2 token endpoints
     - Mock workflow and job CRUD operations
     - Achieve 85%+ coverage
-- [ ] **2.9** Integration tests against live server
+- [x] **2.9** Integration tests against live server
     - Update `tests/integration/test_live_client.py`
-    - Test workflow publish ├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬«├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö¼┬¼├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬¬ job run ├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬«├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö¼┬¼├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬¬ output retrieval flow
+    - Add live smoke and destructive pytest markers
+    - Test workflow publish -> job run -> output retrieval flow
+    - Add skip conditions for missing live credentials and sandbox owner configuration
 
 **Deliverables:**
 - JobResource with full CRUD and polling
@@ -258,6 +260,10 @@
 - [ ] **5.5** Update GitHub Actions workflow for UV
     - Update `.github/workflows/python-package.yml`
     - Use `astral-sh/setup-uv@v5` action
+
+## Discovered During Work
+
+- [x] Document live integration test environment variables in `.env.example` and `README.md`
     - Add matrix testing for Python 3.10, 3.11, 3.12
     - Add publish workflow for releases
 - [ ] **5.6** Bump version to 0.2.0 using uv version --bump minor
