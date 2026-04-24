@@ -2,6 +2,8 @@
 Pytest unit tests for AlteryxClient workflow management methods.
 """
 
+import io
+
 from unittest.mock import MagicMock
 
 import pytest
@@ -46,6 +48,76 @@ def test_get_workflows(client, monkeypatch):
     assert len(workflows) == 1
     assert isinstance(workflows[0], Workflow)
     assert workflows[0].id == "wf1"
+
+
+def test_publish_workflow_includes_legacy_required_fields(client, monkeypatch):
+    """Test publish sends the legacy-required fields observed on live servers."""
+    captured_kwargs = {}
+
+    def fake_request(*args, **kwargs):
+        captured_kwargs.update(kwargs)
+        return {
+            "id": "wf-published",
+            "name": kwargs["data"]["name"],
+            "ownerId": kwargs["data"]["ownerId"],
+            "workflowType": "Standard",
+            "executionMode": "Safe",
+            "dateCreated": "2024-01-01T00:00:00Z",
+        }
+
+    monkeypatch.setattr(client, "_request", fake_request)
+    monkeypatch.setattr("alteryx_server_py.resources.workflows.validate_file_size", lambda _: None)
+    monkeypatch.setattr(
+        "alteryx_server_py.resources.workflows.open_file_for_upload",
+        lambda _: ("test.yxzp", io.BytesIO(b"dummy workflow"), "application/octet-stream"),
+    )
+
+    workflow = client.workflows.publish(
+        file_path="tests/Test_Upload.yxzp",
+        name="Published Workflow",
+        owner_id="owner-1",
+    )
+
+    assert workflow.id == "wf-published"
+    assert captured_kwargs["data"]["isReadyForMigration"] is False
+    assert captured_kwargs["data"]["othersMayDownload"] is True
+    assert captured_kwargs["data"]["othersCanExecute"] is True
+    assert captured_kwargs["data"]["workflowCredentialType"] == "Default"
+    assert captured_kwargs["data"]["makePublic"] == "false"
+
+
+def test_publish_workflow_fetches_details_when_server_returns_only_id(client, monkeypatch):
+    """Test publish normalizes legacy mutation responses that return only a workflow ID."""
+    monkeypatch.setattr("alteryx_server_py.resources.workflows.validate_file_size", lambda _: None)
+    monkeypatch.setattr(
+        "alteryx_server_py.resources.workflows.open_file_for_upload",
+        lambda _: ("test.yxzp", io.BytesIO(b"dummy workflow"), "application/octet-stream"),
+    )
+
+    responses = iter(
+        [
+            "wf-published",
+            {
+                "id": "wf-published",
+                "name": "Published Workflow",
+                "ownerId": "owner-1",
+                "workflowType": "Standard",
+                "executionMode": "Safe",
+                "dateCreated": "2024-01-01T00:00:00Z",
+            },
+        ]
+    )
+
+    monkeypatch.setattr(client, "_request", lambda *args, **kwargs: next(responses))
+
+    workflow = client.workflows.publish(
+        file_path="tests/Test_Upload.yxzp",
+        name="Published Workflow",
+        owner_id="owner-1",
+    )
+
+    assert workflow.id == "wf-published"
+    assert workflow.name == "Published Workflow"
 
 # @responses.activate
 # def test_get_workflow_info_success(client):

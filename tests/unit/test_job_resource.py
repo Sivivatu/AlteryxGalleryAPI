@@ -60,6 +60,47 @@ def job_data():
 class TestJobResource:
     """Test JobResource functionality."""
 
+    def test_job_model_parses_legacy_live_payload(self):
+        """Test parsing the legacy live job payload shape."""
+        job = Job.model_validate(
+            {
+                "id": "job-123",
+                "appId": "workflow-456",
+                "status": "Queued",
+                "priority": "Low",
+                "createDateTime": "2024-01-01T12:00:00Z",
+                "outputs": [],
+                "messages": [],
+                "runWithE2": True,
+            }
+        )
+
+        assert job.workflow_id == "workflow-456"
+        assert job.status == JobStatus.QUEUED
+
+    def test_job_model_parses_legacy_message_payload(self):
+        """Test parsing legacy job messages that use `text` instead of `message`."""
+        job = Job.model_validate(
+            {
+                "id": "job-123",
+                "appId": "workflow-456",
+                "status": "Error",
+                "priority": "Low",
+                "createDateTime": "2024-01-01T12:00:00Z",
+                "outputs": [],
+                "messages": [
+                    {
+                        "status": 3,
+                        "text": "Requires admin privileges.",
+                        "toolId": -1,
+                    }
+                ],
+            }
+        )
+
+        assert job.messages[0].message == "Requires admin privileges."
+        assert job.messages[0].level == "3"
+
     @pytest.mark.asyncio
     async def test_run_job(self, async_client):
         """Test running a workflow job."""

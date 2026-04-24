@@ -75,6 +75,21 @@ class WorkflowResource(_BaseResource):
 
         return []
 
+    def _parse_workflow_response(self, response: object) -> Workflow:
+        """Parse workflow mutation responses from both modern and legacy servers.
+
+        Args:
+            response: Raw API response payload.
+
+        Returns:
+            Workflow: Parsed workflow model.
+        """
+
+        if isinstance(response, str):
+            return self.get(response)
+
+        return Workflow.model_validate(response)
+
     def get(self, workflow_id: WorkflowId) -> Workflow:
         """Get workflow details by ID.
 
@@ -106,7 +121,11 @@ class WorkflowResource(_BaseResource):
         name: str,
         owner_id: str,
         is_public: bool = False,
+        is_ready_for_migration: bool = False,
+        others_may_download: Optional[bool] = None,
+        others_can_execute: bool = True,
         execution_mode: str = "Safe",
+        workflow_credential_type: str = "Default",
         worker_tag: Optional[str] = None,
         comments: Optional[str] = None,
         can_download: Optional[bool] = None,
@@ -118,7 +137,11 @@ class WorkflowResource(_BaseResource):
             name: Workflow name
             owner_id: Owner user ID
             is_public: Public visibility flag
+            is_ready_for_migration: Migration readiness flag
+            others_may_download: Allow other users to download the workflow package
+            others_can_execute: Allow other users to execute the workflow
             execution_mode: Execution mode (Safe/SemiSafe/Unrestricted)
+            workflow_credential_type: Workflow credential mode
             worker_tag: Worker assignment tag
             comments: Version comments
             can_download: Allow download permission
@@ -132,11 +155,19 @@ class WorkflowResource(_BaseResource):
 
         logger.info(f"Publishing workflow '{name}' from {file_path}")
 
+        effective_others_may_download = can_download if can_download is not None else others_may_download
+        if effective_others_may_download is None:
+            effective_others_may_download = True
+
         request = WorkflowUploadRequest(
             name=name,
             owner_id=owner_id,
             is_public=is_public,
+            is_ready_for_migration=is_ready_for_migration,
+            others_may_download=effective_others_may_download,
+            others_can_execute=others_can_execute,
             execution_mode=execution_mode,
+            workflow_credential_type=workflow_credential_type,
             worker_tag=worker_tag,
             comments=comments,
             can_download=can_download,
@@ -157,7 +188,7 @@ class WorkflowResource(_BaseResource):
         )
 
         logger.info(f"Successfully published workflow '{name}'")
-        return Workflow.model_validate(response)
+        return self._parse_workflow_response(response)
 
     def update(
         self,
@@ -223,7 +254,7 @@ class WorkflowResource(_BaseResource):
         )
 
         logger.info(f"Successfully updated workflow '{workflow_id}'")
-        return Workflow.model_validate(response)
+        return self._parse_workflow_response(response)
 
     def delete(self, workflow_id: WorkflowId) -> None:
         """Delete a workflow.

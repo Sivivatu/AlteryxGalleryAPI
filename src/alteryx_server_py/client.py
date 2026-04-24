@@ -142,6 +142,8 @@ class AlteryxClient(_BaseClient):
         headers = self._add_auth_header({})
         if files:
             headers.pop("Content-Type", None)
+            if data is not None:
+                data = self._serialize_form_data(data)
         elif data is not None:
             headers["Content-Type"] = "application/x-www-form-urlencoded"
         elif json_data is not None:

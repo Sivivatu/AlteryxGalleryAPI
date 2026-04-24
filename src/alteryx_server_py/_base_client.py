@@ -3,6 +3,7 @@ Base client with shared logic for sync and async clients.
 """
 
 import logging
+from enum import Enum
 from typing import Any, Dict, Optional
 from urllib.parse import urljoin
 
@@ -166,3 +167,25 @@ class _BaseClient:
         headers["Content-Type"] = "application/json"
 
         return headers
+
+    def _serialize_form_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Serialize multipart form fields into server-friendly string values.
+
+        Args:
+            data: Form field mapping.
+
+        Returns:
+            Dict[str, Any]: Serialized form field mapping.
+        """
+
+        serialized: Dict[str, Any] = {}
+        for key, value in data.items():
+            if isinstance(value, bool):
+                serialized[key] = str(value).lower()
+            elif isinstance(value, Enum):
+                serialized[key] = str(value.value)
+            elif isinstance(value, (int, float)):
+                serialized[key] = str(value)
+            else:
+                serialized[key] = value
+        return serialized
