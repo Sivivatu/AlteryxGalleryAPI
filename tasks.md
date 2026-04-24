@@ -236,7 +236,7 @@
 **Priority:** High  
 **Goal:** Production release to PyPI as v0.2.0
 
-- [ ] **5.1** Comprehensive README with examples
+- [x] **5.1** Comprehensive README with examples
     - Update README.md with new package name
     - Add installation instructions using UV
     - Include sync and async client examples
@@ -250,7 +250,7 @@
     - Update all environment variable names to ALTERYX_*
     - Add descriptions for each variable
     - Include optional variables
-- [ ] **5.4** Create CI/CD example scripts
+- [x] **5.4** Create CI/CD example scripts
     - Create `examples/` directory
     - Add `deploy_workflows.py` script
     - Add `promote_workflow.py` script
@@ -296,8 +296,8 @@
 | **Phase 2: Workflow & Job Resources** | 9 | Complete (9/9) | High |
 | **Phase 3: Schedule & User Management** | 6 | Complete (6/6) | Medium |
 | **Phase 4: Collections, Credentials & Server** | 7 | Complete (7/7) | Low |
-| **Phase 5: Documentation & Release** | 10 | Pending | High |
-| **Total** | **43** | **33/43 (77%)** | - |
+| **Phase 5: Documentation & Release** | 10 | In Progress (2/10) | High |
+| **Total** | **43** | **35/43 (81%)** | - |
 
 ---
 
@@ -328,13 +328,18 @@
     - Corrected request content-type handling so form-encoded V3 endpoints send the expected headers
     - Added unit tests for Phase 4 resources and models
 
+- [x] **Start Phase 5 documentation and examples** (2026-03-18)
+    - Rewrote `README.md` for the `alteryx_server_py` package and current OAuth2/V3 API surface
+    - Added sync, async, collections, credentials, server, and CI/CD usage examples to the README
+    - Added example scripts for workflow deployment, promotion, workflow test execution, and admin resource inspection
+
 ---
 
 ## Next Steps
 
-1. Start Phase 5: Documentation & Release
-2. Update README and environment examples for the full V0.2.0 surface area
-3. Prepare build, publish, and CI release tasks
+1. Add Google-style docstrings to the remaining public APIs
+2. Update release automation and GitHub Actions for the `uv` workflow
+3. Build and validate release artifacts before publish
 
 ---
 
