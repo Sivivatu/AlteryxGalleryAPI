@@ -1,0 +1,116 @@
+name: Release Package
+
+"on":
+  workflow_dispatch:
+    inputs:
+      publish_to_pypi:
+        description: Publish to PyPI after TestPyPI verification
+        required: true
+        default: false
+        type: boolean
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  PACKAGE_NAME: alteryx-server-py
+
+jobs:
+  build:
+    name: Build release artifacts
+    runs-on: ubuntu-22.04
+    outputs:
+      package_version: ${{ steps.metadata.outputs.package_version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Install dependencies
+        run: uv sync --all-extras --dev
+      - name: Run tests
+        run: uv run pytest tests
+      - name: Capture package version
+        id: metadata
+        run: |
+          echo "package_version=$(uv run python -c \"import tomllib; from pathlib import Path; print(tomllib.loads(Path('pyproject.toml').read_text())['project']['version'])\")" >> "$GITHUB_OUTPUT"
+      - name: Build artifacts
+        run: uv build --clear
+      - name: Upload distribution artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/*
+
+  publish_testpypi:
+    name: Publish to TestPyPI
+    runs-on: ubuntu-22.04
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Publish package to TestPyPI
+        run: |
+          uv publish \
+            --trusted-publishing always \
+            --publish-url https://test.pypi.org/legacy/ \
+            --check-url https://test.pypi.org/simple/ \
+            dist/*
+
+  verify_testpypi:
+    name: Verify TestPyPI install
+    runs-on: ubuntu-22.04
+    needs: [build, publish_testpypi]
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Create smoke test environment
+        run: uv venv .venv-smoke
+      - name: Install package from TestPyPI
+        run: |
+          source .venv-smoke/bin/activate
+          uv pip install \
+            --index-url https://test.pypi.org/simple/ \
+            --extra-index-url https://pypi.org/simple/ \
+            "${PACKAGE_NAME}==${{ needs.build.outputs.package_version }}"
+      - name: Smoke test published package
+        run: |
+          source .venv-smoke/bin/activate
+          python -c "import alteryx_server_py; assert alteryx_server_py.__version__ == '${{ needs.build.outputs.package_version }}'"
+
+  publish_pypi:
+    name: Publish to PyPI
+    runs-on: ubuntu-22.04
+    needs: [build, verify_testpypi]
+    if: ${{ github.event_name == 'push' || github.event.inputs.publish_to_pypi == 'true' }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Publish package to PyPI
+        run: |
+          uv publish \
+            --trusted-publishing always \
+            dist/*
