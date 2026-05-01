@@ -28,23 +28,42 @@ class OAuth2Token:
         expires_in: int,
         token_type: str = "Bearer",
     ):
+        """Initialize an OAuth2 token model.
+
+        Args:
+            access_token: Access token string returned by the server.
+            expires_in: Lifetime of the token in seconds.
+            token_type: Authorization scheme prefix. Defaults to "Bearer".
+        """
         self.access_token = access_token
         self.expires_at = datetime.now() + timedelta(seconds=expires_in)
         self.token_type = token_type
 
     @property
     def is_expired(self) -> bool:
-        """Check if token has expired (with 5 minute buffer)."""
+        """Check whether the token should be considered expired.
+
+        Returns:
+            bool: True when the token is expired or within the refresh buffer.
+        """
         buffer_seconds = 300
         return datetime.now() >= self.expires_at - timedelta(seconds=buffer_seconds)
 
     @property
     def authorization_header(self) -> str:
-        """Get formatted authorization header value."""
+        """Build the Authorization header value for requests.
+
+        Returns:
+            str: Combined token type and access token.
+        """
         return f"{self.token_type} {self.access_token}"
 
     def to_dict(self) -> dict:
-        """Convert to dictionary for storage."""
+        """Serialize the token for persistence.
+
+        Returns:
+            dict: Token fields encoded as JSON-friendly values.
+        """
         return {
             "access_token": self.access_token,
             "expires_at": self.expires_at.isoformat(),
@@ -53,7 +72,14 @@ class OAuth2Token:
 
     @classmethod
     def from_dict(cls, data: dict) -> "OAuth2Token":
-        """Create token from dictionary."""
+        """Rebuild a token from serialized state.
+
+        Args:
+            data: Serialized token payload.
+
+        Returns:
+            OAuth2Token: Restored token instance.
+        """
         return cls(
             access_token=data["access_token"],
             expires_in=int((datetime.fromisoformat(data["expires_at"]) - datetime.now()).total_seconds()),

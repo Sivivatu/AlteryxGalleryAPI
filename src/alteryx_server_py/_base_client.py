@@ -72,21 +72,22 @@ class _BaseClient:
         return urljoin(self.config.base_url, f"{api_version}/{endpoint}")
 
     def _process_response(self, response: Any, endpoint: str) -> Any:
-        """Process API response, handling errors.
+        """Process an HTTP response and normalise API errors.
 
         Args:
-            response: HTTP response object
-            endpoint: Endpoint being called (for error messages)
+            response: HTTP response object.
+            endpoint: Endpoint being called, used for logging context.
 
         Returns:
-            Parsed response data
+            Any: Parsed response payload or raw response text.
 
         Raises:
-            AuthenticationError: On 401 status
-            NotFoundError: On 404 status
-            ValidationError: On 400 status
-            RateLimitError: On 429 status
-            ServerError: On 5xx status
+            AuthenticationError: On 401 status.
+            NotFoundError: On 404 status.
+            ValidationError: On 400 status.
+            RateLimitError: On 429 status.
+            ServerError: On 5xx status.
+            Exception: On any other non-success status code.
         """
         status = getattr(response, "status_code", None) or getattr(response, "status_code", 200)
 
@@ -129,13 +130,13 @@ class _BaseClient:
             raise Exception(f"HTTP {status}: {error_text}")
 
     def _get_error_text(self, response: Any) -> str:
-        """Extract error text from response.
+        """Extract the most useful error message from a response.
 
         Args:
-            response: HTTP response object
+            response: HTTP response object.
 
         Returns:
-            str: Error message
+            str: Error message text extracted from JSON or plain text bodies.
         """
         try:
             if hasattr(response, "json"):
@@ -151,13 +152,13 @@ class _BaseClient:
         self,
         headers: Optional[Dict[str, str]],
     ) -> Dict[str, str]:
-        """Add authorization header to request headers.
+        """Add the current OAuth2 authorization header to a header mapping.
 
         Args:
-            headers: Existing headers dict
+            headers: Existing request headers.
 
         Returns:
-            Headers dict with authorization added
+            Dict[str, str]: Headers with Authorization and Content-Type set.
         """
         if headers is None:
             headers = {}

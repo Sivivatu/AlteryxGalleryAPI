@@ -20,6 +20,14 @@ logger = logging.getLogger(__name__)
 
 
 def _coerce_credential_list(response: object) -> list[Credential]:
+    """Normalize credential list responses into model instances.
+
+    Args:
+        response: Raw response payload returned by the API client.
+
+    Returns:
+        list[Credential]: Parsed credential models.
+    """
     if isinstance(response, list):
         return [Credential.model_validate(item) for item in response]
     if isinstance(response, dict) and "credentials" in response:
@@ -40,7 +48,16 @@ class CredentialResource(_BaseResource):
         user_id: Optional[UserId] = None,
         user_group_id: Optional[UserGroupId] = None,
     ) -> list[Credential]:
-        """List accessible credentials."""
+        """List credentials visible to the current caller.
+
+        Args:
+            view: Optional API-specific credential view filter.
+            user_id: Optional user identifier filter.
+            user_group_id: Optional user group identifier filter.
+
+        Returns:
+            list[Credential]: Matching credential models.
+        """
         params = {}
         if view:
             params["view"] = view
@@ -52,7 +69,17 @@ class CredentialResource(_BaseResource):
         return _coerce_credential_list(response)
 
     def get(self, credential_id: CredentialId) -> Credential:
-        """Get a credential by ID."""
+        """Retrieve a credential by identifier.
+
+        Args:
+            credential_id: Credential identifier.
+
+        Returns:
+            Credential: Resolved credential model.
+
+        Raises:
+            CredentialNotFoundError: If the credential does not exist.
+        """
         try:
             response = self._client._request("GET", f"credentials/{credential_id}")
             return Credential.model_validate(response)
@@ -60,7 +87,15 @@ class CredentialResource(_BaseResource):
             raise CredentialNotFoundError(credential_id) from exc
 
     def create(self, username: str, password: str) -> Credential:
-        """Create a credential."""
+        """Create a shared credential.
+
+        Args:
+            username: Credential username.
+            password: Credential secret value.
+
+        Returns:
+            Credential: Newly created credential model.
+        """
         request = CredentialCreateRequest(username=username, password=password)
         response = self._client._request(
             "POST",
@@ -70,7 +105,18 @@ class CredentialResource(_BaseResource):
         return Credential.model_validate(response)
 
     def update(self, credential_id: CredentialId, new_password: str) -> Credential:
-        """Update a credential password."""
+        """Rotate the stored password for a credential.
+
+        Args:
+            credential_id: Credential identifier.
+            new_password: Replacement password value.
+
+        Returns:
+            Credential: Updated credential model.
+
+        Raises:
+            CredentialNotFoundError: If the credential does not exist.
+        """
         request = CredentialUpdateRequest(new_password=new_password)
         try:
             response = self._client._request(
@@ -83,7 +129,15 @@ class CredentialResource(_BaseResource):
             raise CredentialNotFoundError(credential_id) from exc
 
     def delete(self, credential_id: CredentialId, force: bool = False) -> None:
-        """Delete a credential."""
+        """Delete a credential.
+
+        Args:
+            credential_id: Credential identifier.
+            force: Whether to force deletion when supported by the API.
+
+        Raises:
+            CredentialNotFoundError: If the credential does not exist.
+        """
         params = {"force": str(force).lower()} if force else None
         try:
             self._client._request("DELETE", f"credentials/{credential_id}", params=params)
@@ -102,7 +156,16 @@ class AsyncCredentialResource(_BaseResource):
         user_id: Optional[UserId] = None,
         user_group_id: Optional[UserGroupId] = None,
     ) -> list[Credential]:
-        """List accessible credentials."""
+        """List credentials visible to the current caller.
+
+        Args:
+            view: Optional API-specific credential view filter.
+            user_id: Optional user identifier filter.
+            user_group_id: Optional user group identifier filter.
+
+        Returns:
+            list[Credential]: Matching credential models.
+        """
         params = {}
         if view:
             params["view"] = view
@@ -114,7 +177,17 @@ class AsyncCredentialResource(_BaseResource):
         return _coerce_credential_list(response)
 
     async def get(self, credential_id: CredentialId) -> Credential:
-        """Get a credential by ID."""
+        """Retrieve a credential by identifier.
+
+        Args:
+            credential_id: Credential identifier.
+
+        Returns:
+            Credential: Resolved credential model.
+
+        Raises:
+            CredentialNotFoundError: If the credential does not exist.
+        """
         try:
             response = await self._client._request("GET", f"credentials/{credential_id}")
             return Credential.model_validate(response)
@@ -122,7 +195,15 @@ class AsyncCredentialResource(_BaseResource):
             raise CredentialNotFoundError(credential_id) from exc
 
     async def create(self, username: str, password: str) -> Credential:
-        """Create a credential."""
+        """Create a shared credential.
+
+        Args:
+            username: Credential username.
+            password: Credential secret value.
+
+        Returns:
+            Credential: Newly created credential model.
+        """
         request = CredentialCreateRequest(username=username, password=password)
         response = await self._client._request(
             "POST",
@@ -132,7 +213,18 @@ class AsyncCredentialResource(_BaseResource):
         return Credential.model_validate(response)
 
     async def update(self, credential_id: CredentialId, new_password: str) -> Credential:
-        """Update a credential password."""
+        """Rotate the stored password for a credential.
+
+        Args:
+            credential_id: Credential identifier.
+            new_password: Replacement password value.
+
+        Returns:
+            Credential: Updated credential model.
+
+        Raises:
+            CredentialNotFoundError: If the credential does not exist.
+        """
         request = CredentialUpdateRequest(new_password=new_password)
         try:
             response = await self._client._request(
@@ -145,7 +237,15 @@ class AsyncCredentialResource(_BaseResource):
             raise CredentialNotFoundError(credential_id) from exc
 
     async def delete(self, credential_id: CredentialId, force: bool = False) -> None:
-        """Delete a credential."""
+        """Delete a credential.
+
+        Args:
+            credential_id: Credential identifier.
+            force: Whether to force deletion when supported by the API.
+
+        Raises:
+            CredentialNotFoundError: If the credential does not exist.
+        """
         params = {"force": str(force).lower()} if force else None
         try:
             await self._client._request("DELETE", f"credentials/{credential_id}", params=params)

@@ -41,15 +41,15 @@ class ScheduleResource(_BaseResource):
         page: Optional[int] = None,
         page_size: Optional[int] = None,
     ) -> List[Schedule]:
-        """List all schedules.
+        """List schedules visible to the current caller.
 
         Args:
-            workflow_id: Filter by workflow ID
-            page: Page number (1-indexed)
-            page_size: Number of items per page
+            workflow_id: Optional workflow ID filter.
+            page: Optional 1-indexed page number.
+            page_size: Optional page size.
 
         Returns:
-            List of Schedule objects
+            List[Schedule]: Matching schedule models.
         """
         params = {}
         if workflow_id:
@@ -77,16 +77,16 @@ class ScheduleResource(_BaseResource):
         return []
 
     def get(self, schedule_id: ScheduleId) -> Schedule:
-        """Get schedule details by ID.
+        """Retrieve a schedule by identifier.
 
         Args:
-            schedule_id: Schedule identifier
+            schedule_id: Schedule identifier.
 
         Returns:
-            Schedule: Schedule details
+            Schedule: Resolved schedule model.
 
         Raises:
-            ScheduleNotFoundError: If schedule not found
+            ScheduleNotFoundError: If the schedule does not exist.
         """
         logger.debug(f"Getting schedule: {schedule_id}")
 
@@ -110,20 +110,20 @@ class ScheduleResource(_BaseResource):
         end_date: Optional[str] = None,
         iteration: Optional[str] = None,
     ) -> Schedule:
-        """Create a new schedule.
+        """Create a schedule for a workflow.
 
         Args:
-            workflow_id: Associated workflow ID
-            name: Schedule name
-            owner_id: Owner user ID
-            frequency: Execution frequency (Once/Hourly/Daily/Weekly/Monthly/Custom)
-            comment: Schedule description/comment
-            start_date: Schedule start timestamp (ISO format)
-            end_date: Schedule end timestamp (ISO format)
-            iteration: Iteration details for recurring schedules
+            workflow_id: Workflow to schedule.
+            name: Schedule display name.
+            owner_id: Owner user identifier.
+            frequency: Schedule frequency string.
+            comment: Optional schedule description.
+            start_date: Optional ISO-formatted start timestamp.
+            end_date: Optional ISO-formatted end timestamp.
+            iteration: Optional recurrence configuration.
 
         Returns:
-            Schedule: Created schedule details
+            Schedule: Newly created schedule model.
         """
         logger.info(f"Creating schedule '{name}' for workflow: {workflow_id}")
 
@@ -161,23 +161,23 @@ class ScheduleResource(_BaseResource):
         iteration: Optional[str] = None,
         enabled: Optional[bool] = None,
     ) -> Schedule:
-        """Update an existing schedule.
+        """Update a schedule in place.
 
         Args:
-            schedule_id: Schedule identifier
-            name: Schedule name
-            comment: Schedule description/comment
-            frequency: Execution frequency
-            start_date: Schedule start timestamp (ISO format)
-            end_date: Schedule end timestamp (ISO format)
-            iteration: Iteration details
-            enabled: Whether schedule is enabled
+            schedule_id: Schedule identifier.
+            name: Updated schedule name.
+            comment: Updated schedule description.
+            frequency: Updated frequency value.
+            start_date: Optional ISO-formatted start timestamp.
+            end_date: Optional ISO-formatted end timestamp.
+            iteration: Optional recurrence configuration.
+            enabled: Optional enabled flag.
 
         Returns:
-            Schedule: Updated schedule details
+            Schedule: Updated schedule model.
 
         Raises:
-            ScheduleNotFoundError: If schedule not found
+            ScheduleNotFoundError: If the schedule does not exist.
         """
         logger.info(f"Updating schedule: {schedule_id}")
 
@@ -211,10 +211,10 @@ class ScheduleResource(_BaseResource):
         """Delete a schedule.
 
         Args:
-            schedule_id: Schedule identifier
+            schedule_id: Schedule identifier.
 
         Raises:
-            ScheduleNotFoundError: If schedule not found
+            ScheduleNotFoundError: If the schedule does not exist.
         """
         logger.info(f"Deleting schedule: {schedule_id}")
 
@@ -228,16 +228,16 @@ class ScheduleResource(_BaseResource):
             raise ScheduleNotFoundError(schedule_id)
 
     def enable(self, schedule_id: ScheduleId) -> Schedule:
-        """Enable a schedule.
+        """Enable a disabled schedule.
 
         Args:
-            schedule_id: Schedule identifier
+            schedule_id: Schedule identifier.
 
         Returns:
-            Schedule: Updated schedule details
+            Schedule: Updated schedule model.
 
         Raises:
-            ScheduleNotFoundError: If schedule not found
+            ScheduleNotFoundError: If the schedule does not exist.
         """
         logger.info(f"Enabling schedule: {schedule_id}")
 
@@ -251,16 +251,16 @@ class ScheduleResource(_BaseResource):
             raise ScheduleNotFoundError(schedule_id)
 
     def disable(self, schedule_id: ScheduleId) -> Schedule:
-        """Disable a schedule.
+        """Disable an active schedule.
 
         Args:
-            schedule_id: Schedule identifier
+            schedule_id: Schedule identifier.
 
         Returns:
-            Schedule: Updated schedule details
+            Schedule: Updated schedule model.
 
         Raises:
-            ScheduleNotFoundError: If schedule not found
+            ScheduleNotFoundError: If the schedule does not exist.
         """
         logger.info(f"Disabling schedule: {schedule_id}")
 
@@ -288,15 +288,15 @@ class AsyncScheduleResource(_BaseResource):
         page: Optional[int] = None,
         page_size: Optional[int] = None,
     ) -> List[Schedule]:
-        """List all schedules (async).
+        """List schedules visible to the current caller.
 
         Args:
-            workflow_id: Filter by workflow ID
-            page: Page number (1-indexed)
-            page_size: Number of items per page
+            workflow_id: Optional workflow ID filter.
+            page: Optional 1-indexed page number.
+            page_size: Optional page size.
 
         Returns:
-            List of Schedule objects
+            List[Schedule]: Matching schedule models.
         """
         params = {}
         if workflow_id:
@@ -324,16 +324,16 @@ class AsyncScheduleResource(_BaseResource):
         return []
 
     async def get(self, schedule_id: ScheduleId) -> Schedule:
-        """Get schedule details by ID (async).
+        """Retrieve a schedule by identifier.
 
         Args:
-            schedule_id: Schedule identifier
+            schedule_id: Schedule identifier.
 
         Returns:
-            Schedule: Schedule details
+            Schedule: Resolved schedule model.
 
         Raises:
-            ScheduleNotFoundError: If schedule not found
+            ScheduleNotFoundError: If the schedule does not exist.
         """
         logger.debug(f"Getting schedule: {schedule_id}")
 
@@ -357,20 +357,20 @@ class AsyncScheduleResource(_BaseResource):
         end_date: Optional[str] = None,
         iteration: Optional[str] = None,
     ) -> Schedule:
-        """Create a new schedule (async).
+        """Create a schedule for a workflow.
 
         Args:
-            workflow_id: Associated workflow ID
-            name: Schedule name
-            owner_id: Owner user ID
-            frequency: Execution frequency
-            comment: Schedule description/comment
-            start_date: Schedule start timestamp (ISO format)
-            end_date: Schedule end timestamp (ISO format)
-            iteration: Iteration details
+            workflow_id: Workflow to schedule.
+            name: Schedule display name.
+            owner_id: Owner user identifier.
+            frequency: Schedule frequency string.
+            comment: Optional schedule description.
+            start_date: Optional ISO-formatted start timestamp.
+            end_date: Optional ISO-formatted end timestamp.
+            iteration: Optional recurrence configuration.
 
         Returns:
-            Schedule: Created schedule details
+            Schedule: Newly created schedule model.
         """
         logger.info(f"Creating schedule '{name}' for workflow: {workflow_id}")
 
@@ -408,23 +408,23 @@ class AsyncScheduleResource(_BaseResource):
         iteration: Optional[str] = None,
         enabled: Optional[bool] = None,
     ) -> Schedule:
-        """Update an existing schedule (async).
+        """Update a schedule in place.
 
         Args:
-            schedule_id: Schedule identifier
-            name: Schedule name
-            comment: Schedule description/comment
-            frequency: Execution frequency
-            start_date: Schedule start timestamp (ISO format)
-            end_date: Schedule end timestamp (ISO format)
-            iteration: Iteration details
-            enabled: Whether schedule is enabled
+            schedule_id: Schedule identifier.
+            name: Updated schedule name.
+            comment: Updated schedule description.
+            frequency: Updated frequency value.
+            start_date: Optional ISO-formatted start timestamp.
+            end_date: Optional ISO-formatted end timestamp.
+            iteration: Optional recurrence configuration.
+            enabled: Optional enabled flag.
 
         Returns:
-            Schedule: Updated schedule details
+            Schedule: Updated schedule model.
 
         Raises:
-            ScheduleNotFoundError: If schedule not found
+            ScheduleNotFoundError: If the schedule does not exist.
         """
         logger.info(f"Updating schedule: {schedule_id}")
 
@@ -458,10 +458,10 @@ class AsyncScheduleResource(_BaseResource):
         """Delete a schedule (async).
 
         Args:
-            schedule_id: Schedule identifier
+            schedule_id: Schedule identifier.
 
         Raises:
-            ScheduleNotFoundError: If schedule not found
+            ScheduleNotFoundError: If the schedule does not exist.
         """
         logger.info(f"Deleting schedule: {schedule_id}")
 
@@ -475,16 +475,16 @@ class AsyncScheduleResource(_BaseResource):
             raise ScheduleNotFoundError(schedule_id)
 
     async def enable(self, schedule_id: ScheduleId) -> Schedule:
-        """Enable a schedule (async).
+        """Enable a disabled schedule.
 
         Args:
-            schedule_id: Schedule identifier
+            schedule_id: Schedule identifier.
 
         Returns:
-            Schedule: Updated schedule details
+            Schedule: Updated schedule model.
 
         Raises:
-            ScheduleNotFoundError: If schedule not found
+            ScheduleNotFoundError: If the schedule does not exist.
         """
         logger.info(f"Enabling schedule: {schedule_id}")
 
@@ -498,16 +498,16 @@ class AsyncScheduleResource(_BaseResource):
             raise ScheduleNotFoundError(schedule_id)
 
     async def disable(self, schedule_id: ScheduleId) -> Schedule:
-        """Disable a schedule (async).
+        """Disable an active schedule.
 
         Args:
-            schedule_id: Schedule identifier
+            schedule_id: Schedule identifier.
 
         Returns:
-            Schedule: Updated schedule details
+            Schedule: Updated schedule model.
 
         Raises:
-            ScheduleNotFoundError: If schedule not found
+            ScheduleNotFoundError: If the schedule does not exist.
         """
         logger.info(f"Disabling schedule: {schedule_id}")
 

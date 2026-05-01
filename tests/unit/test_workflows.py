@@ -3,7 +3,6 @@ Pytest unit tests for AlteryxClient workflow management methods.
 """
 
 import io
-
 from unittest.mock import MagicMock
 
 import pytest
