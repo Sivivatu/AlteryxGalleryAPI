@@ -248,7 +248,7 @@
     - Add Google-style docstrings to all public APIs
     - Include type hints and return types
     - Add usage examples in docstrings
-- [ ] **5.3** Update .env.example with new variable names
+- [x] **5.3** Update .env.example with new variable names
     - Update all environment variable names to ALTERYX_*
     - Add descriptions for each variable
     - Include optional variables
@@ -257,7 +257,7 @@
     - Add `deploy_workflows.py` script
     - Add `promote_workflow.py` script
     - Add `run_workflow_tests.py` script
-- [ ] **5.5** Update GitHub Actions workflow for UV
+- [x] **5.5** Update GitHub Actions workflow for UV
     - Update `.github/workflows/python-package.yml`
     - Use `astral-sh/setup-uv@v5` action
 
@@ -266,10 +266,9 @@
 - [x] Document live integration test environment variables in `.env.example` and `README.md`
     - Add matrix testing for Python 3.10, 3.11, 3.12
     - Add publish workflow for releases
-- [ ] **5.6** Bump version to 0.2.0 using uv version --bump minor
-    - Run `uv version --bump minor` to update to 0.2.0
-    - Verify version in `pyproject.toml`
-- [ ] **5.7** Build package using uv build
+- [x] **5.6** Bump version to 0.2.0 using uv version --bump minor
+    - Verified version 0.2.0 in `pyproject.toml` and `src/alteryx_server_py/__init__.py`
+- [x] **5.7** Build package using uv build
     - Run `uv build` to create wheel and sdist
     - Verify build artifacts in `dist/`
 - [ ] **5.8** Test publish to TestPyPI
@@ -280,7 +279,7 @@
     - Publish to production PyPI: `uv publish`
     - Verify package listing
     - Test installation: `pip install alteryx-server-py`
-- [ ] **5.10** Create CHANGELOG.md
+- [x] **5.10** Create CHANGELOG.md
     - Document all changes from v0.1.0 ├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬«├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö¼┬¼├ö├Â┬úÔö£├é├ö├Â┬úÔö£├®├ö├Â┬╝Ôö£ÔòæÔö£├ÂÔö£├éÔö¼├║├ö├Â┬úÔö£┬¬ v0.2.0
     - List breaking changes
     - Include migration guide
@@ -302,12 +301,16 @@
 | **Phase 2: Workflow & Job Resources** | 9 | Complete (9/9) | High |
 | **Phase 3: Schedule & User Management** | 6 | Complete (6/6) | Medium |
 | **Phase 4: Collections, Credentials & Server** | 7 | Complete (7/7) | Low |
-| **Phase 5: Documentation & Release** | 10 | In Progress (2/10) | High |
-| **Total** | **43** | **35/43 (81%)** | - |
+| **Phase 5: Documentation & Release** | 10 | In Progress (7/10) | High |
+| **Total** | **43** | **40/43 (93%)** | - |
 
 ---
 
 ## Discovered During Work
+
+- [x] **Add British English instruction for agent writing** (2026-05-01)
+    - Updated `.github/copilot-instructions.md` so repo-scoped documentation and prose responses use British English
+    - Added a persistent global memory note so the preference carries into future conversations
 
 - [x] **Stabilize branch after merge-conflict fallout** (2026-03-18)
     - Removed committed merge conflict markers from active source, tests, task docs, and repo instructions
@@ -339,16 +342,23 @@
     - Added sync, async, collections, credentials, server, and CI/CD usage examples to the README
     - Added example scripts for workflow deployment, promotion, workflow test execution, and admin resource inspection
 
+- [x] **Advance Phase 5 release readiness** (2026-04-30)
+    - Added Google-style docstrings across the core client/auth base and schedule, collection, and credential resources
+    - Replaced stale GitHub Actions workflows with supported Python 3.10-3.12 validation and build jobs
+    - Added a dedicated release workflow for build, TestPyPI publish, verification, and PyPI publish using trusted publishing
+    - Created `CHANGELOG.md` with breaking changes, migration guidance, and contributor attribution
+    - Verified full test suite passes, package build succeeds, and release artifacts are produced under `dist/`
+
 ---
 
 ## Next Steps
 
 1. Add Google-style docstrings to the remaining public APIs
-2. Update release automation and GitHub Actions for the `uv` workflow
-3. Build and validate release artifacts before publish
+2. Publish the built 0.2.0 artifacts to TestPyPI and verify installation from the test index
+3. Publish the verified 0.2.0 release to PyPI and confirm the public install path
 
 ---
 
-**Last Updated:** March 18, 2026  
+**Last Updated:** April 30, 2026  
 **Version:** 0.2.0-dev
 - Complete migration guide
