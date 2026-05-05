@@ -15,7 +15,12 @@ from .resources import WorkflowResource
 if TYPE_CHECKING:
     from .resources.collections import AsyncCollectionResource
     from .resources.credentials import AsyncCredentialResource
+    from .resources.jobs import AsyncJobResource
+    from .resources.schedules import AsyncScheduleResource
+    from .resources.collections import AsyncCollectionResource
     from .resources.server import AsyncServerResource
+    from .resources.user_groups import AsyncUserGroupResource
+    from .resources.users import AsyncUserResource
 
 logger = logging.getLogger(__name__)
 
@@ -75,6 +80,10 @@ class AsyncAlteryxClient(_BaseClient):
 
         self._client: Optional[httpx.AsyncClient] = None
         self._workflows: Optional[WorkflowResource] = None
+        self._jobs: Optional["AsyncJobResource"] = None
+        self._schedules: Optional["AsyncScheduleResource"] = None
+        self._users: Optional["AsyncUserResource"] = None
+        self._user_groups: Optional["AsyncUserGroupResource"] = None
         self._collections: Optional["AsyncCollectionResource"] = None
         self._credentials: Optional["AsyncCredentialResource"] = None
         self._server: Optional["AsyncServerResource"] = None
@@ -241,63 +250,63 @@ class AsyncAlteryxClient(_BaseClient):
         return self._workflows
 
     @property
-    def jobs(self) -> object:
+    def jobs(self) -> "AsyncJobResource":
         """Access job operations for the current async client.
 
         Returns:
-            object: Resource wrapper for job endpoints.
+            AsyncJobResource: Resource wrapper for job endpoints.
         """
-        if not hasattr(self, "_jobs") or self._jobs is None:
+        if self._jobs is None:
             from .resources.jobs import AsyncJobResource
 
             self._jobs = AsyncJobResource(self)
         return self._jobs
 
     @property
-    def schedules(self) -> object:
+    def schedules(self) -> "AsyncScheduleResource":
         """Access schedule operations for the current async client.
 
         Returns:
-            object: Resource wrapper for schedule endpoints.
+            AsyncScheduleResource: Resource wrapper for schedule endpoints.
         """
-        if not hasattr(self, "_schedules") or self._schedules is None:
+        if self._schedules is None:
             from .resources.schedules import AsyncScheduleResource
 
             self._schedules = AsyncScheduleResource(self)
         return self._schedules
 
     @property
-    def users(self) -> object:
+    def users(self) -> "AsyncUserResource":
         """Access user operations for the current async client.
 
         Returns:
-            object: Resource wrapper for user endpoints.
+            AsyncUserResource: Resource wrapper for user endpoints.
         """
-        if not hasattr(self, "_users") or self._users is None:
+        if self._users is None:
             from .resources.users import AsyncUserResource
 
             self._users = AsyncUserResource(self)
         return self._users
 
     @property
-    def user_groups(self) -> object:
+    def user_groups(self) -> "AsyncUserGroupResource":
         """Access user group operations for the current async client.
 
         Returns:
-            object: Resource wrapper for user group endpoints.
+            AsyncUserGroupResource: Resource wrapper for user group endpoints.
         """
-        if not hasattr(self, "_user_groups") or self._user_groups is None:
+        if self._user_groups is None:
             from .resources.user_groups import AsyncUserGroupResource
 
             self._user_groups = AsyncUserGroupResource(self)
         return self._user_groups
 
     @property
-    def collections(self) -> object:
+    def collections(self) -> "AsyncCollectionResource":
         """Access collection operations for the current async client.
 
         Returns:
-            object: Resource wrapper for collection endpoints.
+            AsyncCollectionResource: Resource wrapper for collection endpoints.
         """
         if self._collections is None:
             from .resources.collections import AsyncCollectionResource
@@ -306,11 +315,11 @@ class AsyncAlteryxClient(_BaseClient):
         return self._collections
 
     @property
-    def credentials(self) -> object:
+    def credentials(self) -> "AsyncCredentialResource":
         """Access credential operations for the current async client.
 
         Returns:
-            object: Resource wrapper for credential endpoints.
+            AsyncCredentialResource: Resource wrapper for credential endpoints.
         """
         if self._credentials is None:
             from .resources.credentials import AsyncCredentialResource
@@ -319,11 +328,11 @@ class AsyncAlteryxClient(_BaseClient):
         return self._credentials
 
     @property
-    def server(self) -> object:
+    def server(self) -> "AsyncServerResource":
         """Access server metadata operations for the current async client.
 
         Returns:
-            object: Resource wrapper for server endpoints.
+            AsyncServerResource: Resource wrapper for server endpoints.
         """
         if self._server is None:
             from .resources.server import AsyncServerResource

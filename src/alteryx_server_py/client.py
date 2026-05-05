@@ -255,24 +255,24 @@ class AlteryxClient(_BaseClient):
         return self._workflows
 
     @property
-    def jobs(self) -> object:
+    def jobs(self) -> "JobResource":
         """Access job operations for the current client.
 
         Returns:
-            object: Resource wrapper for job endpoints.
+            JobResource: Resource wrapper for job endpoints.
         """
-        if not hasattr(self, "_jobs") or self._jobs is None:
+        if self._jobs is None:
             from .resources.jobs import JobResource
 
             self._jobs = JobResource(self)
         return self._jobs
 
     @property
-    def schedules(self) -> object:
+    def schedules(self) -> "ScheduleResource":
         """Access schedule operations for the current client.
 
         Returns:
-            object: Resource wrapper for schedule endpoints.
+            ScheduleResource: Resource wrapper for schedule endpoints.
         """
         if self._schedules is None:
             from .resources.schedules import ScheduleResource
@@ -281,11 +281,11 @@ class AlteryxClient(_BaseClient):
         return self._schedules
 
     @property
-    def users(self) -> object:
+    def users(self) -> "UserResource":
         """Access user operations for the current client.
 
         Returns:
-            object: Resource wrapper for user endpoints.
+            UserResource: Resource wrapper for user endpoints.
         """
         if self._users is None:
             from .resources.users import UserResource
@@ -294,11 +294,11 @@ class AlteryxClient(_BaseClient):
         return self._users
 
     @property
-    def user_groups(self) -> object:
+    def user_groups(self) -> "UserGroupResource":
         """Access user group operations for the current client.
 
         Returns:
-            object: Resource wrapper for user group endpoints.
+            UserGroupResource: Resource wrapper for user group endpoints.
         """
         if self._user_groups is None:
             from .resources.user_groups import UserGroupResource
@@ -307,11 +307,11 @@ class AlteryxClient(_BaseClient):
         return self._user_groups
 
     @property
-    def collections(self) -> object:
+    def collections(self) -> "CollectionResource":
         """Access collection operations for the current client.
 
         Returns:
-            object: Resource wrapper for collection endpoints.
+            CollectionResource: Resource wrapper for collection endpoints.
         """
         if self._collections is None:
             from .resources.collections import CollectionResource
@@ -320,11 +320,11 @@ class AlteryxClient(_BaseClient):
         return self._collections
 
     @property
-    def credentials(self) -> object:
+    def credentials(self) -> "CredentialResource":
         """Access credential operations for the current client.
 
         Returns:
-            object: Resource wrapper for credential endpoints.
+            CredentialResource: Resource wrapper for credential endpoints.
         """
         if self._credentials is None:
             from .resources.credentials import CredentialResource
@@ -333,11 +333,11 @@ class AlteryxClient(_BaseClient):
         return self._credentials
 
     @property
-    def server(self) -> object:
+    def server(self) -> "ServerResource":
         """Access server metadata operations for the current client.
 
         Returns:
-            object: Resource wrapper for server endpoints.
+            ServerResource: Resource wrapper for server endpoints.
         """
         if self._server is None:
             from .resources.server import ServerResource
