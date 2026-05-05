@@ -16,12 +16,20 @@ class ServerResource(_BaseResource):
     _client: "AlteryxClient"
 
     def get_info(self) -> ServerInfo:
-        """Get server information."""
+        """Get server information.
+
+        Returns:
+            ServerInfo: Metadata describing the connected Alteryx Server.
+        """
         response = self._client._request("GET", "serverinfo")
         return ServerInfo.model_validate(response)
 
     def get_settings(self) -> ServerSettings:
-        """Get server settings."""
+        """Get server settings.
+
+        Returns:
+            ServerSettings: Configuration values exposed by the server settings endpoint.
+        """
         response = self._client._request("GET", "admin/settings")
         return ServerSettings.model_validate(response)
 
@@ -32,11 +40,19 @@ class AsyncServerResource(_BaseResource):
     _client: "AsyncAlteryxClient"
 
     async def get_info(self) -> ServerInfo:
-        """Get server information."""
+        """Get server information.
+
+        Returns:
+            ServerInfo: Metadata describing the connected Alteryx Server.
+        """
         response = await self._client._request("GET", "serverinfo")
         return ServerInfo.model_validate(response)
 
     async def get_settings(self) -> ServerSettings:
-        """Get server settings."""
+        """Get server settings.
+
+        Returns:
+            ServerSettings: Configuration values exposed by the server settings endpoint.
+        """
         response = await self._client._request("GET", "admin/settings")
         return ServerSettings.model_validate(response)

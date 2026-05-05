@@ -52,11 +52,11 @@ class ScheduleResource(_BaseResource):
             List[Schedule]: Matching schedule models.
         """
         params = {}
-        if workflow_id:
+        if workflow_id is not None:
             params["workflowId"] = workflow_id
-        if page:
+        if page is not None:
             params["page"] = page
-        if page_size:
+        if page_size is not None:
             params["pageSize"] = page_size
 
         logger.debug(f"Listing schedules with params: {params}")
@@ -96,8 +96,8 @@ class ScheduleResource(_BaseResource):
                 f"schedules/{schedule_id}",
             )
             return Schedule.model_validate(response)
-        except NotFoundError:
-            raise ScheduleNotFoundError(schedule_id)
+        except NotFoundError as exc:
+            raise ScheduleNotFoundError(schedule_id) from exc
 
     def create(
         self,
@@ -128,13 +128,13 @@ class ScheduleResource(_BaseResource):
         logger.info(f"Creating schedule '{name}' for workflow: {workflow_id}")
 
         request = ScheduleCreateRequest(
-            workflow_id=workflow_id,
+            workflowId=workflow_id,
             name=name,
-            owner_id=owner_id,
+            ownerId=owner_id,
             frequency=ScheduleFrequency(frequency),
             comment=comment,
-            start_date=start_date,
-            end_date=end_date,
+            startDate=start_date,
+            endDate=end_date,
             iteration=iteration,
         )
 
@@ -187,8 +187,8 @@ class ScheduleResource(_BaseResource):
             name=name,
             comment=comment,
             frequency=freq,
-            start_date=start_date,
-            end_date=end_date,
+            startDate=start_date,
+            endDate=end_date,
             iteration=iteration,
             enabled=enabled,
         )
@@ -204,8 +204,8 @@ class ScheduleResource(_BaseResource):
             schedule = Schedule.model_validate(response)
             logger.info(f"Schedule {schedule_id} updated")
             return schedule
-        except NotFoundError:
-            raise ScheduleNotFoundError(schedule_id)
+        except NotFoundError as exc:
+            raise ScheduleNotFoundError(schedule_id) from exc
 
     def delete(self, schedule_id: ScheduleId) -> None:
         """Delete a schedule.
@@ -375,13 +375,13 @@ class AsyncScheduleResource(_BaseResource):
         logger.info(f"Creating schedule '{name}' for workflow: {workflow_id}")
 
         request = ScheduleCreateRequest(
-            workflow_id=workflow_id,
+            workflowId=workflow_id,
             name=name,
-            owner_id=owner_id,
+            ownerId=owner_id,
             frequency=ScheduleFrequency(frequency),
             comment=comment,
-            start_date=start_date,
-            end_date=end_date,
+            startDate=start_date,
+            endDate=end_date,
             iteration=iteration,
         )
 
@@ -434,8 +434,8 @@ class AsyncScheduleResource(_BaseResource):
             name=name,
             comment=comment,
             frequency=freq,
-            start_date=start_date,
-            end_date=end_date,
+            startDate=start_date,
+            endDate=end_date,
             iteration=iteration,
             enabled=enabled,
         )
@@ -451,8 +451,8 @@ class AsyncScheduleResource(_BaseResource):
             schedule = Schedule.model_validate(response)
             logger.info(f"Schedule {schedule_id} updated")
             return schedule
-        except NotFoundError:
-            raise ScheduleNotFoundError(schedule_id)
+        except NotFoundError as exc:
+            raise ScheduleNotFoundError(schedule_id) from exc
 
     async def delete(self, schedule_id: ScheduleId) -> None:
         """Delete a schedule (async).

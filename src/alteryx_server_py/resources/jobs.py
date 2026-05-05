@@ -1,11 +1,10 @@
-"""
-Job resource for API operations.
-"""
+"""Job resource for API operations."""
 
 import asyncio
+import json
 import logging
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 from ..exceptions import JobExecutionError, JobNotFoundError, NotFoundError
 from ..models import (
@@ -22,6 +21,24 @@ if TYPE_CHECKING:
     from ..client import AlteryxClient
 
 logger = logging.getLogger(__name__)
+
+
+def _coerce_output_bytes(response: object) -> bytes:
+    """Normalize file download responses into bytes."""
+    if hasattr(response, "content"):
+        content = getattr(response, "content")
+        return _coerce_output_bytes(content)
+    if isinstance(response, bytes):
+        return response
+    if isinstance(response, (bytearray, memoryview)):
+        return bytes(response)
+    if isinstance(response, str):
+        return response.encode()
+    if isinstance(response, (dict, list)):
+        return json.dumps(response).encode()
+
+    logger.error("Unexpected job output response type: %s", type(response).__name__)
+    raise TypeError(f"Unsupported job output response type: {type(response).__name__}")
 
 
 class JobResource(_BaseResource):
@@ -172,15 +189,7 @@ class JobResource(_BaseResource):
                 f"jobs/{job_id}/output/{output_id}",
             )
 
-            # The raw response should contain file content
-            if hasattr(response, "content"):
-                return cast(bytes, response.content)
-            elif isinstance(response, bytes):
-                return response
-            elif isinstance(response, str):
-                return response.encode()
-
-            return cast(bytes, response)
+            return _coerce_output_bytes(response)
         except Exception as e:
             if "not found" in str(e).lower() or "404" in str(e):
                 raise JobNotFoundError(job_id) from e

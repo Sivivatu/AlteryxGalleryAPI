@@ -100,7 +100,7 @@ class CredentialResource(_BaseResource):
         response = self._client._request(
             "POST",
             "credentials",
-            data=request.model_dump(by_alias=True, exclude_none=True),
+            json_data=request.model_dump(by_alias=True, exclude_none=True),
         )
         return Credential.model_validate(response)
 
@@ -122,7 +122,7 @@ class CredentialResource(_BaseResource):
             response = self._client._request(
                 "PUT",
                 f"credentials/{credential_id}",
-                data=request.model_dump(by_alias=True, exclude_none=True),
+                json_data=request.model_dump(by_alias=True, exclude_none=True),
             )
             return Credential.model_validate(response)
         except NotFoundError as exc:
@@ -208,7 +208,7 @@ class AsyncCredentialResource(_BaseResource):
         response = await self._client._request(
             "POST",
             "credentials",
-            data=request.model_dump(by_alias=True, exclude_none=True),
+            json_data=request.model_dump(by_alias=True, exclude_none=True),
         )
         return Credential.model_validate(response)
 
@@ -230,7 +230,7 @@ class AsyncCredentialResource(_BaseResource):
             response = await self._client._request(
                 "PUT",
                 f"credentials/{credential_id}",
-                data=request.model_dump(by_alias=True, exclude_none=True),
+                json_data=request.model_dump(by_alias=True, exclude_none=True),
             )
             return Credential.model_validate(response)
         except NotFoundError as exc:

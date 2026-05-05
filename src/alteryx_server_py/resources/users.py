@@ -21,6 +21,16 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 
+def _mask_email(email: str) -> str:
+    """Mask an email address before writing it to logs."""
+    local_part, separator, domain = email.partition("@")
+    if not separator:
+        return "***"
+    if len(local_part) <= 1:
+        return f"*{separator}{domain}"
+    return f"{local_part[0]}***{separator}{domain}"
+
+
 class UserResource(_BaseResource):
     """Resource for user operations.
 
@@ -50,9 +60,9 @@ class UserResource(_BaseResource):
             List of User objects
         """
         params = {}
-        if page:
+        if page is not None:
             params["page"] = page
-        if page_size:
+        if page_size is not None:
             params["pageSize"] = page_size
 
         logger.debug(f"Listing users with params: {params}")
@@ -92,8 +102,8 @@ class UserResource(_BaseResource):
                 f"users/{user_id}",
             )
             return User.model_validate(response)
-        except NotFoundError:
-            raise UserNotFoundError(user_id)
+        except NotFoundError as exc:
+            raise UserNotFoundError(user_id) from exc
 
     def create(
         self,
@@ -117,7 +127,8 @@ class UserResource(_BaseResource):
         Returns:
             User: Created user details
         """
-        logger.info(f"Creating user: {email}")
+        masked_email = _mask_email(email)
+        logger.info("Creating user: %s", masked_email)
 
         request = UserCreateRequest(
             email=email,
@@ -137,7 +148,7 @@ class UserResource(_BaseResource):
         )
 
         user = User.model_validate(response)
-        logger.info(f"User '{email}' created with ID: {user.id}")
+        logger.info("User '%s' created with ID: %s", masked_email, user.id)
         return user
 
     def update(
@@ -191,8 +202,8 @@ class UserResource(_BaseResource):
             user = User.model_validate(response)
             logger.info(f"User {user_id} updated")
             return user
-        except NotFoundError:
-            raise UserNotFoundError(user_id)
+        except NotFoundError as exc:
+            raise UserNotFoundError(user_id) from exc
 
     def delete(self, user_id: UserId) -> None:
         """Delete (deactivate) a user.
@@ -211,8 +222,8 @@ class UserResource(_BaseResource):
                 f"users/{user_id}",
             )
             logger.info(f"Successfully deleted user: {user_id}")
-        except NotFoundError:
-            raise UserNotFoundError(user_id)
+        except NotFoundError as exc:
+            raise UserNotFoundError(user_id) from exc
 
     def get_assets(self, user_id: UserId) -> List[Dict[str, Any]]:
         """Get a user's assets (workflows, schedules, etc.).
@@ -240,8 +251,8 @@ class UserResource(_BaseResource):
                 return response["assets"]
 
             return []
-        except NotFoundError:
-            raise UserNotFoundError(user_id)
+        except NotFoundError as exc:
+            raise UserNotFoundError(user_id) from exc
 
 
 class AsyncUserResource(_BaseResource):
@@ -267,9 +278,9 @@ class AsyncUserResource(_BaseResource):
             List of User objects
         """
         params = {}
-        if page:
+        if page is not None:
             params["page"] = page
-        if page_size:
+        if page_size is not None:
             params["pageSize"] = page_size
 
         logger.debug(f"Listing users with params: {params}")
@@ -309,8 +320,8 @@ class AsyncUserResource(_BaseResource):
                 f"users/{user_id}",
             )
             return User.model_validate(response)
-        except NotFoundError:
-            raise UserNotFoundError(user_id)
+        except NotFoundError as exc:
+            raise UserNotFoundError(user_id) from exc
 
     async def create(
         self,
@@ -334,7 +345,8 @@ class AsyncUserResource(_BaseResource):
         Returns:
             User: Created user details
         """
-        logger.info(f"Creating user: {email}")
+        masked_email = _mask_email(email)
+        logger.info("Creating user: %s", masked_email)
 
         request = UserCreateRequest(
             email=email,
@@ -354,7 +366,7 @@ class AsyncUserResource(_BaseResource):
         )
 
         user = User.model_validate(response)
-        logger.info(f"User '{email}' created with ID: {user.id}")
+        logger.info("User '%s' created with ID: %s", masked_email, user.id)
         return user
 
     async def update(
@@ -408,8 +420,8 @@ class AsyncUserResource(_BaseResource):
             user = User.model_validate(response)
             logger.info(f"User {user_id} updated")
             return user
-        except NotFoundError:
-            raise UserNotFoundError(user_id)
+        except NotFoundError as exc:
+            raise UserNotFoundError(user_id) from exc
 
     async def delete(self, user_id: UserId) -> None:
         """Delete (deactivate) a user (async).
@@ -428,8 +440,8 @@ class AsyncUserResource(_BaseResource):
                 f"users/{user_id}",
             )
             logger.info(f"Successfully deleted user: {user_id}")
-        except NotFoundError:
-            raise UserNotFoundError(user_id)
+        except NotFoundError as exc:
+            raise UserNotFoundError(user_id) from exc
 
     async def get_assets(self, user_id: UserId) -> List[Dict[str, Any]]:
         """Get a user's assets (async).
@@ -457,5 +469,5 @@ class AsyncUserResource(_BaseResource):
                 return response["assets"]
 
             return []
-        except NotFoundError:
-            raise UserNotFoundError(user_id)
+        except NotFoundError as exc:
+            raise UserNotFoundError(user_id) from exc

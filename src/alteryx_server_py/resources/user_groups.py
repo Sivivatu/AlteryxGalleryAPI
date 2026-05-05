@@ -50,9 +50,9 @@ class UserGroupResource(_BaseResource):
             List of UserGroup objects
         """
         params = {}
-        if page:
+        if page is not None:
             params["page"] = page
-        if page_size:
+        if page_size is not None:
             params["pageSize"] = page_size
 
         logger.debug(f"Listing user groups with params: {params}")
@@ -92,8 +92,8 @@ class UserGroupResource(_BaseResource):
                 f"usergroups/{group_id}",
             )
             return UserGroup.model_validate(response)
-        except NotFoundError:
-            raise UserGroupNotFoundError(group_id)
+        except NotFoundError as exc:
+            raise UserGroupNotFoundError(group_id) from exc
 
     def create(
         self,
@@ -175,8 +175,8 @@ class UserGroupResource(_BaseResource):
             group = UserGroup.model_validate(response)
             logger.info(f"User group {group_id} updated")
             return group
-        except NotFoundError:
-            raise UserGroupNotFoundError(group_id)
+        except NotFoundError as exc:
+            raise UserGroupNotFoundError(group_id) from exc
 
     def delete(self, group_id: UserGroupId) -> None:
         """Delete a user group.
@@ -195,8 +195,8 @@ class UserGroupResource(_BaseResource):
                 f"usergroups/{group_id}",
             )
             logger.info(f"Successfully deleted user group: {group_id}")
-        except NotFoundError:
-            raise UserGroupNotFoundError(group_id)
+        except NotFoundError as exc:
+            raise UserGroupNotFoundError(group_id) from exc
 
     def add_users(self, group_id: UserGroupId, user_ids: List[UserId]) -> UserGroup:
         """Add users to a user group.
@@ -220,8 +220,8 @@ class UserGroupResource(_BaseResource):
                 json_data=user_ids,
             )
             return UserGroup.model_validate(response)
-        except NotFoundError:
-            raise UserGroupNotFoundError(group_id)
+        except NotFoundError as exc:
+            raise UserGroupNotFoundError(group_id) from exc
 
     def remove_user(self, group_id: UserGroupId, user_id: UserId) -> None:
         """Remove a user from a user group.
@@ -241,8 +241,8 @@ class UserGroupResource(_BaseResource):
                 f"usergroups/{group_id}/users/{user_id}",
             )
             logger.info(f"Successfully removed user {user_id} from group {group_id}")
-        except NotFoundError:
-            raise UserGroupNotFoundError(group_id)
+        except NotFoundError as exc:
+            raise UserGroupNotFoundError(group_id) from exc
 
 
 class AsyncUserGroupResource(_BaseResource):
@@ -268,9 +268,9 @@ class AsyncUserGroupResource(_BaseResource):
             List of UserGroup objects
         """
         params = {}
-        if page:
+        if page is not None:
             params["page"] = page
-        if page_size:
+        if page_size is not None:
             params["pageSize"] = page_size
 
         logger.debug(f"Listing user groups with params: {params}")
@@ -310,8 +310,8 @@ class AsyncUserGroupResource(_BaseResource):
                 f"usergroups/{group_id}",
             )
             return UserGroup.model_validate(response)
-        except NotFoundError:
-            raise UserGroupNotFoundError(group_id)
+        except NotFoundError as exc:
+            raise UserGroupNotFoundError(group_id) from exc
 
     async def create(
         self,
@@ -393,8 +393,8 @@ class AsyncUserGroupResource(_BaseResource):
             group = UserGroup.model_validate(response)
             logger.info(f"User group {group_id} updated")
             return group
-        except NotFoundError:
-            raise UserGroupNotFoundError(group_id)
+        except NotFoundError as exc:
+            raise UserGroupNotFoundError(group_id) from exc
 
     async def delete(self, group_id: UserGroupId) -> None:
         """Delete a user group (async).
@@ -413,8 +413,8 @@ class AsyncUserGroupResource(_BaseResource):
                 f"usergroups/{group_id}",
             )
             logger.info(f"Successfully deleted user group: {group_id}")
-        except NotFoundError:
-            raise UserGroupNotFoundError(group_id)
+        except NotFoundError as exc:
+            raise UserGroupNotFoundError(group_id) from exc
 
     async def add_users(self, group_id: UserGroupId, user_ids: List[UserId]) -> UserGroup:
         """Add users to a user group (async).
@@ -438,8 +438,8 @@ class AsyncUserGroupResource(_BaseResource):
                 json_data=user_ids,
             )
             return UserGroup.model_validate(response)
-        except NotFoundError:
-            raise UserGroupNotFoundError(group_id)
+        except NotFoundError as exc:
+            raise UserGroupNotFoundError(group_id) from exc
 
     async def remove_user(self, group_id: UserGroupId, user_id: UserId) -> None:
         """Remove a user from a user group (async).
@@ -459,5 +459,5 @@ class AsyncUserGroupResource(_BaseResource):
                 f"usergroups/{group_id}/users/{user_id}",
             )
             logger.info(f"Successfully removed user {user_id} from group {group_id}")
-        except NotFoundError:
-            raise UserGroupNotFoundError(group_id)
+        except NotFoundError as exc:
+            raise UserGroupNotFoundError(group_id) from exc
