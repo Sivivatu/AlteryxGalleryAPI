@@ -51,7 +51,6 @@ All notable changes to this project will be documented in this file.
 ### Contributors
 
 - Paul Houghton
-- Paul
 - Theamazingdp
 - Cavin Dsouza
 - warped-quasar
