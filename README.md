@@ -241,6 +241,16 @@ uv run python examples/run_workflow_tests.py \
 
 ## Development
 
+For the VS Code dev container, rebuild the container after changes to
+`.devcontainer/Dockerfile` so bundled tooling such as the GitHub CLI is
+installed into the image. Once rebuilt, verify the CLI and authenticate as
+needed:
+
+```bash
+gh --version
+gh auth login
+```
+
 Run the test suite:
 
 ```bash
