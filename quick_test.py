@@ -34,6 +34,27 @@ def test_imports():
             WorkflowResource,
         )
 
+        assert all(
+            imported is not None
+            for imported in (
+                AlteryxClient,
+                AsyncAlteryxClient,
+                ClientConfig,
+                from_env,
+                AlteryxError,
+                AuthenticationError,
+                ConfigurationError,
+                WorkflowNotFoundError,
+                ExecutionMode,
+                Job,
+                JobStatus,
+                Workflow,
+                WorkflowType,
+                JobResource,
+                WorkflowResource,
+            )
+        )
+
         print("✅ All imports successful!")
         return True
     except ImportError as e:
