@@ -3,7 +3,7 @@ Schedule models for API.
 """
 
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -46,8 +46,8 @@ class Schedule(BaseApiModel):
     status: ScheduleStatus = Field(ScheduleStatus.ACTIVE)
     enabled: bool = True
     iteration: Optional[str] = None
-    start_date: Optional[datetime] = Field(None, alias="startDate")
-    end_date: Optional[datetime] = Field(None, alias="endDate")
+    start_date: Optional[Union[datetime, str]] = Field(None, alias="startDate")
+    end_date: Optional[Union[datetime, str]] = Field(None, alias="endDate")
     last_run_date: Optional[datetime] = Field(None, alias="lastRunDate")
     next_run_date: Optional[datetime] = Field(None, alias="nextRunDate")
     created_date: Optional[datetime] = Field(None, alias="dateCreated")
@@ -75,8 +75,8 @@ class ScheduleCreateRequest(BaseModel):
     owner_id: str = Field(..., alias="ownerId")
     comment: Optional[str] = None
     frequency: ScheduleFrequency = Field(ScheduleFrequency.ONCE)
-    start_date: Optional[datetime] = Field(None, alias="startDate")
-    end_date: Optional[datetime] = Field(None, alias="endDate")
+    start_date: Optional[Union[datetime, str]] = Field(None, alias="startDate")
+    end_date: Optional[Union[datetime, str]] = Field(None, alias="endDate")
     iteration: Optional[str] = None
 
 
@@ -98,7 +98,7 @@ class ScheduleUpdateRequest(BaseModel):
     name: Optional[str] = None
     comment: Optional[str] = None
     frequency: Optional[ScheduleFrequency] = None
-    start_date: Optional[datetime] = Field(None, alias="startDate")
-    end_date: Optional[datetime] = Field(None, alias="endDate")
+    start_date: Optional[Union[datetime, str]] = Field(None, alias="startDate")
+    end_date: Optional[Union[datetime, str]] = Field(None, alias="endDate")
     iteration: Optional[str] = None
     enabled: Optional[bool] = None

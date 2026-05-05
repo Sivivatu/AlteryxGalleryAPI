@@ -63,7 +63,19 @@ class CollectionUpdateRequest(BaseModel):
     owner_id: UserId = Field(..., alias="ownerId")
 
 
-class CollectionShareUserRequest(BaseModel):
+class _PermissionFlattenMixin:
+    """Shared payload flattening for collection permission requests."""
+
+    def model_dump(self, *args, **kwargs):
+        """Flatten nested permissions into the parent request payload."""
+        data = super().model_dump(*args, **kwargs)
+        permissions = data.pop("permissions", None)
+        if permissions:
+            data.update(permissions)
+        return data
+
+
+class CollectionShareUserRequest(_PermissionFlattenMixin, BaseModel):
     """Request model for adding a user to a collection."""
 
     model_config = ConfigDict(populate_by_name=True)
@@ -72,16 +84,8 @@ class CollectionShareUserRequest(BaseModel):
     expiration_date: Optional[datetime] = Field(None, alias="expirationDate")
     permissions: CollectionPermission
 
-    def model_dump(self, *args, **kwargs):
-        """Flatten nested permissions to match form-encoded API contracts."""
-        data = super().model_dump(*args, **kwargs)
-        permissions = data.pop("permissions", None)
-        if permissions:
-            data.update(permissions)
-        return data
 
-
-class CollectionShareGroupRequest(BaseModel):
+class CollectionShareGroupRequest(_PermissionFlattenMixin, BaseModel):
     """Request model for adding a user group to a collection."""
 
     model_config = ConfigDict(populate_by_name=True)
@@ -90,30 +94,14 @@ class CollectionShareGroupRequest(BaseModel):
     expiration_date: Optional[datetime] = Field(None, alias="expirationDate")
     permissions: CollectionPermission
 
-    def model_dump(self, *args, **kwargs):
-        """Flatten nested permissions to match form-encoded API contracts."""
-        data = super().model_dump(*args, **kwargs)
-        permissions = data.pop("permissions", None)
-        if permissions:
-            data.update(permissions)
-        return data
 
-
-class CollectionPermissionUpdateRequest(BaseModel):
+class CollectionPermissionUpdateRequest(_PermissionFlattenMixin, BaseModel):
     """Request model for updating collection permissions."""
 
     model_config = ConfigDict(populate_by_name=True)
 
     expiration_date: Optional[datetime] = Field(None, alias="expirationDate")
     permissions: CollectionPermission
-
-    def model_dump(self, *args, **kwargs):
-        """Flatten nested permissions to match form-encoded API contracts."""
-        data = super().model_dump(*args, **kwargs)
-        permissions = data.pop("permissions", None)
-        if permissions:
-            data.update(permissions)
-        return data
 
 
 class CollectionWorkflowRequest(BaseModel):

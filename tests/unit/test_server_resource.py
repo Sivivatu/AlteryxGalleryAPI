@@ -41,7 +41,7 @@ class TestServerResource:
             info = await async_client.server.get_info()
 
         assert isinstance(info, ServerInfo)
-        assert info.model_extra["serverVersion"] == "2025.2"
+        assert info.server_version == "2025.2"
 
     @pytest.mark.asyncio
     async def test_get_server_settings(self, async_client):
@@ -59,4 +59,4 @@ class TestServerResource:
             settings = await async_client.server.get_settings()
 
         assert isinstance(settings, ServerSettings)
-        assert settings.model_extra["galleryName"] == "Test Server"
+        assert settings.gallery_name == "Test Server"
