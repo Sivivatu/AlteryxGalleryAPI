@@ -308,6 +308,11 @@
 
 ## Discovered During Work
 
+- [x] **Restore Ruff compliance after server model test updates** (2026-05-05)
+    - Added the missing `cast` import in the async job resource
+    - Updated `quick_test.py` import smoke test to reference imported symbols so Ruff no longer flags them as unused
+    - Restored missing legacy workflow model imports in `src/alteryx_gallery_api/client.py`
+
 - [x] **Fix stale server model extra-field tests** (2026-05-05)
     - Updated server model tests to assert documented aliases map to typed fields
     - Kept the extra-field preservation check by using genuinely undocumented keys
