@@ -1,5 +1,7 @@
 """Unit tests for credential and server Pydantic models."""
 
+import pytest
+
 from alteryx_server_py.models.credentials import (
     Credential,
     CredentialCreateRequest,
@@ -34,7 +36,7 @@ class TestCredentialModel:
 
     def test_update_request_serialization(self):
         """Test credential update request uses documented field name."""
-        request = CredentialUpdateRequest(new_password="new-secret")
+        request = CredentialUpdateRequest(NewPassword="new-secret")
         data = request.model_dump(by_alias=True, exclude_none=True)
 
         assert data == {"NewPassword": "new-secret"}
@@ -43,12 +45,28 @@ class TestCredentialModel:
 class TestServerModels:
     """Test generic server models."""
 
-    def test_server_info_allows_extra_fields(self):
-        """Test server info preserves undocumented fields."""
-        model = ServerInfo.model_validate({"serverVersion": "2025.2"})
-        assert model.model_extra["serverVersion"] == "2025.2"
+    @pytest.mark.parametrize(
+        ("model_class", "payload", "field_name", "expected_value"),
+        [
+            (ServerInfo, {"serverVersion": "2025.2"}, "server_version", "2025.2"),
+            (
+                ServerSettings,
+                {"galleryName": "Test Server"},
+                "gallery_name",
+                "Test Server",
+            ),
+        ],
+    )
+    def test_server_models_map_aliases_and_allow_extra_fields(
+        self,
+        model_class,
+        payload,
+        field_name,
+        expected_value,
+    ):
+        """Test server models map documented aliases and preserve extras."""
+        model = model_class.model_validate({**payload, "undocumentedField": "kept"})
 
-    def test_server_settings_allows_extra_fields(self):
-        """Test server settings preserves undocumented fields."""
-        model = ServerSettings.model_validate({"galleryName": "Test Server"})
-        assert model.model_extra["galleryName"] == "Test Server"
+        assert getattr(model, field_name) == expected_value
+        assert model.model_extra is not None
+        assert model.model_extra["undocumentedField"] == "kept"

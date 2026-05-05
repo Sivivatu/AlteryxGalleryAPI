@@ -308,6 +308,10 @@
 
 ## Discovered During Work
 
+- [x] **Fix stale server model extra-field tests** (2026-05-05)
+    - Updated server model tests to assert documented aliases map to typed fields
+    - Kept the extra-field preservation check by using genuinely undocumented keys
+
 - [x] **Add GitHub CLI to the dev container** (2026-05-01)
     - Installed `gh` in `.devcontainer/Dockerfile` from GitHub's official signed APT repository
     - Documented the required dev container rebuild and initial `gh auth login` flow in `README.md`

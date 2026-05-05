@@ -17,7 +17,6 @@ if TYPE_CHECKING:
     from .resources.credentials import AsyncCredentialResource
     from .resources.jobs import AsyncJobResource
     from .resources.schedules import AsyncScheduleResource
-    from .resources.collections import AsyncCollectionResource
     from .resources.server import AsyncServerResource
     from .resources.user_groups import AsyncUserGroupResource
     from .resources.users import AsyncUserResource
