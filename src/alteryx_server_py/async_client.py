@@ -3,14 +3,23 @@ Asynchronous Alteryx Server API client.
 """
 
 import logging
-from typing import Optional, Any, Dict, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
 import httpx
 
 from ._base_client import _BaseClient
-from .config import ClientConfig, from_env as config_from_env
-from .exceptions import ConfigurationError
+from .config import ClientConfig
+from .config import from_env as config_from_env
 from .resources import WorkflowResource
+
+if TYPE_CHECKING:
+    from .resources.collections import AsyncCollectionResource
+    from .resources.credentials import AsyncCredentialResource
+    from .resources.jobs import AsyncJobResource
+    from .resources.schedules import AsyncScheduleResource
+    from .resources.server import AsyncServerResource
+    from .resources.user_groups import AsyncUserGroupResource
+    from .resources.users import AsyncUserResource
 
 logger = logging.getLogger(__name__)
 
@@ -70,12 +79,23 @@ class AsyncAlteryxClient(_BaseClient):
 
         self._client: Optional[httpx.AsyncClient] = None
         self._workflows: Optional[WorkflowResource] = None
+        self._jobs: Optional["AsyncJobResource"] = None
+        self._schedules: Optional["AsyncScheduleResource"] = None
+        self._users: Optional["AsyncUserResource"] = None
+        self._user_groups: Optional["AsyncUserGroupResource"] = None
+        self._collections: Optional["AsyncCollectionResource"] = None
+        self._credentials: Optional["AsyncCredentialResource"] = None
+        self._server: Optional["AsyncServerResource"] = None
 
         if config_obj.base_url and config_obj.client_id and config_obj.client_secret:
             self._initialize_client()
 
     def _initialize_client(self) -> None:
-        """Initialize httpx async client with authentication."""
+        """Create the shared asynchronous HTTP client on first use.
+
+        Returns:
+            None: This method initializes internal client state in place.
+        """
         if self._client is None:
             self._client = httpx.AsyncClient(
                 verify=self.config.verify_ssl,
@@ -84,12 +104,25 @@ class AsyncAlteryxClient(_BaseClient):
             logger.debug("Async HTTP client initialized")
 
     async def __aenter__(self):
-        """Async context manager entry."""
+        """Enter the async client context manager.
+
+        Returns:
+            AsyncAlteryxClient: The initialized async client instance.
+        """
         self._initialize_client()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        """Async context manager exit."""
+        """Exit the async client context manager and close open resources.
+
+        Args:
+            exc_type: Exception type raised in the context, if any.
+            exc_val: Exception instance raised in the context, if any.
+            exc_tb: Traceback associated with the exception, if any.
+
+        Returns:
+            None: This method closes the underlying async HTTP client in place.
+        """
         if self._client:
             await self._client.aclose()
             logger.debug("Async HTTP client closed")
@@ -105,23 +138,34 @@ class AsyncAlteryxClient(_BaseClient):
         files: Optional[Dict[str, Any]] = None,
         **kwargs,
     ) -> Any:
-        """Make authenticated async HTTP request.
+        """Make an authenticated asynchronous HTTP request against the API.
 
         Args:
-            method: HTTP method (GET, POST, PUT, DELETE)
-            endpoint: API endpoint path
-            api_version: API version to use
-            params: URL query parameters
-            data: Form data
-            json_data: JSON request body
-            files: Files to upload
-            **kwargs: Additional arguments for httpx
+            method: HTTP method such as GET, POST, PUT, or DELETE.
+            endpoint: API endpoint path relative to the version root.
+            api_version: API version to use.
+            params: URL query parameters.
+            data: Form data payload.
+            json_data: JSON request body.
+            files: Files to upload with multipart form data.
+            **kwargs: Additional arguments forwarded to httpx.
 
         Returns:
-            Parsed response data
+            Any: Parsed response payload returned by the API.
+
+        Raises:
+            Exception: Propagates request and API response failures.
         """
         url = self._build_endpoint_url(endpoint, api_version)
         headers = self._add_auth_header({})
+        if files:
+            headers.pop("Content-Type", None)
+            if isinstance(data, dict):
+                data = self._serialize_form_data(data)
+        elif data is not None:
+            headers["Content-Type"] = "application/x-www-form-urlencoded"
+        elif json_data is not None:
+            headers["Content-Type"] = "application/json"
 
         logger.debug(f"ASYNC {method} {url}")
         logger.debug(f"Params: {params}")
@@ -193,10 +237,10 @@ class AsyncAlteryxClient(_BaseClient):
 
     @property
     def workflows(self) -> WorkflowResource:
-        """Access workflow resource.
+        """Access workflow operations for the current async client.
 
         Returns:
-            WorkflowResource: Workflow API operations
+            WorkflowResource: Resource wrapper for workflow endpoints.
         """
         if self._workflows is None:
             from .resources.workflows import WorkflowResource
@@ -205,13 +249,92 @@ class AsyncAlteryxClient(_BaseClient):
         return self._workflows
 
     @property
-    def jobs(self) -> object:
-        """Access job resource.
-        
+    def jobs(self) -> "AsyncJobResource":
+        """Access job operations for the current async client.
+
         Returns:
-            AsyncJobResource: Job API operations
+            AsyncJobResource: Resource wrapper for job endpoints.
         """
-        if not hasattr(self, "_jobs") or self._jobs is None:
+        if self._jobs is None:
             from .resources.jobs import AsyncJobResource
+
             self._jobs = AsyncJobResource(self)
         return self._jobs
+
+    @property
+    def schedules(self) -> "AsyncScheduleResource":
+        """Access schedule operations for the current async client.
+
+        Returns:
+            AsyncScheduleResource: Resource wrapper for schedule endpoints.
+        """
+        if self._schedules is None:
+            from .resources.schedules import AsyncScheduleResource
+
+            self._schedules = AsyncScheduleResource(self)
+        return self._schedules
+
+    @property
+    def users(self) -> "AsyncUserResource":
+        """Access user operations for the current async client.
+
+        Returns:
+            AsyncUserResource: Resource wrapper for user endpoints.
+        """
+        if self._users is None:
+            from .resources.users import AsyncUserResource
+
+            self._users = AsyncUserResource(self)
+        return self._users
+
+    @property
+    def user_groups(self) -> "AsyncUserGroupResource":
+        """Access user group operations for the current async client.
+
+        Returns:
+            AsyncUserGroupResource: Resource wrapper for user group endpoints.
+        """
+        if self._user_groups is None:
+            from .resources.user_groups import AsyncUserGroupResource
+
+            self._user_groups = AsyncUserGroupResource(self)
+        return self._user_groups
+
+    @property
+    def collections(self) -> "AsyncCollectionResource":
+        """Access collection operations for the current async client.
+
+        Returns:
+            AsyncCollectionResource: Resource wrapper for collection endpoints.
+        """
+        if self._collections is None:
+            from .resources.collections import AsyncCollectionResource
+
+            self._collections = AsyncCollectionResource(self)
+        return self._collections
+
+    @property
+    def credentials(self) -> "AsyncCredentialResource":
+        """Access credential operations for the current async client.
+
+        Returns:
+            AsyncCredentialResource: Resource wrapper for credential endpoints.
+        """
+        if self._credentials is None:
+            from .resources.credentials import AsyncCredentialResource
+
+            self._credentials = AsyncCredentialResource(self)
+        return self._credentials
+
+    @property
+    def server(self) -> "AsyncServerResource":
+        """Access server metadata operations for the current async client.
+
+        Returns:
+            AsyncServerResource: Resource wrapper for server endpoints.
+        """
+        if self._server is None:
+            from .resources.server import AsyncServerResource
+
+            self._server = AsyncServerResource(self)
+        return self._server

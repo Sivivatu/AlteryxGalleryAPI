@@ -3,19 +3,19 @@ Base client with shared logic for sync and async clients.
 """
 
 import logging
-from typing import Optional, Any, Dict
+from enum import Enum
+from typing import Any, Dict, Optional
 from urllib.parse import urljoin
 
-from .config import ClientConfig
 from .auth import OAuth2Client
+from .config import ClientConfig
 from .exceptions import (
     AuthenticationError,
     NotFoundError,
-    ValidationError,
     RateLimitError,
     ServerError,
+    ValidationError,
 )
-from .utils import retry_with_backoff
 
 logger = logging.getLogger(__name__)
 
@@ -72,21 +72,22 @@ class _BaseClient:
         return urljoin(self.config.base_url, f"{api_version}/{endpoint}")
 
     def _process_response(self, response: Any, endpoint: str) -> Any:
-        """Process API response, handling errors.
+        """Process an HTTP response and normalise API errors.
 
         Args:
-            response: HTTP response object
-            endpoint: Endpoint being called (for error messages)
+            response: HTTP response object.
+            endpoint: Endpoint being called, used for logging context.
 
         Returns:
-            Parsed response data
+            Any: Parsed response payload or raw response text.
 
         Raises:
-            AuthenticationError: On 401 status
-            NotFoundError: On 404 status
-            ValidationError: On 400 status
-            RateLimitError: On 429 status
-            ServerError: On 5xx status
+            AuthenticationError: On 401 status.
+            NotFoundError: On 404 status.
+            ValidationError: On 400 status.
+            RateLimitError: On 429 status.
+            ServerError: On 5xx status.
+            Exception: On any other non-success status code.
         """
         status = getattr(response, "status_code", None) or getattr(response, "status_code", 200)
 
@@ -115,7 +116,7 @@ class _BaseClient:
 
         elif status == 429:
             retry_after = response.headers.get("Retry-After")
-            logger.warning(f"Rate limit exceeded for {endpoint}. " f"Retry after {retry_after}s")
+            logger.warning(f"Rate limit exceeded for {endpoint}. Retry after {retry_after}s")
             raise RateLimitError(retry_after=int(retry_after) if retry_after else None)
 
         elif status >= 500:
@@ -129,13 +130,13 @@ class _BaseClient:
             raise Exception(f"HTTP {status}: {error_text}")
 
     def _get_error_text(self, response: Any) -> str:
-        """Extract error text from response.
+        """Extract the most useful error message from a response.
 
         Args:
-            response: HTTP response object
+            response: HTTP response object.
 
         Returns:
-            str: Error message
+            str: Error message text extracted from JSON or plain text bodies.
         """
         try:
             if hasattr(response, "json"):
@@ -151,13 +152,13 @@ class _BaseClient:
         self,
         headers: Optional[Dict[str, str]],
     ) -> Dict[str, str]:
-        """Add authorization header to request headers.
+        """Add the current OAuth2 authorization header to a header mapping.
 
         Args:
-            headers: Existing headers dict
+            headers: Existing request headers.
 
         Returns:
-            Headers dict with authorization added
+            Dict[str, str]: Headers with Authorization and Content-Type set.
         """
         if headers is None:
             headers = {}
@@ -167,3 +168,25 @@ class _BaseClient:
         headers["Content-Type"] = "application/json"
 
         return headers
+
+    def _serialize_form_data(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Serialize multipart form fields into server-friendly string values.
+
+        Args:
+            data: Form field mapping.
+
+        Returns:
+            Dict[str, Any]: Serialized form field mapping.
+        """
+
+        serialized: Dict[str, Any] = {}
+        for key, value in data.items():
+            if isinstance(value, bool):
+                serialized[key] = str(value).lower()
+            elif isinstance(value, Enum):
+                serialized[key] = str(value.value)
+            elif isinstance(value, (int, float)):
+                serialized[key] = str(value)
+            else:
+                serialized[key] = value
+        return serialized

@@ -3,12 +3,12 @@ OAuth2 authentication for Alteryx Server API.
 """
 
 import logging
-from typing import Optional
 from datetime import datetime, timedelta
+from typing import Optional
 
 import httpx
 
-from .exceptions import AuthenticationError, ConfigurationError
+from .exceptions import AuthenticationError
 
 logger = logging.getLogger(__name__)
 
@@ -28,23 +28,42 @@ class OAuth2Token:
         expires_in: int,
         token_type: str = "Bearer",
     ):
+        """Initialize an OAuth2 token model.
+
+        Args:
+            access_token: Access token string returned by the server.
+            expires_in: Lifetime of the token in seconds.
+            token_type: Authorization scheme prefix. Defaults to "Bearer".
+        """
         self.access_token = access_token
         self.expires_at = datetime.now() + timedelta(seconds=expires_in)
         self.token_type = token_type
 
     @property
     def is_expired(self) -> bool:
-        """Check if token has expired (with 5 minute buffer)."""
+        """Check whether the token should be considered expired.
+
+        Returns:
+            bool: True when the token is expired or within the refresh buffer.
+        """
         buffer_seconds = 300
         return datetime.now() >= self.expires_at - timedelta(seconds=buffer_seconds)
 
     @property
     def authorization_header(self) -> str:
-        """Get formatted authorization header value."""
+        """Build the Authorization header value for requests.
+
+        Returns:
+            str: Combined token type and access token.
+        """
         return f"{self.token_type} {self.access_token}"
 
     def to_dict(self) -> dict:
-        """Convert to dictionary for storage."""
+        """Serialize the token for persistence.
+
+        Returns:
+            dict: Token fields encoded as JSON-friendly values.
+        """
         return {
             "access_token": self.access_token,
             "expires_at": self.expires_at.isoformat(),
@@ -53,7 +72,14 @@ class OAuth2Token:
 
     @classmethod
     def from_dict(cls, data: dict) -> "OAuth2Token":
-        """Create token from dictionary."""
+        """Rebuild a token from serialized state.
+
+        Args:
+            data: Serialized token payload.
+
+        Returns:
+            OAuth2Token: Restored token instance.
+        """
         return cls(
             access_token=data["access_token"],
             expires_in=int((datetime.fromisoformat(data["expires_at"]) - datetime.now()).total_seconds()),
@@ -143,7 +169,7 @@ class OAuth2Client:
             raise AuthenticationError(f"Network error fetching token: {e}") from e
         except KeyError as e:
             logger.error(f"Invalid token response: missing key {e}")
-            raise AuthenticationError(f"Invalid token response from server") from e
+            raise AuthenticationError("Invalid token response from server") from e
 
     def get_token(self) -> str:
         """Get current valid access token, fetching new one if expired.

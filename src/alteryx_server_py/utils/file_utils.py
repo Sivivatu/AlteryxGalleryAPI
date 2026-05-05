@@ -79,4 +79,4 @@ def validate_file_size(file_path: str, max_size_mb: int = 500) -> None:
     size_mb = size_bytes / (1024 * 1024)
 
     if size_mb > max_size_mb:
-        raise ValueError(f"File size ({size_mb:.2f} MB) exceeds maximum " f"allowed size ({max_size_mb} MB)")
+        raise ValueError(f"File size ({size_mb:.2f} MB) exceeds maximum allowed size ({max_size_mb} MB)")

@@ -1,22 +1,25 @@
-"""
-Synchronous Alteryx Server API client.
-"""
+"""Synchronous Alteryx Server API client."""
 
 import logging
-from typing import Optional, Any, Dict, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional
 
 import httpx
 
 from ._base_client import _BaseClient
-from .config import ClientConfig, from_env as config_from_env
-from .exceptions import ConfigurationError
-from .utils.pagination import PaginatedResponse
+from .config import ClientConfig
+from .config import from_env as config_from_env
 from .resources import WorkflowResource
 
+if TYPE_CHECKING:
+    from .resources.collections import CollectionResource
+    from .resources.credentials import CredentialResource
+    from .resources.jobs import JobResource
+    from .resources.schedules import ScheduleResource
+    from .resources.server import ServerResource
+    from .resources.user_groups import UserGroupResource
+    from .resources.users import UserResource
+
 logger = logging.getLogger(__name__)
-
-
-class AlteryxClient(_BaseClient):
 
 
 class AlteryxClient(_BaseClient):
@@ -78,12 +81,23 @@ class AlteryxClient(_BaseClient):
 
         self._client: Optional[httpx.Client] = None
         self._workflows: Optional[WorkflowResource] = None
+        self._jobs: Optional["JobResource"] = None
+        self._schedules: Optional["ScheduleResource"] = None
+        self._users: Optional["UserResource"] = None
+        self._user_groups: Optional["UserGroupResource"] = None
+        self._collections: Optional["CollectionResource"] = None
+        self._credentials: Optional["CredentialResource"] = None
+        self._server: Optional["ServerResource"] = None
 
         if config_obj.base_url and config_obj.client_id and config_obj.client_secret:
             self._initialize_client()
 
     def _initialize_client(self) -> None:
-        """Initialize httpx client with authentication."""
+        """Create the shared synchronous HTTP client on first use.
+
+        Returns:
+            None: This method initializes internal client state in place.
+        """
         if self._client is None:
             self._client = httpx.Client(
                 verify=self.config.verify_ssl,
@@ -92,12 +106,25 @@ class AlteryxClient(_BaseClient):
             logger.debug("HTTP client initialized")
 
     def __enter__(self):
-        """Context manager entry."""
+        """Enter the client context manager.
+
+        Returns:
+            AlteryxClient: The initialized client instance.
+        """
         self._initialize_client()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        """Context manager exit."""
+        """Exit the client context manager and close open resources.
+
+        Args:
+            exc_type: Exception type raised in the context, if any.
+            exc_val: Exception instance raised in the context, if any.
+            exc_tb: Traceback associated with the exception, if any.
+
+        Returns:
+            None: This method closes the underlying HTTP client in place.
+        """
         if self._client:
             self._client.close()
             logger.debug("HTTP client closed")
@@ -108,33 +135,48 @@ class AlteryxClient(_BaseClient):
         endpoint: str,
         api_version: str = "v3",
         params: Optional[Dict[str, Any]] = None,
-        data: Optional[Union[Dict[str, Any], str]] = None,
+        data: Optional[Dict[str, Any]] = None,
         json_data: Optional[Dict[str, Any]] = None,
         files: Optional[Dict[str, Any]] = None,
         **kwargs,
     ) -> Any:
-        """Make authenticated HTTP request.
+        """Make an authenticated HTTP request against the Alteryx API.
 
         Args:
-            method: HTTP method (GET, POST, PUT, DELETE)
-            endpoint: API endpoint path
-            api_version: API version to use
-            params: URL query parameters
-            data: Form data
-            json_data: JSON request body
-            files: Files to upload
-            **kwargs: Additional arguments for httpx
+            method: HTTP method such as GET, POST, PUT, or DELETE.
+            endpoint: API endpoint path relative to the version root.
+            api_version: API version to use.
+            params: URL query parameters.
+            data: Form data payload.
+            json_data: JSON request body.
+            files: Files to upload with multipart form data.
+            **kwargs: Additional arguments forwarded to httpx.
 
         Returns:
-            Parsed response data
+            Any: Parsed response payload returned by the API.
+
+        Raises:
+            Exception: Propagates request and API response failures.
         """
         url = self._build_endpoint_url(endpoint, api_version)
         headers = self._add_auth_header({})
+        if files:
+            headers.pop("Content-Type", None)
+            if data is not None:
+                data = self._serialize_form_data(data)
+        elif data is not None:
+            headers["Content-Type"] = "application/x-www-form-urlencoded"
+        elif json_data is not None:
+            headers["Content-Type"] = "application/json"
 
         logger.debug(f"{method} {url}")
         logger.debug(f"Params: {params}")
         logger.debug(f"Data: {data}")
         logger.debug(f"JSON: {json_data}")
+
+        if self._client is None:
+            self._initialize_client()
+        assert self._client is not None
 
         try:
             response = self._client.request(
@@ -201,24 +243,104 @@ class AlteryxClient(_BaseClient):
 
     @property
     def workflows(self) -> WorkflowResource:
-        """Access workflow resource.
-        
+        """Access workflow operations for the current client.
+
         Returns:
-            WorkflowResource: Workflow API operations
+            WorkflowResource: Resource wrapper for workflow endpoints.
         """
         if self._workflows is None:
             from .resources.workflows import WorkflowResource
+
             self._workflows = WorkflowResource(self)
         return self._workflows
-    
+
     @property
-    def jobs(self) -> object:
-        """Access job resource.
-        
+    def jobs(self) -> "JobResource":
+        """Access job operations for the current client.
+
         Returns:
-            JobResource: Job API operations
+            JobResource: Resource wrapper for job endpoints.
         """
-        if not hasattr(self, "_jobs") or self._jobs is None:
+        if self._jobs is None:
             from .resources.jobs import JobResource
+
             self._jobs = JobResource(self)
         return self._jobs
+
+    @property
+    def schedules(self) -> "ScheduleResource":
+        """Access schedule operations for the current client.
+
+        Returns:
+            ScheduleResource: Resource wrapper for schedule endpoints.
+        """
+        if self._schedules is None:
+            from .resources.schedules import ScheduleResource
+
+            self._schedules = ScheduleResource(self)
+        return self._schedules
+
+    @property
+    def users(self) -> "UserResource":
+        """Access user operations for the current client.
+
+        Returns:
+            UserResource: Resource wrapper for user endpoints.
+        """
+        if self._users is None:
+            from .resources.users import UserResource
+
+            self._users = UserResource(self)
+        return self._users
+
+    @property
+    def user_groups(self) -> "UserGroupResource":
+        """Access user group operations for the current client.
+
+        Returns:
+            UserGroupResource: Resource wrapper for user group endpoints.
+        """
+        if self._user_groups is None:
+            from .resources.user_groups import UserGroupResource
+
+            self._user_groups = UserGroupResource(self)
+        return self._user_groups
+
+    @property
+    def collections(self) -> "CollectionResource":
+        """Access collection operations for the current client.
+
+        Returns:
+            CollectionResource: Resource wrapper for collection endpoints.
+        """
+        if self._collections is None:
+            from .resources.collections import CollectionResource
+
+            self._collections = CollectionResource(self)
+        return self._collections
+
+    @property
+    def credentials(self) -> "CredentialResource":
+        """Access credential operations for the current client.
+
+        Returns:
+            CredentialResource: Resource wrapper for credential endpoints.
+        """
+        if self._credentials is None:
+            from .resources.credentials import CredentialResource
+
+            self._credentials = CredentialResource(self)
+        return self._credentials
+
+    @property
+    def server(self) -> "ServerResource":
+        """Access server metadata operations for the current client.
+
+        Returns:
+            ServerResource: Resource wrapper for server endpoints.
+        """
+        if self._server is None:
+            from .resources.server import ServerResource
+
+            self._server = ServerResource(self)
+        return self._server

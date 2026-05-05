@@ -12,14 +12,12 @@ from dotenv import load_dotenv
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
 
-from .models import WorkflowId, Workflow
-
 from .exceptions import (
     AlteryxAPIError,
     AuthenticationError,
-    JobExecutionError,
     WorkflowNotFoundError,
 )
+from .models import Workflow, WorkflowId
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

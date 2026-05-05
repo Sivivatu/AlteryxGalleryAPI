@@ -1,22 +1,44 @@
-"""
-Job resource for API operations.
-"""
+"""Job resource for API operations."""
 
-import logging
 import asyncio
-from typing import Optional, List, Dict, Any
+import json
+import logging
 from datetime import datetime
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
+from ..exceptions import JobExecutionError, JobNotFoundError, NotFoundError
 from ..models import (
-    JobId,
     Job,
-    JobStatus,
+    JobId,
+    JobPriority,
     JobRunRequest,
+    JobStatus,
 )
-from ..exceptions import JobNotFoundError, JobExecutionError
 from ._base import _BaseResource
 
+if TYPE_CHECKING:
+    from ..async_client import AsyncAlteryxClient
+    from ..client import AlteryxClient
+
 logger = logging.getLogger(__name__)
+
+
+def _coerce_output_bytes(response: object) -> bytes:
+    """Normalize file download responses into bytes."""
+    if hasattr(response, "content"):
+        content = getattr(response, "content")
+        return _coerce_output_bytes(content)
+    if isinstance(response, bytes):
+        return response
+    if isinstance(response, (bytearray, memoryview)):
+        return bytes(response)
+    if isinstance(response, str):
+        return response.encode()
+    if isinstance(response, (dict, list)):
+        return json.dumps(response).encode()
+
+    logger.error("Unexpected job output response type: %s", type(response).__name__)
+    raise TypeError(f"Unsupported job output response type: {type(response).__name__}")
 
 
 class JobResource(_BaseResource):
@@ -31,6 +53,8 @@ class JobResource(_BaseResource):
         - Cancel jobs
         - Wait for job completion
     """
+
+    _client: "AlteryxClient"
 
     def run(
         self,
@@ -58,8 +82,8 @@ class JobResource(_BaseResource):
 
         request = JobRunRequest(
             questions=questions,
-            priority=priority,
-            worker_tag=worker_tag,
+            priority=JobPriority(priority),
+            workerTag=worker_tag,
         )
 
         data = request.model_dump(by_alias=True, exclude_none=True)
@@ -165,18 +189,10 @@ class JobResource(_BaseResource):
                 f"jobs/{job_id}/output/{output_id}",
             )
 
-            # The raw response should contain file content
-            if hasattr(response, "content"):
-                return response.content
-            elif isinstance(response, bytes):
-                return response
-            elif isinstance(response, str):
-                return response.encode()
-
-            return response.encode() if isinstance(response, str) else response
+            return _coerce_output_bytes(response)
         except Exception as e:
             if "not found" in str(e).lower() or "404" in str(e):
-                raise JobNotFoundError(job_id, message=f"Output '{output_id}' not found")
+                raise JobNotFoundError(job_id) from e
             raise
 
     def get_messages(self, job_id: JobId) -> List[Dict[str, Any]]:
@@ -288,7 +304,7 @@ class JobResource(_BaseResource):
             try:
                 job = self.get(job.id)
                 elapsed = (datetime.now() - start_time).total_seconds()
-                logger.debug(f"Job {job.id} status: {job.status} " f"({elapsed}s elapsed)")
+                logger.debug(f"Job {job.id} status: {job.status} ({elapsed}s elapsed)")
             except Exception as e:
                 logger.error(f"Error polling job status: {e}")
                 raise
@@ -313,6 +329,8 @@ class AsyncJobResource(_BaseResource):
     Provides async versions of all JobResource methods.
     """
 
+    _client: "AsyncAlteryxClient"
+
     async def run(
         self,
         workflow_id: str,
@@ -335,8 +353,8 @@ class AsyncJobResource(_BaseResource):
 
         request = JobRunRequest(
             questions=questions,
-            priority=priority,
-            worker_tag=worker_tag,
+            priority=JobPriority(priority),
+            workerTag=worker_tag,
         )
 
         data = request.model_dump(by_alias=True, exclude_none=True)
@@ -437,16 +455,16 @@ class AsyncJobResource(_BaseResource):
             )
 
             if hasattr(response, "content"):
-                return response.content
+                return cast(bytes, response.content)
             elif isinstance(response, bytes):
                 return response
             elif isinstance(response, str):
                 return response.encode()
 
-            return response.encode() if isinstance(response, str) else response
+            return cast(bytes, response)
         except Exception as e:
             if "not found" in str(e).lower() or "404" in str(e):
-                raise JobNotFoundError(job_id, message=f"Output '{output_id}' not found")
+                raise JobNotFoundError(job_id) from e
             raise
 
     async def get_messages(self, job_id: JobId) -> List[Dict[str, Any]]:
@@ -491,9 +509,9 @@ class AsyncJobResource(_BaseResource):
                 f"jobs/{job_id}",
             )
             logger.info(f"Successfully cancelled job: {job_id}")
+        except NotFoundError:
+            raise JobNotFoundError(job_id)
         except Exception as e:
-            if "not found" in str(e).lower() or "404" in str(e):
-                raise JobNotFoundError(job_id)
             raise JobExecutionError(job_id, "Unknown", messages=[str(e)])
 
     async def run_and_wait(
@@ -545,7 +563,7 @@ class AsyncJobResource(_BaseResource):
             try:
                 job = await self.get(job.id)
                 elapsed = (datetime.now() - start_time).total_seconds()
-                logger.debug(f"Job {job.id} status: {job.status} " f"({elapsed}s elapsed)")
+                logger.debug(f"Job {job.id} status: {job.status} ({elapsed}s elapsed)")
             except Exception as e:
                 logger.error(f"Error polling job status: {e}")
                 raise

@@ -1,9 +1,9 @@
 import os
-from http.client import NON_AUTHORITATIVE_INFORMATION
 
 import pytest
-from AlteryxGallery import AlteryxGalleryAPI
 from dotenv import load_dotenv
+
+from AlteryxGallery import AlteryxGalleryAPI
 
 load_dotenv()
 

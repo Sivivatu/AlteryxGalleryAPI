@@ -1,15 +1,18 @@
 from __future__ import annotations
-from typing import Optional, List, Dict, Any
+
 from datetime import datetime
-from enum import Enum
-from pydantic import Field, ConfigDict
+from typing import Any, Dict, List, Optional
+
+from pydantic import ConfigDict, Field
+
 from .base import BaseApiModel
 from .common import (
-    WorkflowId,
-    SubscriptionId,
-    ExecutionMode,
     CredentialType,
+    ExecutionMode,
+    SubscriptionId,
+    WorkflowId,
 )
+
 
 class PublishWorkflowRequest(BaseApiModel):
     name: str
@@ -26,14 +29,20 @@ class PublishWorkflowRequest(BaseApiModel):
     def to_payload(self) -> Dict[str, Any]:
         return self.model_dump(by_alias=True, exclude_none=True)
 
+
 class GetWorkflowRequest(BaseApiModel):
+    """Request model for fetching workflows by id, name, or owner.
+
+    Attributes:
+        id: Workflow identifier filter.
+        name: Workflow name filter.
+        owner_id: Workflow owner identifier filter.
+    """
+
     id: Optional[WorkflowId] = Field(default=None, alias="id")
     name: Optional[str] = Field(default=None, alias="name")
     owner_id: Optional[SubscriptionId] = Field(default=None, alias="ownerId")
 
-class ViewType(str, Enum):
-    DEFAULT = "Default"
-    FULL = "Full"
 
 class Workflow(BaseApiModel):
     # Accept additional properties from the API payload to remain forward-compatible
@@ -48,6 +57,14 @@ class Workflow(BaseApiModel):
     is_amp: bool = Field(..., alias="isAmp")
     execution_mode: ExecutionMode = Field(..., alias="executionMode")
 
+
 class WorkflowListResponse(BaseApiModel):
+    """Collection response containing matching workflow records.
+
+    Attributes:
+        total: Optional total number of matching workflows.
+        workflows: Workflow list populated from the `workflows` alias and defaulting to an empty list.
+    """
+
     total: Optional[int] = None
     workflows: List[Workflow] = Field(default_factory=list, alias="workflows")

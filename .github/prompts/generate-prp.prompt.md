@@ -1,5 +1,5 @@
 ---
-mode: agent
+agent: agent
 ---
 # Execute BASE PRP
 

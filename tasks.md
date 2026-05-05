@@ -40,7 +40,7 @@
 **Goal:** Migrate to modern architecture with httpx, UV build system, and resource-based API design
 
 - [x] **1.1** Rename package from alteryx_gallery_api to alteryx_server_py
-    - Move `src/alteryx_gallery_api/` → `src/alteryx_server_py/`
+    - Move `src/alteryx_gallery_api/` -> `src/alteryx_server_py/`
     - Update all imports across codebase
     - Archive old code to separate branch
 - [x] **1.2** Update pyproject.toml with UV build backend and new package name
@@ -83,9 +83,9 @@
     - Support configuration from env vars, .env file, and explicit params
     - Add validation for config values
 - [x] **1.11** Update environment variable names (ALTERYX_*)
-    - Rename `BASE_URL` → `ALTERYX_BASE_URL`
-    - Rename `API_KEY` → `ALTERYX_CLIENT_ID`
-    - Rename `API_SECRET` → `ALTERYX_CLIENT_SECRET`
+    - Rename `BASE_URL` -> `ALTERYX_BASE_URL`
+    - Rename `API_KEY` -> `ALTERYX_CLIENT_ID`
+    - Rename `API_SECRET` -> `ALTERYX_CLIENT_SECRET`
     - Update `.env.example`
     - Update all tests
 
@@ -135,9 +135,11 @@
     - Mock OAuth2 token endpoints
     - Mock workflow and job CRUD operations
     - Achieve 85%+ coverage
-- [ ] **2.9** Integration tests against live server
+- [x] **2.9** Integration tests against live server
     - Update `tests/integration/test_live_client.py`
-    - Test workflow publish → job run → output retrieval flow
+    - Add live smoke and destructive pytest markers
+    - Test workflow publish -> job run -> output retrieval flow
+    - Add skip conditions for missing live credentials and sandbox owner configuration
 
 **Deliverables:**
 - JobResource with full CRUD and polling
@@ -158,32 +160,33 @@
 
 ## Phase 3: Schedule & User Management (Week 5-6)
 
-**Status:** Pending  
+**Status:** Complete (6/6)  
 **Priority:** Medium  
 **Goal:** Enable schedule automation and user provisioning
 
-- [ ] **3.1** Implement ScheduleResource
+- [x] **3.1** Implement ScheduleResource
     - Create `resources/schedules.py`
     - Implement: `list()`, `get()`, `create()`, `update()`, `delete()`
     - Add: `enable()`, `disable()`
-- [ ] **3.2** Implement UserResource
+- [x] **3.2** Implement UserResource
     - Create `resources/users.py`
     - Implement: `list()`, `get()`, `create()`, `update()`, `delete()`
     - Add: `get_assets()`
-- [ ] **3.3** Implement UserGroupResource
+- [x] **3.3** Implement UserGroupResource
     - Create `resources/user_groups.py`
     - Implement: `list()`, `get()`, `create()`, `update()`, `delete()`
     - Add: `add_users()`, `remove_user()`
-- [ ] **3.4** Create Pydantic models for schedules
+- [x] **3.4** Create Pydantic models for schedules
     - Create `models/schedules.py`
-    - Add: `Schedule`, `ScheduleCreateRequest`, `ScheduleFrequency` enum
-- [ ] **3.5** Create Pydantic models for users/groups
+    - Add: `Schedule`, `ScheduleCreateRequest`, `ScheduleUpdateRequest`, `ScheduleFrequency` enum, `ScheduleStatus` enum
+- [x] **3.5** Create Pydantic models for users/groups
     - Create `models/users.py`
-    - Add: `User`, `UserGroup`, `UserCreateRequest`, `UserRole` enum
-- [ ] **3.6** Unit and integration tests for schedules/users
-    - Create test files for schedule and user resources
-    - Mock API responses with respx
-    - Test permission scenarios
+    - Add: `User`, `UserCreateRequest`, `UserUpdateRequest`, `UserGroup`, `UserGroupCreateRequest`, `UserGroupUpdateRequest`, `UserRole` enum
+- [x] **3.6** Unit and integration tests for schedules/users
+    - Created test files for schedule, user, and user group resources
+    - Created model-level tests for schedules and users/groups
+    - Mocked API responses with respx
+    - 90 tests passing, 4 skipped (live integration)
 
 **Deliverables:**
 - Schedule CRUD operations with enable/disable
@@ -194,30 +197,30 @@
 
 ## Phase 4: Collections, Credentials & Server (Week 7)
 
-**Status:** Pending  
+**Status:** Complete (7/7)  
 **Priority:** Low  
 **Goal:** Complete remaining API coverage
 
-- [ ] **4.1** Implement CollectionResource
+- [x] **4.1** Implement CollectionResource
     - Create `resources/collections.py`
     - Implement: `list()`, `get()`, `create()`, `update()`, `delete()`
     - Add: `add_workflow()`, `remove_workflow()`, `set_permissions()`
-- [ ] **4.2** Implement CredentialResource (DCM)
+- [x] **4.2** Implement CredentialResource (DCM)
     - Create `resources/credentials.py`
     - Implement: `list()`, `get()`, `create()`, `update()`, `delete()`
-- [ ] **4.3** Implement ServerResource
+- [x] **4.3** Implement ServerResource
     - Create `resources/server.py`
     - Implement: `get_info()`, `get_settings()`
-- [ ] **4.4** Create Pydantic models for collections
+- [x] **4.4** Create Pydantic models for collections
     - Create `models/collections.py`
     - Add: `Collection`, `CollectionPermission`
-- [ ] **4.5** Create Pydantic models for credentials
+- [x] **4.5** Create Pydantic models for credentials
     - Create `models/credentials.py`
     - Add: `Credential`, `CredentialType` enum
-- [ ] **4.6** Create Pydantic models for server info
+- [x] **4.6** Create Pydantic models for server info
     - Create `models/server.py`
     - Add: `ServerInfo`, `ServerSettings`
-- [ ] **4.7** Unit and integration tests for collections/credentials/server
+- [x] **4.7** Unit and integration tests for collections/credentials/server
     - Create test files for remaining resources
     - Achieve 80%+ coverage
 
@@ -235,7 +238,7 @@
 **Priority:** High  
 **Goal:** Production release to PyPI as v0.2.0
 
-- [ ] **5.1** Comprehensive README with examples
+- [x] **5.1** Comprehensive README with examples
     - Update README.md with new package name
     - Add installation instructions using UV
     - Include sync and async client examples
@@ -245,24 +248,27 @@
     - Add Google-style docstrings to all public APIs
     - Include type hints and return types
     - Add usage examples in docstrings
-- [ ] **5.3** Update .env.example with new variable names
+- [x] **5.3** Update .env.example with new variable names
     - Update all environment variable names to ALTERYX_*
     - Add descriptions for each variable
     - Include optional variables
-- [ ] **5.4** Create CI/CD example scripts
+- [x] **5.4** Create CI/CD example scripts
     - Create `examples/` directory
     - Add `deploy_workflows.py` script
     - Add `promote_workflow.py` script
     - Add `run_workflow_tests.py` script
-- [ ] **5.5** Update GitHub Actions workflow for UV
+- [x] **5.5** Update GitHub Actions workflow for UV
     - Update `.github/workflows/python-package.yml`
     - Use `astral-sh/setup-uv@v5` action
+
+## Discovered During Work
+
+- [x] Document live integration test environment variables in `.env.example` and `README.md`
     - Add matrix testing for Python 3.10, 3.11, 3.12
     - Add publish workflow for releases
-- [ ] **5.6** Bump version to 0.2.0 using uv version --bump minor
-    - Run `uv version --bump minor` to update to 0.2.0
-    - Verify version in `pyproject.toml`
-- [ ] **5.7** Build package using uv build
+- [x] **5.6** Bump version to 0.2.0 using uv version --bump minor
+    - Verified version 0.2.0 in `pyproject.toml` and `src/alteryx_server_py/__init__.py`
+- [x] **5.7** Build package using uv build
     - Run `uv build` to create wheel and sdist
     - Verify build artifacts in `dist/`
 - [ ] **5.8** Test publish to TestPyPI
@@ -273,8 +279,8 @@
     - Publish to production PyPI: `uv publish`
     - Verify package listing
     - Test installation: `pip install alteryx-server-py`
-- [ ] **5.10** Create CHANGELOG.md
-    - Document all changes from v0.1.0 → v0.2.0
+- [x] **5.10** Create CHANGELOG.md
+    - Document all changes from v0.1.0 -> v0.2.0
     - List breaking changes
     - Include migration guide
     - Add contributors
@@ -293,20 +299,79 @@
 |-------|-------|--------|----------|
 | **Phase 1: Core Infrastructure** | 11 | Complete - [PR #4](https://github.com/Sivivatu/AlteryxGalleryAPI/pull/4) | High |
 | **Phase 2: Workflow & Job Resources** | 9 | Complete (9/9) | High |
-| **Phase 3: Schedule & User Management** | 6 | Pending | Medium |
-| **Phase 4: Collections, Credentials & Server** | 7 | Pending | Low |
-| **Phase 5: Documentation & Release** | 10 | Pending | High |
-| **Total** | **43** | **20/43 (47%)** | - |
+| **Phase 3: Schedule & User Management** | 6 | Complete (6/6) | Medium |
+| **Phase 4: Collections, Credentials & Server** | 7 | Complete (7/7) | Low |
+| **Phase 5: Documentation & Release** | 10 | In Progress (7/10) | High |
+| **Total** | **43** | **40/43 (93%)** | - |
+
+---
+
+## Discovered During Work
+
+- [x] **Restore Ruff compliance after server model test updates** (2026-05-05)
+    - Added the missing `cast` import in the async job resource
+    - Updated `quick_test.py` import smoke test to reference imported symbols so Ruff no longer flags them as unused
+    - Restored missing legacy workflow model imports in `src/alteryx_gallery_api/client.py`
+
+- [x] **Fix stale server model extra-field tests** (2026-05-05)
+    - Updated server model tests to assert documented aliases map to typed fields
+    - Kept the extra-field preservation check by using genuinely undocumented keys
+
+- [x] **Add GitHub CLI to the dev container** (2026-05-01)
+    - Installed `gh` in `.devcontainer/Dockerfile` from GitHub's official signed APT repository
+    - Documented the required dev container rebuild and initial `gh auth login` flow in `README.md`
+
+- [x] **Add British English instruction for agent writing** (2026-05-01)
+    - Updated `.github/copilot-instructions.md` so repo-scoped documentation and prose responses use British English
+    - Added a persistent global memory note so the preference carries into future conversations
+
+- [x] **Stabilize branch after merge-conflict fallout** (2026-03-18)
+    - Removed committed merge conflict markers from active source, tests, task docs, and repo instructions
+    - Repaired `src/alteryx_server_py/client.py` request signature and restored sync accessors for jobs, schedules, users, and user groups
+    - Rebuilt conflicted workflow/job/environment tests against the current `alteryx_server_py` API surface
+    - Excluded archived legacy packages and scratch files from current lint/type-analysis scope
+    - Verified `uv run ruff check src/alteryx_server_py tests .github/copilot-instructions.md` passes
+    - Verified `uv run pytest` passes with live integration tests skipped when credentials are absent
+
+- [x] **Fix failing test suite** (2026-03-17)
+    - Fixed 4 test files still importing from old `alteryx_gallery_api` package (renamed to `alteryx_server_py`)
+    - Fixed `test_exceptions.py` infinite recursion caused by Windows path separator mismatch in `importlib.util.spec_from_file_location`
+    - Fixed `test_workflows.py` calling non-existent `get_workflows()` method (now uses `client.workflows.list()`)
+    - Fixed `test_job_resource.py` async/sync mismatch (used sync client with `await`) and broken `respx` mock patterns
+    - Fixed `test_client.py` and `test_client_get_workflows_models.py` using `responses` library (migrated to `respx`/`unittest.mock`)
+    - Fixed test data using invalid `ExecutionMode` enum value (`"Standard"` → `"Safe"`)
+    - Fixed duplicate empty `class AlteryxClient` definition in `client.py` causing `IndentationError`
+    - Fixed `AsyncJobResource.cancel()` string-based error detection to use explicit `NotFoundError` type catching
+
+- [x] **Complete Phase 4 API coverage** (2026-03-18)
+    - Added collection, credential, and server models under `src/alteryx_server_py/models`
+    - Added sync and async resources for collections, credentials, and server endpoints
+    - Wired new resources into both clients and exported new not-found exception types
+    - Corrected request content-type handling so form-encoded V3 endpoints send the expected headers
+    - Added unit tests for Phase 4 resources and models
+
+- [x] **Start Phase 5 documentation and examples** (2026-03-18)
+    - Rewrote `README.md` for the `alteryx_server_py` package and current OAuth2/V3 API surface
+    - Added sync, async, collections, credentials, server, and CI/CD usage examples to the README
+    - Added example scripts for workflow deployment, promotion, workflow test execution, and admin resource inspection
+
+- [x] **Advance Phase 5 release readiness** (2026-04-30)
+    - Added Google-style docstrings across the core client/auth base and schedule, collection, and credential resources
+    - Replaced stale GitHub Actions workflows with supported Python 3.10-3.12 validation and build jobs
+    - Added a dedicated release workflow for build, TestPyPI publish, verification, and PyPI publish using trusted publishing
+    - Created `CHANGELOG.md` with breaking changes, migration guidance, and contributor attribution
+    - Verified full test suite passes, package build succeeds, and release artifacts are produced under `dist/`
 
 ---
 
 ## Next Steps
 
-1. Start Phase 3: Schedule & User Management
-2. Create PR for Phase 2 (stacked on top of PR #4)
-3. Begin implementing Phase 3 tasks
+1. Add Google-style docstrings to the remaining public APIs
+2. Publish the built 0.2.0 artifacts to TestPyPI and verify installation from the test index
+3. Publish the verified 0.2.0 release to PyPI and confirm the public install path
 
 ---
 
-**Last Updated:** January 9, 2026  
+**Last Updated:** April 30, 2026  
 **Version:** 0.2.0-dev
+- Complete migration guide

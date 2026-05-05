@@ -3,8 +3,7 @@ Configuration management for Alteryx Server API client.
 """
 
 import os
-from typing import Any
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 from dotenv import load_dotenv
 

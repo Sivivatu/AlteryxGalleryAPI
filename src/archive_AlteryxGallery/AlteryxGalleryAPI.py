@@ -32,7 +32,6 @@ class GalleryClient:
         logger.info("Authenticating user...")
         auth_response = requests.request(
             "POST",
-
             f"{self.host_url}/oauth2/token",
             data={
                 "client_id": self.client_id,
@@ -237,7 +236,6 @@ class GalleryClient:
                     file,
                     "application/octet-stream",
                 )
-
             }
 
             response = self._post(

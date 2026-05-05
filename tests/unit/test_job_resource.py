@@ -1,39 +1,25 @@
-"""
-Unit tests for JobResource.
-"""
+"""Unit tests for JobResource."""
 
-import pytest
 from unittest.mock import MagicMock
 
+import pytest
 import respx
 
-from alteryx_server_py import AlteryxClient
-from alteryx_server_py.models import Job, JobStatus, JobOutput, JobMessage, JobId
-from alteryx_server_py.exceptions import JobNotFoundError, JobExecutionError, TimeoutError
+from alteryx_server_py import AsyncAlteryxClient
+from alteryx_server_py.exceptions import JobExecutionError, JobNotFoundError, TimeoutError
+from alteryx_server_py.models import Job, JobStatus
 
 
 @pytest.fixture
-def mock_client():
-    """Create a mock client for testing."""
-    from alteryx_server_py._base_client import _BaseClient
-    from alteryx_server_py.resources import JobResource
-
-    # Create a minimal mock client
-    config = MagicMock()
-    config.base_url = "https://test.example.com/webapi/"
-    config.client_id = "test-client-id"
-    config.client_secret = "test-client-secret"
-
-    client = AlteryxClient(
+def async_client():
+    """Create a mock async client for testing."""
+    client = AsyncAlteryxClient(
         base_url="https://test.example.com/webapi/",
         client_id="test-id",
         client_secret="test-secret",
     )
-
-    # Monkey patch to avoid authentication
     client._auth_client = MagicMock()
     client._auth_client.get_token.return_value = "Bearer test-token"
-
     return client
 
 
@@ -74,64 +60,78 @@ def job_data():
 class TestJobResource:
     """Test JobResource functionality."""
 
+    def test_job_model_parses_legacy_live_payload(self):
+        """Test parsing the legacy live job payload shape."""
+        job = Job.model_validate(
+            {
+                "id": "job-123",
+                "appId": "workflow-456",
+                "status": "Queued",
+                "priority": "Low",
+                "createDateTime": "2024-01-01T12:00:00Z",
+                "outputs": [],
+                "messages": [],
+                "runWithE2": True,
+            }
+        )
+
+        assert job.workflow_id == "workflow-456"
+        assert job.status == JobStatus.QUEUED
+
+    def test_job_model_parses_legacy_message_payload(self):
+        """Test parsing legacy job messages that use `text` instead of `message`."""
+        job = Job.model_validate(
+            {
+                "id": "job-123",
+                "appId": "workflow-456",
+                "status": "Error",
+                "priority": "Low",
+                "createDateTime": "2024-01-01T12:00:00Z",
+                "outputs": [],
+                "messages": [
+                    {
+                        "status": 3,
+                        "text": "Requires admin privileges.",
+                        "toolId": -1,
+                    }
+                ],
+            }
+        )
+
+        assert job.messages[0].message == "Requires admin privileges."
+        assert job.messages[0].level == "3"
+
     @pytest.mark.asyncio
-    async def test_run_job(self, mock_client):
+    async def test_run_job(self, async_client):
         """Test running a workflow job."""
         with respx.mock:
-            # Mock the job creation endpoint
             respx.post(
                 "https://test.example.com/webapi/v3/workflows/workflow-456/jobs",
+            ).respond(
                 json={
                     "id": "job-123",
                     "workflowId": "workflow-456",
                     "status": "Queued",
                     "priority": "Default",
-                },
-            ) @ respx.call
-            respx.get(
-                "https://test.example.com/webapi/oauth2/token",
-            ) @ respx.call
-            respx.get(
-                "https://test.example.com/webapi/v3/workflows/workflow-456/jobs",
-                json={
-                    "id": "job-123",
-                    "workflowId": "workflow-456",
-                    "status": "Queued",
-                    "priority": "Default",
+                    "createDate": "2024-01-01T12:00:00Z",
                 },
             )
 
-        job = await mock_client.jobs.run("workflow-456")
+            job = await async_client.jobs.run("workflow-456")
 
         assert job.id == "job-123"
         assert job.workflow_id == "workflow-456"
         assert job.status == JobStatus.QUEUED
 
     @pytest.mark.asyncio
-    async def test_get_job(self, job_data):
+    async def test_get_job(self, async_client, job_data):
         """Test getting job details."""
-        from alteryx_server_py import AsyncAlteryxClient
-
-        client = AsyncAlteryxClient(
-            base_url="https://test.example.com/webapi/",
-            client_id="test-id",
-            client_secret="test-secret",
-        )
-
-        # Mock to skip authentication
-        client._auth_client = MagicMock()
-        client._auth_client.get_token.return_value = "Bearer test-token"
-
         with respx.mock:
             respx.get(
-                "https://test.example.com/webapi/oauth2/token",
-            )
-            respx.get(
                 "https://test.example.com/webapi/v3/jobs/job-123",
-                json=job_data,
-            ) @ respx.call
+            ).respond(json=job_data)
 
-        job = await client.jobs.get("job-123")
+            job = await async_client.jobs.get("job-123")
 
         assert isinstance(job, Job)
         assert job.id == "job-123"
@@ -140,140 +140,135 @@ class TestJobResource:
         assert job.outputs[0].name == "output.csv"
 
     @pytest.mark.asyncio
-    async def test_list_jobs(self, job_data):
+    async def test_list_jobs(self, async_client, job_data):
         """Test listing jobs with filters."""
-        from alteryx_server_py import AsyncAlteryxClient
-
-        client = AsyncAlteryxClient(
-            base_url="https://test.example.com/webapi/",
-            client_id="test-id",
-            client_secret="test-secret",
-        )
-
-        client._auth_client = MagicMock()
-        client._auth_client.get_token.return_value = "Bearer test-token"
-
         with respx.mock:
             respx.get(
-                "https://test.example.com/webapi/oauth2/token",
-            )
-            respx.get(
                 "https://test.example.com/webapi/v3/jobs/",
-                json={"jobs": [job_data]},
-            ) @ respx.call
+            ).respond(json={"jobs": [job_data]})
 
-        jobs = await client.jobs.list()
+            jobs = await async_client.jobs.list()
 
         assert len(jobs) == 1
         assert jobs[0].id == "job-123"
         assert jobs[0].status == JobStatus.COMPLETED
 
     @pytest.mark.asyncio
-    async def test_get_job_output(self, job_data):
+    async def test_get_job_output(self, async_client):
         """Test downloading job output."""
-        from alteryx_server_py import AsyncAlteryxClient
-
-        client = AsyncAlteryxClient(
-            base_url="https://test.example.com/webapi/",
-            client_id="test-id",
-            client_secret="test-secret",
-        )
-
-        client._auth_client = MagicMock()
-        client._auth_client.get_token.return_value = "Bearer test-token"
-
         output_content = b"CSV content here"
 
         with respx.mock:
             respx.get(
-                "https://test.example.com/webapi/oauth2/token",
-            )
-            respx.get(
                 "https://test.example.com/webapi/v3/jobs/job-123/output/output-1",
-                content=output_content,
-            ) @ respx.call
+            ).respond(content=output_content)
 
-        output = await client.jobs.get_output("job-123", "output-1")
+            output = await async_client.jobs.get_output("job-123", "output-1")
 
         assert output == output_content
 
     @pytest.mark.asyncio
-    async def test_get_job_messages(self, job_data):
+    async def test_get_job_messages(self, async_client, job_data):
         """Test getting job messages."""
-        from alteryx_server_py import AsyncAlteryxClient
-
-        client = AsyncAlteryxClient(
-            base_url="https://test.example.com/webapi/",
-            client_id="test-id",
-            client_secret="test-secret",
-        )
-
-        client._auth_client = MagicMock()
-        client._auth_client.get_token.return_value = "Bearer test-token"
-
         with respx.mock:
             respx.get(
-                "https://test.example.com/webapi/oauth2/token",
-            )
-            respx.get(
                 "https://test.example.com/webapi/v3/jobs/job-123/messages",
-                json={"messages": job_data["messages"]},
-            ) @ respx.call
+            ).respond(json={"messages": job_data["messages"]})
 
-        messages = await client.jobs.get_messages("job-123")
+            messages = await async_client.jobs.get_messages("job-123")
 
         assert len(messages) == 1
         assert "Job completed successfully" in messages[0]["message"]
 
     @pytest.mark.asyncio
-    async def test_cancel_job(self, job_data):
+    async def test_cancel_job(self, async_client):
         """Test cancelling a job."""
-        from alteryx_server_py import AsyncAlteryxClient
-
-        client = AsyncAlteryxClient(
-            base_url="https://test.example.com/webapi/",
-            client_id="test-id",
-            client_secret="test-secret",
-        )
-
-        client._auth_client = MagicMock()
-        client._auth_client.get_token.return_value = "Bearer test-token"
-
         with respx.mock:
-            respx.get(
-                "https://test.example.com/webapi/oauth2/token",
-            )
             respx.delete(
                 "https://test.example.com/webapi/v3/jobs/job-123",
-            ) @ respx.call
+            ).respond(204)
 
-        await client.jobs.cancel("job-123")
+            await async_client.jobs.cancel("job-123")
 
         # Should not raise if successful
         assert True
 
     @pytest.mark.asyncio
-    async def test_cancel_job_not_found(self):
+    async def test_cancel_job_not_found(self, async_client):
         """Test cancelling a job that doesn't exist."""
-        from alteryx_server_py import AsyncAlteryxClient
-
-        client = AsyncAlteryxClient(
-            base_url="https://test.example.com/webapi/",
-            client_id="test-id",
-            client_secret="test-secret",
-        )
-
-        client._auth_client = MagicMock()
-        client._auth_client.get_token.return_value = "Bearer test-token"
-
         with respx.mock:
-            respx.get(
-                "https://test.example.com/webapi/oauth2/token",
-            )
             respx.delete(
                 "https://test.example.com/webapi/v3/jobs/job-999",
-                status_code=404,
-            ) @ respx.call
+            ).respond(404)
 
-        with pytest.raises(JobNotFoundError):
-            await client.jobs.cancel("job-999")
+            with pytest.raises(JobNotFoundError):
+                await async_client.jobs.cancel("job-999")
+
+    @pytest.mark.asyncio
+    async def test_run_and_wait_raises_timeout(self, async_client):
+        """Test run_and_wait raises TimeoutError when a job never finishes."""
+        with respx.mock:
+            respx.post(
+                "https://test.example.com/webapi/v3/workflows/workflow-456/jobs",
+            ).respond(
+                json={
+                    "id": "job-123",
+                    "workflowId": "workflow-456",
+                    "status": "Queued",
+                    "priority": "Default",
+                    "createDate": "2024-01-01T12:00:00Z",
+                },
+            )
+            respx.get(
+                "https://test.example.com/webapi/v3/jobs/job-123",
+            ).respond(
+                json={
+                    "id": "job-123",
+                    "workflowId": "workflow-456",
+                    "status": "Running",
+                    "priority": "Default",
+                    "createDate": "2024-01-01T12:00:00Z",
+                },
+            )
+
+            with pytest.raises(TimeoutError):
+                await async_client.jobs.run_and_wait(
+                    "workflow-456",
+                    timeout=0,
+                    poll_interval=0,
+                )
+
+    @pytest.mark.asyncio
+    async def test_run_and_wait_raises_job_execution_error(self, async_client):
+        """Test run_and_wait raises JobExecutionError when the job fails."""
+        with respx.mock:
+            respx.post(
+                "https://test.example.com/webapi/v3/workflows/workflow-456/jobs",
+            ).respond(
+                json={
+                    "id": "job-123",
+                    "workflowId": "workflow-456",
+                    "status": "Queued",
+                    "priority": "Default",
+                    "createDate": "2024-01-01T12:00:00Z",
+                },
+            )
+            respx.get(
+                "https://test.example.com/webapi/v3/jobs/job-123",
+            ).respond(
+                json={
+                    "id": "job-123",
+                    "workflowId": "workflow-456",
+                    "status": "Error",
+                    "priority": "Default",
+                    "createDate": "2024-01-01T12:00:00Z",
+                    "messages": [{"message": "Job failed", "level": "Error"}],
+                },
+            )
+
+            with pytest.raises(JobExecutionError):
+                await async_client.jobs.run_and_wait(
+                    "workflow-456",
+                    timeout=1,
+                    poll_interval=0,
+                )

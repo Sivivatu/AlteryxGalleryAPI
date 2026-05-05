@@ -13,22 +13,28 @@ Example:
         print(workflow.name)
 """
 
-from .client import AlteryxClient
 from .async_client import AsyncAlteryxClient
-from .config import ClientConfig, from_env as config_from_env
+from .client import AlteryxClient
+from .config import ClientConfig
+from .config import from_env as config_from_env
 from .exceptions import (
     AlteryxError,
-    ConfigurationError,
     AuthenticationError,
     AuthorizationError,
-    NotFoundError,
-    WorkflowNotFoundError,
-    JobNotFoundError,
-    ValidationError,
-    RateLimitError,
-    ServerError,
+    CollectionNotFoundError,
+    ConfigurationError,
+    CredentialNotFoundError,
     JobExecutionError,
+    JobNotFoundError,
+    NotFoundError,
+    RateLimitError,
+    ScheduleNotFoundError,
+    ServerError,
     TimeoutError,
+    UserGroupNotFoundError,
+    UserNotFoundError,
+    ValidationError,
+    WorkflowNotFoundError,
 )
 
 __version__ = "0.2.0"
@@ -45,8 +51,13 @@ __all__ = [
     "AuthenticationError",
     "AuthorizationError",
     "NotFoundError",
+    "CollectionNotFoundError",
+    "CredentialNotFoundError",
     "WorkflowNotFoundError",
     "JobNotFoundError",
+    "ScheduleNotFoundError",
+    "UserNotFoundError",
+    "UserGroupNotFoundError",
     "ValidationError",
     "RateLimitError",
     "ServerError",

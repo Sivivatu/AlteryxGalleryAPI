@@ -2,11 +2,11 @@
 Base resource class for API resources.
 """
 
-from typing import Any, Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ..client import AlteryxClient
     from ..async_client import AsyncAlteryxClient
+    from ..client import AlteryxClient
 
 
 class _BaseResource:

@@ -27,19 +27,5 @@
       ]
     }
   },
-  // "features": {
-  //   "ghcr.io/devcontainers/features/vscode-extensions:1": {
-  //     "extensions": [
-  //       "ms-python.python",
-  //       "charliermarsh.ruff",
-  //       "tamasfe.even-better-toml",
-  //       "github.vscode-github-actions",
-  //       "aaron-bond.better-comments",
-  //       "alexcvzz.vscode-sqlite",
-  //       "ms-python.vscode-pylance",
-  //       "njpwerner.autodocstring"
-  //     ]
-  //   }
-  // },
   "remoteUser": "root"
 }

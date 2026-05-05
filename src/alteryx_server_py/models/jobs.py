@@ -2,15 +2,16 @@
 Job models for API.
 """
 
-from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
 from datetime import datetime
+from typing import Any, Dict, List, Optional
+
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from .base import BaseApiModel
 from .common import (
     JobId,
-    JobStatus,
     JobPriority,
+    JobStatus,
 )
 
 
@@ -39,9 +40,34 @@ class JobMessage(BaseModel):
         level: Message level (Info/Warning/Error)
     """
 
+    model_config = ConfigDict(populate_by_name=True, extra="ignore")
+
     message: str
     timestamp: Optional[datetime] = None
     level: Optional[str] = None
+
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_legacy_payload(cls, data: object) -> object:
+        """Normalize older job message payloads.
+
+        Args:
+            data: Raw response payload.
+
+        Returns:
+            object: Normalized payload for model validation.
+        """
+
+        if not isinstance(data, dict):
+            return data
+
+        normalized = dict(data)
+        if "message" not in normalized and "text" in normalized:
+            normalized["message"] = normalized["text"]
+        if "level" not in normalized and "status" in normalized:
+            normalized["level"] = str(normalized["status"])
+
+        return normalized
 
 
 class Job(BaseApiModel):
@@ -64,6 +90,13 @@ class Job(BaseApiModel):
         duration_seconds: Total job duration
     """
 
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        validate_assignment=True,
+        extra="ignore",
+        populate_by_name=True,
+    )
+
     id: JobId
     workflow_id: str = Field(..., alias="workflowId")
     status: JobStatus
@@ -79,6 +112,29 @@ class Job(BaseApiModel):
     end_date: Optional[datetime] = Field(None, alias="endDate")
     duration_seconds: Optional[float] = Field(None, alias="durationSeconds")
 
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_legacy_payload(cls, data: object) -> object:
+        """Normalize older job payloads into the current model shape.
+
+        Args:
+            data: Raw response payload.
+
+        Returns:
+            object: Normalized payload for model validation.
+        """
+
+        if not isinstance(data, dict):
+            return data
+
+        normalized = dict(data)
+        if "workflowId" not in normalized and "appId" in normalized:
+            normalized["workflowId"] = normalized["appId"]
+        if "createDate" not in normalized and "createDateTime" in normalized:
+            normalized["createDate"] = normalized["createDateTime"]
+
+        return normalized
+
 
 class JobRunRequest(BaseModel):
     """Request model for running a workflow job.
@@ -89,9 +145,8 @@ class JobRunRequest(BaseModel):
         worker_tag: Worker assignment tag
     """
 
+    model_config = ConfigDict(populate_by_name=True)
+
     questions: Optional[Dict[str, Any]] = None
     priority: JobPriority = Field(JobPriority.DEFAULT)
     worker_tag: Optional[str] = Field(None, alias="workerTag")
-
-    class Config:
-        populate_by_name = True

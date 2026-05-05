@@ -4,8 +4,8 @@ Pytest unit tests for retry_with_backoff decorator.
 
 import pytest
 
-from alteryx_server_py.utils.retry import retry_with_backoff
 from alteryx_server_py.exceptions import RateLimitError
+from alteryx_server_py.utils.retry import retry_with_backoff
 
 
 class TestRetryWithBackoff:
