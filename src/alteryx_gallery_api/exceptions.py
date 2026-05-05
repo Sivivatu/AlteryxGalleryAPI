@@ -25,7 +25,15 @@ class AlteryxAPIError(Exception):
 class AuthenticationError(AlteryxAPIError):
     """Raised when authentication with the Alteryx Server fails."""
 
-    def __init__(self, message: str = "Authentication failed. Check API key/secret and permissions."):
+    def __init__(self, message: str = "Authentication failed. Check API key/secret and permissions.") -> None:
+        """Initialize an authentication error.
+
+        Args:
+            message: Error message describing the authentication failure.
+
+        Returns:
+            None: This initializer stores the fixed 401 status code.
+        """
         super().__init__(message, status_code=401)
 
 

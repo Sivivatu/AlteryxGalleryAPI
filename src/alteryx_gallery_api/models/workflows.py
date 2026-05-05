@@ -32,14 +32,17 @@ class PublishWorkflowRequest(BaseApiModel):
 
 
 class GetWorkflowRequest(BaseApiModel):
+    """Request model for fetching workflows by id, name, or owner.
+
+    Attributes:
+        id: Workflow identifier filter.
+        name: Workflow name filter.
+        owner_id: Workflow owner identifier filter.
+    """
+
     id: Optional[WorkflowId] = Field(default=None, alias="id")
     name: Optional[str] = Field(default=None, alias="name")
     owner_id: Optional[SubscriptionId] = Field(default=None, alias="ownerId")
-
-
-class ViewType(str, Enum):
-    DEFAULT = "Default"
-    FULL = "Full"
 
 
 class Workflow(BaseApiModel):
@@ -57,5 +60,12 @@ class Workflow(BaseApiModel):
 
 
 class WorkflowListResponse(BaseApiModel):
+    """Collection response containing matching workflow records.
+
+    Attributes:
+        total: Optional total number of matching workflows.
+        workflows: Workflow list populated from the `workflows` alias and defaulting to an empty list.
+    """
+
     total: Optional[int] = None
     workflows: List[Workflow] = Field(default_factory=list, alias="workflows")
