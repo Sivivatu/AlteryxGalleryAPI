@@ -20,7 +20,7 @@ All notable changes to this project will be documented in this file.
 - Renamed the primary distribution to `alteryx-server-py`.
 - Moved active development from the legacy `alteryx_gallery_api` implementation to `src/alteryx_server_py`.
 - Switched HTTP transport from `requests` to `httpx` to support both sync and async clients consistently.
-- Standardized environment configuration on `ALTERYX_*` variable names.
+- Standardised environment configuration on `ALTERYX_*` variable names.
 - Updated local development, testing, and packaging workflows around `uv`.
 - Reworked the public API around resource accessors such as `client.workflows`, `client.jobs`, and `client.collections`.
 
