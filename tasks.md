@@ -308,6 +308,10 @@
 
 ## Discovered During Work
 
+- [x] **Add SSH client tooling to the dev container** (2026-05-05)
+    - Installed `openssh-client` in `.devcontainer/Dockerfile` so SSH signing utilities are available in the container image
+    - Updated `README.md` to note the rebuild requirement and the SSH tooling verification commands
+
 - [x] **Restore Ruff compliance after server model test updates** (2026-05-05)
     - Added the missing `cast` import in the async job resource
     - Updated `quick_test.py` import smoke test to reference imported symbols so Ruff no longer flags them as unused

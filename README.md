@@ -242,14 +242,20 @@ uv run python examples/run_workflow_tests.py \
 ## Development
 
 For the VS Code dev container, rebuild the container after changes to
-`.devcontainer/Dockerfile` so bundled tooling such as the GitHub CLI is
-installed into the image. Once rebuilt, verify the CLI and authenticate as
-needed:
+`.devcontainer/Dockerfile` so bundled tooling such as the GitHub CLI and SSH
+client utilities are installed into the image. Once rebuilt, verify the tools
+you need and authenticate as needed:
 
 ```bash
 gh --version
+ssh -V
+ssh-keygen -Y find-principals -h >/dev/null 2>&1 || true
 gh auth login
 ```
+
+The bundled SSH client is intended for workflows such as SSH-backed Git commit
+signing from the dev container when your host SSH agent is forwarded into the
+container.
 
 Run the test suite:
 
