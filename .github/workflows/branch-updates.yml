@@ -4,6 +4,7 @@ on:
   push:
     branches-ignore:
       - master
+      - graphite-base/[0-9]*
 
 jobs:
   project_linting:
