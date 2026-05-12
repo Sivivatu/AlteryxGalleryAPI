@@ -237,6 +237,9 @@
 - [x] **CI-2026-05-08** Exclude Graphite migration branches from branch validation workflow
     - Added a GitHub Actions branch ignore pattern for `graphite-base/[0-9]*`
     - Prevented lint and test jobs from running on Graphite intermediate migration branches
+- [x] **CI-2026-05-12** Add explicit release environments for trusted publishing
+    - Set the TestPyPI publish job environment to `testpypi`
+    - Set the PyPI publish job environment to `pypi`
 
 ---
 
