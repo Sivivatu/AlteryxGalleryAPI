@@ -376,6 +376,28 @@
 
 ---
 
+## Discovered During Work
+
+- [x] **Stabilize branch after merge-conflict fallout** (2026-03-18)
+    - Removed committed merge conflict markers from active source, tests, task docs, and repo instructions
+    - Repaired `src/alteryx_server_py/client.py` request signature and restored sync accessors for jobs, schedules, users, and user groups
+    - Rebuilt conflicted workflow/job/environment tests against the current `alteryx_server_py` API surface
+    - Excluded archived legacy packages and scratch files from current lint/type-analysis scope
+    - Verified `uv run ruff check src/alteryx_server_py tests .github/copilot-instructions.md` passes
+    - Verified `uv run pytest` passes with live integration tests skipped when credentials are absent
+
+- [x] **Fix failing test suite** (2026-03-17)
+    - Fixed 4 test files still importing from old `alteryx_gallery_api` package (renamed to `alteryx_server_py`)
+    - Fixed `test_exceptions.py` infinite recursion caused by Windows path separator mismatch in `importlib.util.spec_from_file_location`
+    - Fixed `test_workflows.py` calling non-existent `get_workflows()` method (now uses `client.workflows.list()`)
+    - Fixed `test_job_resource.py` async/sync mismatch (used sync client with `await`) and broken `respx` mock patterns
+    - Fixed `test_client.py` and `test_client_get_workflows_models.py` using `responses` library (migrated to `respx`/`unittest.mock`)
+    - Fixed test data using invalid `ExecutionMode` enum value (`"Standard"` → `"Safe"`)
+    - Fixed duplicate empty `class AlteryxClient` definition in `client.py` causing `IndentationError`
+    - Fixed `AsyncJobResource.cancel()` string-based error detection to use explicit `NotFoundError` type catching
+
+---
+
 ## Next Steps
 
 1. Add Google-style docstrings to the remaining public APIs
