@@ -16,8 +16,8 @@ jobs:
         os: [ubuntu-22.04]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6 # TODO: Should this be used or replaced with UV's setup-uv action?
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -41,8 +41,8 @@ jobs:
         os: [ubuntu-22.04]
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6 # TODO: Should this be used or replaced with UV's setup-uv action?
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install uv
