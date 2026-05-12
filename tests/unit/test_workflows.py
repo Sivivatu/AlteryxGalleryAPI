@@ -2,7 +2,7 @@
 Pytest unit tests for AlteryxClient workflow management methods.
 """
 
-import pytest
+import io
 from unittest.mock import MagicMock
 
 import pytest
@@ -13,6 +13,7 @@ from alteryx_server_py.models import Workflow
 BASE_URL = "https://mock-gallery.com/webapi/"
 CLIENT_ID = "test_key"
 CLIENT_SECRET = "test_secret"
+
 
 @pytest.fixture
 def client():
@@ -29,7 +30,6 @@ def client():
 
 
 def test_get_workflows(client, monkeypatch):
-    """Test listing workflows through the resource-based API."""
     payload = [
         {
             "id": "wf1",
@@ -117,6 +117,7 @@ def test_publish_workflow_fetches_details_when_server_returns_only_id(client, mo
 
     assert workflow.id == "wf-published"
     assert workflow.name == "Published Workflow"
+
 
 # @responses.activate
 # def test_get_workflow_info_success(client):

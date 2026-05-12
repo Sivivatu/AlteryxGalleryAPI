@@ -34,9 +34,7 @@ class TestServerResource:
         }
 
         with respx.mock:
-            respx.get("https://test.example.com/webapi/v3/serverinfo").respond(
-                json=payload
-            )
+            respx.get("https://test.example.com/webapi/v3/serverinfo").respond(json=payload)
 
             info = await async_client.server.get_info()
 
@@ -52,9 +50,7 @@ class TestServerResource:
         }
 
         with respx.mock:
-            respx.get("https://test.example.com/webapi/v3/admin/settings").respond(
-                json=payload
-            )
+            respx.get("https://test.example.com/webapi/v3/admin/settings").respond(json=payload)
 
             settings = await async_client.server.get_settings()
 

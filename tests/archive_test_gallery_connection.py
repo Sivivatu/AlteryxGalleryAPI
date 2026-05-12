@@ -3,10 +3,9 @@ import os
 import pytest
 from dotenv import load_dotenv
 
-from AlteryxGallery import AlteryxGalleryAPI
+AlteryxGalleryAPI = pytest.importorskip("AlteryxGallery").AlteryxGalleryAPI
 
 load_dotenv()
-
 
 # Fixture to initialize the HTTPX params
 @pytest.fixture(scope="module")
@@ -16,8 +15,6 @@ def params():
     params["client_id"] = os.getenv("CLIENT_ID", "NoValueFound")
     params["client_secret"] = os.getenv("CLIENT_SECRET", "NoValueFound")
     return params
-
-
 
 @pytest.fixture(scope="module")
 def client(params: dict):

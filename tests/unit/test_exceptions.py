@@ -2,7 +2,6 @@
 Unit tests for custom exceptions in alteryx_server_py.
 """
 
-
 from alteryx_server_py.exceptions import NotFoundError, WorkflowNotFoundError
 
 

@@ -44,9 +44,7 @@ class TestCredentialResource:
     async def test_list_credentials(self, async_client, credential_data):
         """Test listing credentials returns Credential objects."""
         with respx.mock:
-            respx.get("https://test.example.com/webapi/v3/credentials").respond(
-                json=[credential_data]
-            )
+            respx.get("https://test.example.com/webapi/v3/credentials").respond(json=[credential_data])
 
             credentials = await async_client.credentials.list()
 
@@ -58,9 +56,7 @@ class TestCredentialResource:
     async def test_get_credential(self, async_client, credential_data):
         """Test getting a credential by ID."""
         with respx.mock:
-            respx.get(
-                "https://test.example.com/webapi/v3/credentials/cred-123"
-            ).respond(json=credential_data)
+            respx.get("https://test.example.com/webapi/v3/credentials/cred-123").respond(json=credential_data)
 
             credential = await async_client.credentials.get("cred-123")
 
@@ -70,9 +66,7 @@ class TestCredentialResource:
     async def test_get_credential_not_found(self, async_client):
         """Test missing credential lookup raises a credential-specific error."""
         with respx.mock:
-            respx.get(
-                "https://test.example.com/webapi/v3/credentials/missing"
-            ).respond(404)
+            respx.get("https://test.example.com/webapi/v3/credentials/missing").respond(404)
 
             with pytest.raises(CredentialNotFoundError):
                 await async_client.credentials.get("missing")
@@ -81,9 +75,7 @@ class TestCredentialResource:
     async def test_create_credential(self, async_client, credential_data):
         """Test creating a credential."""
         with respx.mock:
-            respx.post("https://test.example.com/webapi/v3/credentials").respond(
-                json=credential_data
-            )
+            respx.post("https://test.example.com/webapi/v3/credentials").respond(json=credential_data)
 
             credential = await async_client.credentials.create(
                 username="CONTOSO\\svc-alteryx",
@@ -96,13 +88,9 @@ class TestCredentialResource:
     async def test_update_credential(self, async_client, credential_data):
         """Test updating a credential password."""
         with respx.mock:
-            respx.put(
-                "https://test.example.com/webapi/v3/credentials/cred-123"
-            ).respond(json=credential_data)
+            respx.put("https://test.example.com/webapi/v3/credentials/cred-123").respond(json=credential_data)
 
-            credential = await async_client.credentials.update(
-                "cred-123", new_password="new-secret"
-            )
+            credential = await async_client.credentials.update("cred-123", new_password="new-secret")
 
         assert credential.owner_id == "user-123"
 
@@ -110,9 +98,7 @@ class TestCredentialResource:
     async def test_delete_credential(self, async_client):
         """Test deleting a credential."""
         with respx.mock:
-            respx.delete(
-                "https://test.example.com/webapi/v3/credentials/cred-123"
-            ).respond(204)
+            respx.delete("https://test.example.com/webapi/v3/credentials/cred-123").respond(204)
 
             await async_client.credentials.delete("cred-123")
 
