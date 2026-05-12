@@ -218,14 +218,6 @@
     - Create `models/credentials.py`
     - Add: `Credential`, `CredentialType` enum
 - [x] **4.6** Create Pydantic models for server info
-
----
-
-## Completed Maintenance Tasks
-
-- [x] **CI-2026-05-08** Exclude Graphite migration branches from branch validation workflow
-    - Added a GitHub Actions branch ignore pattern for `graphite-base/[0-9]*`
-    - Prevented lint and test jobs from running on Graphite intermediate migration branches
     - Create `models/server.py`
     - Add: `ServerInfo`, `ServerSettings`
 - [x] **4.7** Unit and integration tests for collections/credentials/server
@@ -237,6 +229,14 @@
 - DCM credential management
 - Server info/settings access
 - Complete V3 API coverage
+
+---
+
+## Completed Maintenance Tasks
+
+- [x] **CI-2026-05-08** Exclude Graphite migration branches from branch validation workflow
+    - Added a GitHub Actions branch ignore pattern for `graphite-base/[0-9]*`
+    - Prevented lint and test jobs from running on Graphite intermediate migration branches
 
 ---
 
