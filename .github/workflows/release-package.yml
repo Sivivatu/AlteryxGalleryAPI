@@ -39,7 +39,8 @@ jobs:
       - name: Capture package version
         id: metadata
         run: |
-          echo "package_version=$(uv run python -c \"import tomllib; from pathlib import Path; print(tomllib.loads(Path('pyproject.toml').read_text())['project']['version'])\")" >> "$GITHUB_OUTPUT"
+          package_version=$(uv run python -c 'import tomllib; from pathlib import Path; print(tomllib.loads(Path("pyproject.toml").read_text())["project"]["version"])')
+          echo "package_version=$package_version" >> "$GITHUB_OUTPUT"
       - name: Build artifacts
         run: uv build --clear
       - name: Upload distribution artifacts
