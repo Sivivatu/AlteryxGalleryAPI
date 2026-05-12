@@ -83,15 +83,31 @@ jobs:
           python-version: "3.12"
       - name: Install uv
         uses: astral-sh/setup-uv@v7
+      - name: Wait for TestPyPI propagation
+        run: sleep 30
       - name: Create smoke test environment
         run: uv venv .venv-smoke
       - name: Install package from TestPyPI
         run: |
           source .venv-smoke/bin/activate
-          uv pip install \
-            --index-url https://test.pypi.org/simple/ \
-            --extra-index-url https://pypi.org/simple/ \
-            "${PACKAGE_NAME}==${{ needs.build.outputs.package_version }}"
+          max_attempts=3
+          for attempt in $(seq 1 "$max_attempts"); do
+            if uv pip install \
+              --index-url https://test.pypi.org/simple/ \
+              --extra-index-url https://pypi.org/simple/ \
+              "${PACKAGE_NAME}==${{ needs.build.outputs.package_version }}"; then
+              exit 0
+            fi
+
+            if [[ "$attempt" -eq "$max_attempts" ]]; then
+              echo "TestPyPI package installation failed after $max_attempts attempts."
+              exit 1
+            fi
+
+            sleep_seconds=$((attempt * 15))
+            echo "Install attempt $attempt failed; retrying in ${sleep_seconds}s."
+            sleep "$sleep_seconds"
+          done
       - name: Smoke test published package
         run: |
           source .venv-smoke/bin/activate
