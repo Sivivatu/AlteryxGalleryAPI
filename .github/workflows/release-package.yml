@@ -57,7 +57,7 @@ jobs:
         with:
           name: dist
           path: dist
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Install uv
@@ -75,7 +75,7 @@ jobs:
     runs-on: ubuntu-22.04
     needs: [build, publish_testpypi]
     steps:
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Install uv
@@ -104,7 +104,7 @@ jobs:
         with:
           name: dist
           path: dist
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
       - name: Install uv

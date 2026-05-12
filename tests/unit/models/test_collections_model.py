@@ -66,9 +66,7 @@ class TestCollectionPermissionRequests:
 
     def test_permission_update_request_flattens_permissions(self):
         """Test permission update contract serialization."""
-        request = CollectionPermissionUpdateRequest(
-            permissions=CollectionPermission(can_remove_users=True)
-        )
+        request = CollectionPermissionUpdateRequest(permissions=CollectionPermission(can_remove_users=True))
 
         data = request.model_dump(by_alias=True, exclude_none=True)
 

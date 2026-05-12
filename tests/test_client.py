@@ -2,7 +2,6 @@
 Pytest unit tests for the AlteryxClient initialization and configuration.
 """
 
-
 import pytest
 
 from alteryx_server_py.client import AlteryxClient

@@ -232,6 +232,14 @@
 
 ---
 
+## Completed Maintenance Tasks
+
+- [x] **CI-2026-05-08** Exclude Graphite migration branches from branch validation workflow
+    - Added a GitHub Actions branch ignore pattern for `graphite-base/[0-9]*`
+    - Prevented lint and test jobs from running on Graphite intermediate migration branches
+
+---
+
 ## Phase 5: Documentation & Release (Week 8)
 
 **Status:** Pending  

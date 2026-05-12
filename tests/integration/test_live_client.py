@@ -338,9 +338,7 @@ def test_live_get_workflow_by_id_smoke(live_client: AlteryxClient, live_settings
     if workflow_id is None:
         workflows = live_client.workflows.list(page_size=1)
         if not workflows:
-            pytest.skip(
-                f"Set {KNOWN_WORKFLOW_ID_ENV} or ensure at least one workflow exists for read-only smoke validation"
-            )
+            pytest.skip(f"Set {KNOWN_WORKFLOW_ID_ENV} or ensure at least one workflow exists for read-only smoke validation")
         workflow_id = workflows[0].id
 
     workflow = live_client.workflows.get(workflow_id)

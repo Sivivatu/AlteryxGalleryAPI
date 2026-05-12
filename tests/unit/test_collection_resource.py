@@ -47,9 +47,7 @@ class TestCollectionResource:
     async def test_list_collections(self, async_client, collection_data):
         """Test listing collections returns Collection objects."""
         with respx.mock:
-            respx.get("https://test.example.com/webapi/v3/collections").respond(
-                json=[collection_data]
-            )
+            respx.get("https://test.example.com/webapi/v3/collections").respond(json=[collection_data])
 
             collections = await async_client.collections.list()
 
@@ -61,9 +59,7 @@ class TestCollectionResource:
     async def test_get_collection(self, async_client, collection_data):
         """Test getting a collection by ID."""
         with respx.mock:
-            respx.get(
-                "https://test.example.com/webapi/v3/collections/collection-123"
-            ).respond(json=collection_data)
+            respx.get("https://test.example.com/webapi/v3/collections/collection-123").respond(json=collection_data)
 
             collection = await async_client.collections.get("collection-123")
 
@@ -74,9 +70,7 @@ class TestCollectionResource:
     async def test_get_collection_not_found(self, async_client):
         """Test collection lookup raises a collection-specific error."""
         with respx.mock:
-            respx.get(
-                "https://test.example.com/webapi/v3/collections/missing"
-            ).respond(404)
+            respx.get("https://test.example.com/webapi/v3/collections/missing").respond(404)
 
             with pytest.raises(CollectionNotFoundError):
                 await async_client.collections.get("missing")
@@ -85,9 +79,7 @@ class TestCollectionResource:
     async def test_create_collection(self, async_client, collection_data):
         """Test creating a collection."""
         with respx.mock:
-            respx.post("https://test.example.com/webapi/v3/collections").respond(
-                json=collection_data
-            )
+            respx.post("https://test.example.com/webapi/v3/collections").respond(json=collection_data)
 
             collection = await async_client.collections.create("Accounting")
 
@@ -100,13 +92,9 @@ class TestCollectionResource:
         updated = {**collection_data, "name": "Finance", "ownerId": "user-999"}
 
         with respx.mock:
-            respx.put(
-                "https://test.example.com/webapi/v3/collections/collection-123"
-            ).respond(json=updated)
+            respx.put("https://test.example.com/webapi/v3/collections/collection-123").respond(json=updated)
 
-            collection = await async_client.collections.update(
-                "collection-123", name="Finance", owner_id="user-999"
-            )
+            collection = await async_client.collections.update("collection-123", name="Finance", owner_id="user-999")
 
         assert collection.name == "Finance"
         assert collection.owner_id == "user-999"
@@ -115,13 +103,11 @@ class TestCollectionResource:
     async def test_add_workflow(self, async_client, collection_data):
         """Test adding a workflow to a collection."""
         with respx.mock:
-            respx.post(
-                "https://test.example.com/webapi/v3/collections/collection-123/workflows"
-            ).respond(json=collection_data)
-
-            collection = await async_client.collections.add_workflow(
-                "collection-123", "workflow-456"
+            respx.post("https://test.example.com/webapi/v3/collections/collection-123/workflows").respond(
+                json=collection_data
             )
+
+            collection = await async_client.collections.add_workflow("collection-123", "workflow-456")
 
         assert collection.workflow_ids == ["workflow-456"]
 
@@ -138,9 +124,9 @@ class TestCollectionResource:
         )
 
         with respx.mock:
-            respx.put(
-                "https://test.example.com/webapi/v3/collections/collection-123/users/user-123/permissions"
-            ).respond(json=collection_data)
+            respx.put("https://test.example.com/webapi/v3/collections/collection-123/users/user-123/permissions").respond(
+                json=collection_data
+            )
 
             collection = await async_client.collections.set_permissions(
                 "collection-123", permissions=permissions, user_id="user-123"
@@ -163,9 +149,7 @@ class TestCollectionResource:
     async def test_delete_collection(self, async_client):
         """Test deleting a collection."""
         with respx.mock:
-            respx.delete(
-                "https://test.example.com/webapi/v3/collections/collection-123"
-            ).respond(204)
+            respx.delete("https://test.example.com/webapi/v3/collections/collection-123").respond(204)
 
             await async_client.collections.delete("collection-123")
 

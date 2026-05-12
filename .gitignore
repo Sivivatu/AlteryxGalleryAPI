@@ -166,3 +166,7 @@ uv.lock
 test.txt
 scratch2.py
 _version.py
+
+# example server api package files from alteryx workflows
+ServerAPI_v1_3_6.yxi
+ServerAPI_v1_3_6_extracted/*

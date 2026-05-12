@@ -243,8 +243,6 @@ class AlteryxClient(_BaseClient):
 
     @property
     def workflows(self) -> WorkflowResource:
-        """Access workflow resource.
-
         """Access workflow operations for the current client.
 
         Returns:
@@ -257,9 +255,6 @@ class AlteryxClient(_BaseClient):
         return self._workflows
 
     @property
-    def jobs(self) -> object:
-        """Access job resource.
-
     def jobs(self) -> "JobResource":
         """Access job operations for the current client.
 
