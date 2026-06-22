@@ -4,8 +4,8 @@ import pytest
 
 from alteryx_server_py.models.credentials import (
     Credential,
-    CredentialCreateRequest,
-    CredentialUpdateRequest,
+    CredentialUserGroupShareRequest,
+    CredentialUserShareRequest,
 )
 from alteryx_server_py.models.server import ServerInfo, ServerSettings
 
@@ -27,19 +27,31 @@ class TestCredentialModel:
         assert credential.username == "CONTOSO\\svc-alteryx"
         assert credential.owner_id == "user-1"
 
-    def test_create_request_serialization(self):
-        """Test credential create request serialization."""
-        request = CredentialCreateRequest(username="CONTOSO\\svc", password="secret")
+    def test_credential_allows_documented_extra_fields(self):
+        """Test credential model remains permissive for undocumented fields."""
+        data = {
+            "id": "cred-1",
+            "username": "CONTOSO\\svc-alteryx",
+            "undocumentedField": "kept",
+        }
+
+        credential = Credential.model_validate(data)
+
+        assert credential.model_extra["undocumentedField"] == "kept"
+
+    def test_user_share_request_serialization(self):
+        """Test credential user share request serialization."""
+        request = CredentialUserShareRequest(user_id="user-1")
         data = request.model_dump(by_alias=True, exclude_none=True)
 
-        assert data == {"username": "CONTOSO\\svc", "password": "secret"}
+        assert data == {"userId": "user-1"}
 
-    def test_update_request_serialization(self):
-        """Test credential update request uses documented field name."""
-        request = CredentialUpdateRequest(NewPassword="new-secret")
+    def test_user_group_share_request_serialization(self):
+        """Test credential user-group share request serialization."""
+        request = CredentialUserGroupShareRequest(user_group_id="group-1")
         data = request.model_dump(by_alias=True, exclude_none=True)
 
-        assert data == {"NewPassword": "new-secret"}
+        assert data == {"userGroupId": "group-1"}
 
 
 class TestServerModels:

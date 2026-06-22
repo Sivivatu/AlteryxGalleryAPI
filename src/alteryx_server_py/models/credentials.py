@@ -7,19 +7,12 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .base import BaseApiModel
+from .base import PermissiveApiModel
 from .common import CredentialId, CredentialType, UserGroupId, UserId
 
 
-class Credential(BaseApiModel):
+class Credential(PermissiveApiModel):
     """Credential model representing a shared server credential."""
-
-    model_config = ConfigDict(
-        str_strip_whitespace=True,
-        validate_assignment=True,
-        extra="allow",
-        populate_by_name=True,
-    )
 
     id: CredentialId
     username: Optional[str] = None

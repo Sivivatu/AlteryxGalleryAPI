@@ -7,11 +7,12 @@ from typing import TYPE_CHECKING, List, Optional
 from ..exceptions import CollectionNotFoundError, NotFoundError, ValidationError
 from ..models import (
     Collection,
+    CollectionGroupPermissionUpdateRequest,
     CollectionPermission,
-    CollectionPermissionUpdateRequest,
     CollectionShareGroupRequest,
     CollectionShareUserRequest,
     CollectionUpdateRequest,
+    CollectionUserPermissionUpdateRequest,
     CollectionWorkflowRequest,
 )
 from ..models.collections import CollectionCreateRequest
@@ -284,13 +285,19 @@ class CollectionResource(_BaseResource):
         if bool(user_id) == bool(user_group_id):
             raise ValidationError("Provide exactly one of user_id or user_group_id.")
 
-        request = CollectionPermissionUpdateRequest(
-            expiration_date=expiration_date,
-            permissions=permissions,
-        )
         if user_id:
+            if expiration_date is None:
+                raise ValidationError("expiration_date is required when updating user permissions.")
+            request = CollectionUserPermissionUpdateRequest(
+                expiration_date=expiration_date,
+                permissions=permissions,
+            )
             endpoint = f"collections/{collection_id}/users/{user_id}/permissions"
         else:
+            request = CollectionGroupPermissionUpdateRequest(
+                expiration_date=expiration_date,
+                permissions=permissions,
+            )
             endpoint = f"collections/{collection_id}/userGroups/{user_group_id}/permissions"
 
         try:
@@ -548,13 +555,19 @@ class AsyncCollectionResource(_BaseResource):
         if bool(user_id) == bool(user_group_id):
             raise ValidationError("Provide exactly one of user_id or user_group_id.")
 
-        request = CollectionPermissionUpdateRequest(
-            expiration_date=expiration_date,
-            permissions=permissions,
-        )
         if user_id:
+            if expiration_date is None:
+                raise ValidationError("expiration_date is required when updating user permissions.")
+            request = CollectionUserPermissionUpdateRequest(
+                expiration_date=expiration_date,
+                permissions=permissions,
+            )
             endpoint = f"collections/{collection_id}/users/{user_id}/permissions"
         else:
+            request = CollectionGroupPermissionUpdateRequest(
+                expiration_date=expiration_date,
+                permissions=permissions,
+            )
             endpoint = f"collections/{collection_id}/userGroups/{user_group_id}/permissions"
 
         try:

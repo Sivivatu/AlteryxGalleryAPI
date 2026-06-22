@@ -40,3 +40,14 @@ class BaseApiModel(BaseModel):
             else:
                 cleaned[key] = value
         return cls.model_validate(cleaned)
+
+
+class PermissiveApiModel(BaseApiModel):
+    """Base model for API responses with documented open-ended payloads."""
+
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        validate_assignment=True,
+        extra="allow",
+        populate_by_name=True,
+    )
