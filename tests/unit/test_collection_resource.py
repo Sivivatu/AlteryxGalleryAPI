@@ -78,14 +78,17 @@ class TestCollectionResource:
 
     @pytest.mark.asyncio
     async def test_create_collection(self, async_client, collection_data):
-        """Test creating a collection."""
+        """Test creating a collection sends a form-encoded request."""
         with respx.mock:
-            respx.post("https://test.example.com/webapi/v3/collections").respond(json=collection_data)
+            route = respx.post("https://test.example.com/webapi/v3/collections").respond(json=collection_data)
 
             collection = await async_client.collections.create("Accounting")
 
         assert collection.id == "collection-123"
         assert collection.name == "Accounting"
+        request = route.calls[0].request
+        assert request.headers["Content-Type"] == "application/x-www-form-urlencoded"
+        assert request.content == b"name=Accounting"
 
     @pytest.mark.asyncio
     async def test_update_collection(self, async_client, collection_data):

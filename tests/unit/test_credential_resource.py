@@ -72,29 +72,6 @@ class TestCredentialResource:
                 await async_client.credentials.get("missing")
 
     @pytest.mark.asyncio
-    async def test_create_credential(self, async_client, credential_data):
-        """Test creating a credential."""
-        with respx.mock:
-            respx.post("https://test.example.com/webapi/v3/credentials").respond(json=credential_data)
-
-            credential = await async_client.credentials.create(
-                username="CONTOSO\\svc-alteryx",
-                password="secret",
-            )
-
-        assert credential.id == "cred-123"
-
-    @pytest.mark.asyncio
-    async def test_update_credential(self, async_client, credential_data):
-        """Test updating a credential password."""
-        with respx.mock:
-            respx.put("https://test.example.com/webapi/v3/credentials/cred-123").respond(json=credential_data)
-
-            credential = await async_client.credentials.update("cred-123", new_password="new-secret")
-
-        assert credential.owner_id == "user-123"
-
-    @pytest.mark.asyncio
     async def test_delete_credential(self, async_client):
         """Test deleting a credential."""
         with respx.mock:
@@ -103,3 +80,8 @@ class TestCredentialResource:
             await async_client.credentials.delete("cred-123")
 
         assert True
+
+    def test_unsupported_create_update_methods_are_not_exposed(self, async_client):
+        """Test unsupported credential create/update endpoints are not public methods."""
+        assert not hasattr(async_client.credentials, "create")
+        assert not hasattr(async_client.credentials, "update")

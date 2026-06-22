@@ -169,8 +169,7 @@ class AsyncAlteryxClient(_BaseClient):
 
         logger.debug(f"ASYNC {method} {url}")
         logger.debug(f"Params: {params}")
-        logger.debug(f"Data: {data}")
-        logger.debug(f"JSON: {json_data}")
+        logger.debug("Request body omitted from debug logs")
 
         try:
             response = await self._client.request(

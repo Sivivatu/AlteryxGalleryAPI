@@ -5,8 +5,21 @@ from unittest.mock import MagicMock
 import pytest
 import respx
 
-from alteryx_server_py import AsyncAlteryxClient
+from alteryx_server_py import AlteryxClient, AsyncAlteryxClient
 from alteryx_server_py.models import ServerInfo, ServerSettings
+
+
+@pytest.fixture
+def sync_client():
+    """Create a mock sync client for testing."""
+    client = AlteryxClient(
+        base_url="https://test.example.com/webapi/",
+        client_id="test-id",
+        client_secret="test-secret",
+    )
+    client._auth_client = MagicMock()
+    client._auth_client.get_token.return_value = "Bearer test-token"
+    return client
 
 
 @pytest.fixture
@@ -24,6 +37,36 @@ def async_client():
 
 class TestServerResource:
     """Test ServerResource functionality."""
+
+    def test_get_server_info_sync(self, sync_client):
+        """Test sync server info retrieval uses the generic model."""
+        payload = {
+            "serverVersion": "2025.2",
+            "baseAddress": "https://test.example.com/webapi/",
+        }
+
+        with respx.mock:
+            respx.get("https://test.example.com/webapi/v3/serverinfo").respond(json=payload)
+
+            info = sync_client.server.get_info()
+
+        assert isinstance(info, ServerInfo)
+        assert info.server_version == "2025.2"
+
+    def test_get_server_settings_sync(self, sync_client):
+        """Test sync server settings retrieval uses the generic model."""
+        payload = {
+            "galleryName": "Test Server",
+            "allowApiAccess": True,
+        }
+
+        with respx.mock:
+            respx.get("https://test.example.com/webapi/v3/admin/settings").respond(json=payload)
+
+            settings = sync_client.server.get_settings()
+
+        assert isinstance(settings, ServerSettings)
+        assert settings.gallery_name == "Test Server"
 
     @pytest.mark.asyncio
     async def test_get_server_info(self, async_client):

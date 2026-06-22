@@ -1,8 +1,7 @@
 """Collection resource for API operations."""
 
-import logging
 from datetime import datetime
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Optional
 
 from ..exceptions import CollectionNotFoundError, NotFoundError, ValidationError
 from ..models import (
@@ -23,17 +22,15 @@ if TYPE_CHECKING:
     from ..async_client import AsyncAlteryxClient
     from ..client import AlteryxClient
 
-logger = logging.getLogger(__name__)
 
-
-def _coerce_collection_list(response: object) -> List[Collection]:
+def _coerce_collection_list(response: object) -> list[Collection]:
     """Normalize collection list responses into model instances.
 
     Args:
         response: Raw response payload returned by the API client.
 
     Returns:
-        List[Collection]: Parsed collection models.
+        list[Collection]: Parsed collection models.
     """
     if isinstance(response, list):
         return [Collection.model_validate(item) for item in response]
@@ -49,14 +46,14 @@ class CollectionResource(_BaseResource):
 
     _client: "AlteryxClient"
 
-    def list(self, view: Optional[str] = None) -> List[Collection]:
+    def list(self, view: Optional[str] = None) -> list[Collection]:
         """List collections visible to the current caller.
 
         Args:
             view: Optional API-specific collection view filter.
 
         Returns:
-            List[Collection]: Matching collection models.
+            list[Collection]: Matching collection models.
         """
         params = {"view": view} if view else None
         response = self._client._request("GET", "collections", params=params)
@@ -93,7 +90,7 @@ class CollectionResource(_BaseResource):
         response = self._client._request(
             "POST",
             "collections",
-            json_data=request.model_dump(by_alias=True, exclude_none=True),
+            data=request.model_dump(by_alias=True, exclude_none=True),
         )
         return Collection.model_validate(response)
 
@@ -319,14 +316,14 @@ class AsyncCollectionResource(_BaseResource):
 
     _client: "AsyncAlteryxClient"
 
-    async def list(self, view: Optional[str] = None) -> List[Collection]:
+    async def list(self, view: Optional[str] = None) -> list[Collection]:
         """List collections visible to the current caller.
 
         Args:
             view: Optional API-specific collection view filter.
 
         Returns:
-            List[Collection]: Matching collection models.
+            list[Collection]: Matching collection models.
         """
         params = {"view": view} if view else None
         response = await self._client._request("GET", "collections", params=params)
@@ -363,7 +360,7 @@ class AsyncCollectionResource(_BaseResource):
         response = await self._client._request(
             "POST",
             "collections",
-            json_data=request.model_dump(by_alias=True, exclude_none=True),
+            data=request.model_dump(by_alias=True, exclude_none=True),
         )
         return Collection.model_validate(response)
 
