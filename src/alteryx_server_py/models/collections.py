@@ -7,8 +7,8 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .base import BaseApiModel
-from .common import CollectionId, UserGroupId, UserId, WorkflowId
+from .base import PermissiveApiModel
+from .common import CollectionId, ScheduleId, UserGroupId, UserId, WorkflowId
 
 
 class CollectionPermission(BaseModel):
@@ -24,15 +24,8 @@ class CollectionPermission(BaseModel):
     can_remove_users: bool = Field(False, alias="canRemoveUsers")
 
 
-class Collection(BaseApiModel):
+class Collection(PermissiveApiModel):
     """Collection model representing a Server collection."""
-
-    model_config = ConfigDict(
-        str_strip_whitespace=True,
-        validate_assignment=True,
-        extra="allow",
-        populate_by_name=True,
-    )
 
     id: CollectionId
     name: str
@@ -43,7 +36,7 @@ class Collection(BaseApiModel):
     user_ids: list[UserId] = Field(default_factory=list, alias="userIds")
     user_group_ids: list[UserGroupId] = Field(default_factory=list, alias="userGroupIds")
     workflow_ids: list[WorkflowId] = Field(default_factory=list, alias="workflowIds")
-    schedule_ids: list[str] = Field(default_factory=list, alias="scheduleIds")
+    schedule_ids: list[ScheduleId] = Field(default_factory=list, alias="scheduleIds")
 
 
 class CollectionCreateRequest(BaseModel):
@@ -68,6 +61,7 @@ class _PermissionFlattenMixin:
 
     def model_dump(self, *args, **kwargs):
         """Flatten nested permissions into the parent request payload."""
+        kwargs.setdefault("mode", "json")
         data = super().model_dump(*args, **kwargs)
         permissions = data.pop("permissions", None)
         if permissions:
@@ -95,8 +89,17 @@ class CollectionShareGroupRequest(_PermissionFlattenMixin, BaseModel):
     permissions: CollectionPermission
 
 
-class CollectionPermissionUpdateRequest(_PermissionFlattenMixin, BaseModel):
-    """Request model for updating collection permissions."""
+class CollectionUserPermissionUpdateRequest(_PermissionFlattenMixin, BaseModel):
+    """Request model for updating user collection permissions."""
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    expiration_date: datetime = Field(..., alias="expirationDate")
+    permissions: CollectionPermission
+
+
+class CollectionGroupPermissionUpdateRequest(_PermissionFlattenMixin, BaseModel):
+    """Request model for updating user-group collection permissions."""
 
     model_config = ConfigDict(populate_by_name=True)
 

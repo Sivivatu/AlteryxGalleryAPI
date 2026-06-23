@@ -38,7 +38,7 @@ def test_workflow_parses_legacy_list_payload_from_live_server():
 
     assert wf.id == "wf-legacy-list"
     assert wf.workflow_type.value == "Standard"
-    assert wf.execution_mode.value == "Safe"
+    assert wf.execution_mode.value == "Standard"
 
 
 def test_workflow_parses_legacy_detail_payload_from_live_server():
@@ -58,4 +58,19 @@ def test_workflow_parses_legacy_detail_payload_from_live_server():
 
     assert wf.id == "wf-legacy-detail"
     assert wf.workflow_type.value == "AnalyticApp"
-    assert wf.execution_mode.value == "Safe"
+    assert wf.execution_mode.value == "Standard"
+
+
+def test_workflow_preserves_standard_execution_mode():
+    payload = {
+        "id": "wf-standard",
+        "name": "Standard Workflow",
+        "ownerId": "sub-standard",
+        "dateCreated": "2024-06-01T12:34:56Z",
+        "workflowType": "Standard",
+        "executionMode": "Standard",
+    }
+
+    wf = Workflow.model_validate(payload)
+
+    assert wf.execution_mode.value == "Standard"

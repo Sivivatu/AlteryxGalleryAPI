@@ -94,7 +94,7 @@ class Workflow(BaseApiModel):
             "AnalyticApp": "AnalyticApp",
             "Macro": "Macro",
         }
-        valid_execution_modes = {"Safe", "SemiSafe", "Unrestricted"}
+        valid_execution_modes = {mode.value for mode in ExecutionMode}
 
         if workflow_type is None:
             legacy_workflow_type = package_workflow_type or execution_mode

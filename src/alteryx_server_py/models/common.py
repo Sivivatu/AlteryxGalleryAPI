@@ -21,6 +21,7 @@ UserGroupId = str
 class ExecutionMode(str, Enum):
     """Workflow execution mode."""
 
+    STANDARD = "Standard"
     SAFE = "Safe"
     SEMI_SAFE = "SemiSafe"
     UNRESTRICTED = "Unrestricted"

@@ -3,15 +3,16 @@ Pydantic models for API requests and responses.
 """
 
 from .auth import TokenResponse
-from .base import BaseApiModel
+from .base import BaseApiModel, PermissiveApiModel
 from .collections import (
     Collection,
     CollectionCreateRequest,
+    CollectionGroupPermissionUpdateRequest,
     CollectionPermission,
-    CollectionPermissionUpdateRequest,
     CollectionShareGroupRequest,
     CollectionShareUserRequest,
     CollectionUpdateRequest,
+    CollectionUserPermissionUpdateRequest,
     CollectionWorkflowRequest,
 )
 from .common import (
@@ -71,6 +72,7 @@ from .workflows import (
 __all__ = [
     # Base
     "BaseApiModel",
+    "PermissiveApiModel",
     # Common types
     "WorkflowId",
     "UserId",
@@ -99,7 +101,8 @@ __all__ = [
     "CollectionUpdateRequest",
     "CollectionShareUserRequest",
     "CollectionShareGroupRequest",
-    "CollectionPermissionUpdateRequest",
+    "CollectionUserPermissionUpdateRequest",
+    "CollectionGroupPermissionUpdateRequest",
     "CollectionWorkflowRequest",
     # Credential models
     "Credential",

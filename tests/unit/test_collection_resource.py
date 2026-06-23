@@ -1,5 +1,6 @@
 """Unit tests for CollectionResource."""
 
+from datetime import datetime, timezone
 from unittest.mock import MagicMock
 
 import pytest
@@ -129,7 +130,44 @@ class TestCollectionResource:
             )
 
             collection = await async_client.collections.set_permissions(
-                "collection-123", permissions=permissions, user_id="user-123"
+                "collection-123",
+                permissions=permissions,
+                user_id="user-123",
+                expiration_date=datetime(2026, 6, 19, 10, 30, tzinfo=timezone.utc),
+            )
+
+        assert collection.id == "collection-123"
+
+    @pytest.mark.asyncio
+    async def test_set_user_permissions_requires_expiration_date(self, async_client):
+        """Test user permission updates require an expiration date."""
+        permissions = CollectionPermission()
+
+        with pytest.raises(ValidationError, match="expiration_date is required"):
+            await async_client.collections.set_permissions(
+                "collection-123",
+                permissions=permissions,
+                user_id="user-123",
+            )
+
+    @pytest.mark.asyncio
+    async def test_set_group_permissions_allows_missing_expiration_date(
+        self,
+        async_client,
+        collection_data,
+    ):
+        """Test group permission updates may omit an expiration date."""
+        permissions = CollectionPermission(can_remove_users=True)
+
+        with respx.mock:
+            respx.put(
+                "https://test.example.com/webapi/v3/collections/collection-123/userGroups/group-123/permissions"
+            ).respond(json=collection_data)
+
+            collection = await async_client.collections.set_permissions(
+                "collection-123",
+                permissions=permissions,
+                user_group_id="group-123",
             )
 
         assert collection.id == "collection-123"
@@ -143,6 +181,14 @@ class TestCollectionResource:
             await async_client.collections.set_permissions(
                 "collection-123",
                 permissions=permissions,
+            )
+
+        with pytest.raises(ValidationError):
+            await async_client.collections.set_permissions(
+                "collection-123",
+                permissions=permissions,
+                user_id="user-123",
+                user_group_id="group-123",
             )
 
     @pytest.mark.asyncio
