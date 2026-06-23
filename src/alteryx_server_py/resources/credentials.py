@@ -1,22 +1,15 @@
 """Credential resource for API operations."""
 
-import logging
 from typing import TYPE_CHECKING, Optional
 
 from ..exceptions import CredentialNotFoundError, NotFoundError
-from ..models import (
-    Credential,
-    CredentialCreateRequest,
-    CredentialUpdateRequest,
-)
+from ..models import Credential
 from ..models.common import CredentialId, UserGroupId, UserId
 from ._base import _BaseResource
 
 if TYPE_CHECKING:
     from ..async_client import AsyncAlteryxClient
     from ..client import AlteryxClient
-
-logger = logging.getLogger(__name__)
 
 
 def _coerce_credential_list(response: object) -> list[Credential]:
@@ -86,48 +79,6 @@ class CredentialResource(_BaseResource):
         except NotFoundError as exc:
             raise CredentialNotFoundError(credential_id) from exc
 
-    def create(self, username: str, password: str) -> Credential:
-        """Create a shared credential.
-
-        Args:
-            username: Credential username.
-            password: Credential secret value.
-
-        Returns:
-            Credential: Newly created credential model.
-        """
-        request = CredentialCreateRequest(username=username, password=password)
-        response = self._client._request(
-            "POST",
-            "credentials",
-            json_data=request.model_dump(by_alias=True, exclude_none=True),
-        )
-        return Credential.model_validate(response)
-
-    def update(self, credential_id: CredentialId, new_password: str) -> Credential:
-        """Rotate the stored password for a credential.
-
-        Args:
-            credential_id: Credential identifier.
-            new_password: Replacement password value.
-
-        Returns:
-            Credential: Updated credential model.
-
-        Raises:
-            CredentialNotFoundError: If the credential does not exist.
-        """
-        request = CredentialUpdateRequest(new_password=new_password)
-        try:
-            response = self._client._request(
-                "PUT",
-                f"credentials/{credential_id}",
-                json_data=request.model_dump(by_alias=True, exclude_none=True),
-            )
-            return Credential.model_validate(response)
-        except NotFoundError as exc:
-            raise CredentialNotFoundError(credential_id) from exc
-
     def delete(self, credential_id: CredentialId, force: bool = False) -> None:
         """Delete a credential.
 
@@ -190,48 +141,6 @@ class AsyncCredentialResource(_BaseResource):
         """
         try:
             response = await self._client._request("GET", f"credentials/{credential_id}")
-            return Credential.model_validate(response)
-        except NotFoundError as exc:
-            raise CredentialNotFoundError(credential_id) from exc
-
-    async def create(self, username: str, password: str) -> Credential:
-        """Create a shared credential.
-
-        Args:
-            username: Credential username.
-            password: Credential secret value.
-
-        Returns:
-            Credential: Newly created credential model.
-        """
-        request = CredentialCreateRequest(username=username, password=password)
-        response = await self._client._request(
-            "POST",
-            "credentials",
-            json_data=request.model_dump(by_alias=True, exclude_none=True),
-        )
-        return Credential.model_validate(response)
-
-    async def update(self, credential_id: CredentialId, new_password: str) -> Credential:
-        """Rotate the stored password for a credential.
-
-        Args:
-            credential_id: Credential identifier.
-            new_password: Replacement password value.
-
-        Returns:
-            Credential: Updated credential model.
-
-        Raises:
-            CredentialNotFoundError: If the credential does not exist.
-        """
-        request = CredentialUpdateRequest(new_password=new_password)
-        try:
-            response = await self._client._request(
-                "PUT",
-                f"credentials/{credential_id}",
-                json_data=request.model_dump(by_alias=True, exclude_none=True),
-            )
             return Credential.model_validate(response)
         except NotFoundError as exc:
             raise CredentialNotFoundError(credential_id) from exc

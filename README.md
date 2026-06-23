@@ -152,6 +152,8 @@ for output in job.outputs:
 ### Create a collection and assign permissions
 
 ```python
+from datetime import datetime, timezone
+
 from alteryx_server_py import AlteryxClient
 from alteryx_server_py.models import CollectionPermission
 
@@ -162,6 +164,7 @@ client.collections.add_workflow(collection.id, "workflow-id")
 client.collections.set_permissions(
    collection_id=collection.id,
    user_id="user-id",
+   expiration_date=datetime(2026, 6, 19, 10, 30, tzinfo=timezone.utc),
    permissions=CollectionPermission(
       is_admin=True,
       can_add_assets=True,
@@ -173,24 +176,17 @@ client.collections.set_permissions(
 )
 ```
 
-### Create or rotate a shared credential
+### List or delete shared credentials
 
 ```python
 from alteryx_server_py import AlteryxClient
 
 client = AlteryxClient.from_env()
 
-credential = client.credentials.create(
-   username=r"CONTOSO\svc-alteryx",
-   password="super-secret-password",
-)
+credentials = client.credentials.list()
+credential = client.credentials.get(credentials[0].id)
 
-rotated = client.credentials.update(
-   credential_id=credential.id,
-   new_password="new-super-secret-password",
-)
-
-print(rotated.id)
+client.credentials.delete(credential.id)
 ```
 
 ### Inspect server metadata

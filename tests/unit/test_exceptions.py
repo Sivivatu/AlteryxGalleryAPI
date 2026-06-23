@@ -2,7 +2,14 @@
 Unit tests for custom exceptions in alteryx_server_py.
 """
 
-from alteryx_server_py.exceptions import NotFoundError, WorkflowNotFoundError
+import pytest
+
+from alteryx_server_py.exceptions import (
+    CollectionNotFoundError,
+    CredentialNotFoundError,
+    NotFoundError,
+    WorkflowNotFoundError,
+)
 
 
 class TestWorkflowNotFoundError:
@@ -38,3 +45,29 @@ class TestWorkflowNotFoundError:
         """Passing message=None explicitly still uses the default format."""
         error = WorkflowNotFoundError("abc-123", message=None)
         assert str(error) == "Workflow 'abc-123' not found"
+
+
+@pytest.mark.parametrize(
+    ("error_class", "id_attr", "resource_id", "expected_message"),
+    [
+        (
+            CollectionNotFoundError,
+            "collection_id",
+            "collection-123",
+            "Collection 'collection-123' not found",
+        ),
+        (
+            CredentialNotFoundError,
+            "credential_id",
+            "credential-123",
+            "Credential 'credential-123' not found",
+        ),
+    ],
+)
+def test_phase_4_not_found_errors(error_class, id_attr, resource_id, expected_message):
+    """Collection and credential not-found errors format and store ids."""
+    error = error_class(resource_id)
+
+    assert str(error) == expected_message
+    assert getattr(error, id_attr) == resource_id
+    assert isinstance(error, NotFoundError)

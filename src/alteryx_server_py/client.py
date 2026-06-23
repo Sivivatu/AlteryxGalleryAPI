@@ -171,8 +171,7 @@ class AlteryxClient(_BaseClient):
 
         logger.debug(f"{method} {url}")
         logger.debug(f"Params: {params}")
-        logger.debug(f"Data: {data}")
-        logger.debug(f"JSON: {json_data}")
+        logger.debug("Request body omitted from debug logs")
 
         if self._client is None:
             self._initialize_client()
